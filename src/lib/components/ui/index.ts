@@ -25,3 +25,9 @@ export type { IconCardProps } from './icon-card';
 
 export { LanguageCard } from './language-card';
 export type { LanguageCardProps } from './language-card';
+
+export { Popover } from './popover';
+export type { PopoverProps } from './popover';
+
+export { Header } from './header';
+export type { HeaderProps } from './header';

@@ -1,5 +1,5 @@
 import { VideoAxios } from ".."
-import { GetAvatarByIdRequest, GetAvatarsRequest } from "../../types"
+import type { GetAvatarByIdRequest, GetAvatarsRequest } from "../../types"
 import { prepareAssetFilters } from "../common"
 
 export const getAvatars = async (data: GetAvatarsRequest) => {

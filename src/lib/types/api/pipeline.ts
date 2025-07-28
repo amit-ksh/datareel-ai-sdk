@@ -1,4 +1,4 @@
-import { BaseGetAssetsRequest } from "./common";
+import type { BaseGetAssetsRequest } from "./common";
 
 export interface GetPipelinesRequest extends BaseGetAssetsRequest {}
 

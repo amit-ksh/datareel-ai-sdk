@@ -1,4 +1,4 @@
-import { DataReelConstructor } from "../types";
+import type { DataReelConstructor } from "../types";
 
 
 export class DataReel {
@@ -10,10 +10,10 @@ export class DataReel {
   email?: string;
   name?: string;
 
-  constructor({secret}: DataReelConstructor) {
+  constructor({secret, organisationId}: DataReelConstructor) {
     this.secret = secret
+    this.organisationId = organisationId
 
-    // TODO: SET & READ apiKey and organisationId from cookie
   }
 
   private _validateSecret(secret: string) {

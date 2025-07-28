@@ -45,7 +45,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               ${
                 error
                   ? "border-red-300 focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                  : "border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  : "border-gray-300 focus:ring-2 ring-brand focus:border-brand"
               }
               ${className}
             `.trim()}

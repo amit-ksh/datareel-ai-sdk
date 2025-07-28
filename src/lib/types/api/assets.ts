@@ -1,4 +1,4 @@
-import { BaseGetAssetsRequest, BaseVideoRequest } from "./common";
+import type { BaseGetAssetsRequest, BaseVideoRequest } from "./common";
 
 export interface GetAvatarsRequest extends BaseGetAssetsRequest {}
 

@@ -22,7 +22,7 @@ export const LanguageCard = React.forwardRef<HTMLDivElement, LanguageCardProps>(
         className={clsx(
           "p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md",
           selected
-            ? "border-green-500 ring-2 ring-green-200"
+            ? "border-brand ring-2 ring-brand"
             : "border-gray-200 hover:border-gray-300"
         )}
         onClick={onClick}
@@ -55,7 +55,7 @@ export const LanguageCard = React.forwardRef<HTMLDivElement, LanguageCardProps>(
           {/* Selection indicator - vertically centered */}
           <div className="flex items-center">
             {selected && (
-              <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+              <div className="w-5 h-5 bg-brand rounded-full flex items-center justify-center">
                 <svg
                   className="w-3 h-3 text-white"
                   fill="currentColor"

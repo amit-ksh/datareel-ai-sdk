@@ -39,8 +39,8 @@ const sampleItems = [
             <p className="text-sm font-medium">Sophia</p>
             <p className="text-xs text-gray-500">Warm American voice</p>
           </div>
-          <div className="text-center p-4 bg-white rounded-lg border border-green-500">
-            <div className="w-16 h-16 bg-green-100 rounded-lg mx-auto mb-2 flex items-center justify-center text-green-600 text-2xl">
+          <div className="text-center p-4 bg-white rounded-lg border-brand border">
+            <div className="w-16 h-16 bg-brand-light rounded-lg mx-auto mb-2 flex items-center justify-center text-brand text-2xl">
               +
             </div>
             <p className="text-sm font-medium">Custom Avatar</p>
@@ -94,7 +94,7 @@ const sampleItems = [
       <div className="p-4 bg-gray-50 rounded-lg min-h-[200px]">
         <h3 className="text-lg font-semibold mb-4">Select Language</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-lg border border-blue-200 bg-blue-50">
+          <div className="p-4 rounded-lg border-brand border bg-brand-light">
             <div className="flex items-center space-x-3">
               <span className="text-2xl">🇺🇸</span>
               <div>
@@ -123,7 +123,7 @@ const sampleItems = [
           </div>
         </div>
         <div className="mt-4 text-center">
-          <button className="text-blue-600 hover:text-blue-800 text-sm">
+          <button className="text-brand hover:text-brand text-sm">
             ⚙️ Need a custom language?
           </button>
         </div>
@@ -177,19 +177,19 @@ export const ControlledTabs = {
         <div className="flex gap-2">
           <button
             onClick={() => setActiveTab("tab1")}
-            className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
+            className="px-3 py-1 bg-brand text-white rounded text-sm"
           >
             Go to Tab 1
           </button>
           <button
             onClick={() => setActiveTab("tab2")}
-            className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
+            className="px-3 py-1 bg-brand text-white rounded text-sm"
           >
             Go to Tab 2
           </button>
           <button
             onClick={() => setActiveTab("tab3")}
-            className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
+            className="px-3 py-1 bg-brand text-white rounded text-sm"
           >
             Go to Tab 3
           </button>

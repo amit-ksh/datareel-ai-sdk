@@ -1,5 +1,5 @@
 import { VideoAxios } from ".."
-import { GetAvatarByIdRequest, GetAvatarsRequest, GetVideoByIdRequest, CreateVideoRequest } from "../../types"
+import type { GetAvatarByIdRequest, GetAvatarsRequest, GetVideoByIdRequest, CreateVideoRequest } from "../../types"
 import { prepareAssetFilters } from "../common"
 
 export const getPipelines = async (data: GetAvatarsRequest) => {

@@ -31,7 +31,7 @@ export const IconCard = React.forwardRef<HTMLDivElement, IconCardProps>(
         className={clsx(
           "p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md",
           selected
-            ? "border-green-500 ring-2 ring-green-200"
+            ? "border-brand ring-2 ring-brand"
             : "border-gray-200 hover:border-gray-300"
         )}
         onClick={onClick}

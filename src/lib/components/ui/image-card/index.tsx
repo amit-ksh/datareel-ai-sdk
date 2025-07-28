@@ -22,7 +22,7 @@ export const ImageCard = React.forwardRef<HTMLDivElement, ImageCardProps>(
         className={clsx(
           "relative p-2 bg-white rounded-lg border cursor-pointer transition-all hover:shadow-md",
           selected
-            ? "border-green-500 ring-2 ring-green-200"
+            ? "border-brand ring-2 ring-brand"
             : "border-gray-200 hover:border-gray-300",
           className
         )}
@@ -54,7 +54,7 @@ export const ImageCard = React.forwardRef<HTMLDivElement, ImageCardProps>(
         </div>
 
         {selected && (
-          <div className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+          <div className="absolute top-2 right-2 w-6 h-6 bg-brand rounded-full flex items-center justify-center">
             <svg
               className="w-4 h-4 text-white"
               fill="none"

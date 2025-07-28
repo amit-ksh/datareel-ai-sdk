@@ -19,7 +19,7 @@ const headerVariants = cva(
       variant: {
         default: "bg-white border-gray-200",
         dark: "bg-gray-900 border-gray-700 text-white",
-        primary: "bg-green-500 border-green-600 text-white",
+        primary: "bg-brand border-brand text-white",
       },
       size: {
         sm: "px-3 py-2",

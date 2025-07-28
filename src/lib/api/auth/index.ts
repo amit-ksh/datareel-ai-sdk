@@ -1,5 +1,5 @@
 import { AuthAxios } from "..";
-import { CreateOrganisationRequest, CreateOrganisationResponse, ValidateUserRequest, ValidateUserResponse } from "../../types";
+import type { CreateOrganisationRequest, CreateOrganisationResponse, ValidateUserRequest, ValidateUserResponse } from "../../types";
 
 export const createOrganisation = async (data: CreateOrganisationRequest): Promise<CreateOrganisationResponse> => {
   return AuthAxios.post('/api/v1/admin/admin/create_org', data)

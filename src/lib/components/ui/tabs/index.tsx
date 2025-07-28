@@ -70,7 +70,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
             base,
             "border-b-2 -mb-px",
             isActive
-              ? "border-green-500 bg-green-600 text-white"
+              ? "border-brand bg-brand text-white"
               : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
           );
         default:
@@ -78,7 +78,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
             base,
             "border-b-2 -mb-px",
             isActive
-              ? "border-green-500 bg-green-500 text-white"
+              ? "border-brand bg-brand text-white"
               : "border-transparent text-gray-500 hover:text-gray-700"
           );
       }

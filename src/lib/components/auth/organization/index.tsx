@@ -1,5 +1,5 @@
 import { LoaderCircleIcon, AlertCircleIcon, Building2Icon } from "lucide-react";
-import React from "react";
+import type React from "react";
 
 export interface OrganizationProps {
   onCreateOrganization?: () => void;

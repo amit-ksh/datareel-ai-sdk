@@ -16,7 +16,7 @@ export const ItemSelector = React.forwardRef<HTMLDivElement, ItemSelectorProps>(
         <div className="mb-6">
           {step && (
             <div className="flex items-center mb-4">
-              <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-medium mr-3">
+              <div className="w-8 h-8 bg-brand text-white rounded-full flex items-center justify-center text-sm font-medium mr-3">
                 {step}
               </div>
               <h2 className="text-xl font-semibold text-gray-900">{title}</h2>

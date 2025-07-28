@@ -1,1 +1,33 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+
+:root {
+  --datareel-brand-color: #3b82f6; /* Default brand color (blue-500) */
+  --datareel-brand-color-hover: #2563eb; /* Darker shade for hover */
+  --datareel-brand-color-light: #dbeafe; /* Light shade for backgrounds */
+  --datareel-brand-color-ring: #3b82f6; /* For focus rings */
+}
+
+/* Utility classes for brand color */
+.bg-brand {
+  background-color: var(--datareel-brand-color);
+}
+
+.bg-brand-hover:hover {
+  background-color: var(--datareel-brand-color-hover);
+}
+
+.bg-brand-light {
+  background-color: var(--datareel-brand-color-light);
+}
+
+.text-brand {
+  color: var(--datareel-brand-color);
+}
+
+.border-brand {
+  border-color: var(--datareel-brand-color);
+}
+
+.ring-brand {
+  --tw-ring-color: var(--datareel-brand-color-ring);
+}

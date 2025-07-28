@@ -1,4 +1,5 @@
-import React, { useCallback, useState } from "react";
+import type React from "react";
+import { useCallback, useState } from "react";
 import { Upload, X, FileIcon, AlertCircle } from "lucide-react";
 
 export interface FileUploadProps {
@@ -122,7 +123,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    return parseFloat((bytes / k ** i).toFixed(2)) + " " + sizes[i];
   };
 
   const currentError = error || localError;
@@ -136,12 +137,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       <div
         className={`
           relative border-2 border-dashed rounded-lg p-6 text-center transition-colors
-          ${isDragOver ? "border-green-400 bg-green-50" : ""}
+          ${isDragOver ? "border-brand bg-brand-light" : ""}
           ${currentError ? "border-red-300" : "border-gray-300"}
           ${
             disabled
               ? "opacity-50 cursor-not-allowed"
-              : "cursor-pointer hover:border-green-400 hover:bg-green-50"
+              : "cursor-pointer hover:border-brand hover:bg-brand-light"
           }
         `.trim()}
         onDragOver={handleDragOver}

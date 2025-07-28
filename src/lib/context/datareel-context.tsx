@@ -6,6 +6,7 @@ import React, {
   type ReactNode,
 } from "react";
 import { DataReel } from "../sdk/datareel";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 interface DatareelContextProps {
   organisationId: string;
@@ -23,6 +24,8 @@ interface DatareelProviderProps extends DatareelContextProps {
   children: ReactNode;
   secret: string;
 }
+
+const queryClient = new QueryClient();
 
 export function DatareelProvider({
   children,
@@ -55,9 +58,11 @@ export function DatareelProvider({
   };
 
   return (
-    <DatareelContext.Provider value={contextValue}>
-      {children}
-    </DatareelContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <DatareelContext.Provider value={contextValue}>
+        {children}
+      </DatareelContext.Provider>
+    </QueryClientProvider>
   );
 }
 

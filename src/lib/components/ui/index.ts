@@ -31,3 +31,6 @@ export type { PopoverProps } from './popover';
 
 export { Header } from './header';
 export type { HeaderProps } from './header';
+
+export { VideoRecorder } from './video-recorder';
+export type { VideoRecorderProps } from './video-recorder';

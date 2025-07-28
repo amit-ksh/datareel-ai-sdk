@@ -1,6 +1,6 @@
 import type { DataReelConstructor, BaseGetAssetsRequest, PaginatedResponse, Avatar, Voice, Template, ContentVideo, Persona, Pipeline, CreateVideoRequest, GetVideoByIdRequest, CreateAvatarRequest } from "../types";
 import { getAvatars, getVoices, getTemplates, getContentVideos, getPersonas, createAvatar } from "../api/assets";
-import { getPipelines, createVideo, getVideoById } from "../api/pipeline";
+import { getPipelines, createVideo, getVideoById,  getOrganisationLanguages } from "../api/pipeline";
 import { createOrganisation, loginUser } from "../api/auth";
 
 
@@ -165,6 +165,12 @@ export class DataReel {
     };
 
     return await createAvatar(request);
+  }
+
+  async getLanguages() {
+    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    
+    return await getOrganisationLanguages();
   }
 
   async getPipelines(labels: string[] = [], emails: string[] = [], languages: string[] = []): Promise<PaginatedResponse<Pipeline>> {

@@ -29,3 +29,8 @@ export const getVideoById = async (data: GetVideoByIdRequest) => {
   })
   return resp.data
 }
+
+export const getOrganisationLanguages = async (): Promise<string[]> => {
+  const resp = await VideoAxios.get(`/api/v1/pipeline/languages`)
+  return resp.data
+}

@@ -12,7 +12,6 @@ export interface GetVideoByIdRequest extends BaseGetAssetsRequest {
   videoId: string;
 }
 
-
 type ComponentType = "lipsync" | "content" | "presentation";
 type ComponentAssetType = "static" | "dynamic";
 export interface Pipeline {

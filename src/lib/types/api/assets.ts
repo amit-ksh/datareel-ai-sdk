@@ -2,7 +2,6 @@ import type { BaseGetAssetsRequest, RenderSetting } from "./common";
 
 export interface GetAvatarsRequest extends BaseGetAssetsRequest {}
 
-
 export interface Avatar {
   avatar_id: string;
   avatar_name: string;
@@ -13,6 +12,17 @@ export interface Avatar {
   reference_id: string | null;
   settings_id: string | null;
   render_settings: RenderSetting;
+}
+
+export interface CreateAvatarRequest {
+  apiKey: string;
+  data: {
+    persona_id: string;
+    settings_id: string;
+    reference_id: string;
+    avatar_name: string;
+    video: File;
+  };
 }
 
 export interface Persona {
@@ -73,27 +83,27 @@ export interface Cluster {
 }
 
 export interface Video {
-    video_id: string;
-    cluster_id: string;
-    voice_over: boolean;
-    video_name: string;
-    voice_over_config: Array<{
-      iso: string;
-      content: string;
-    }>;
-    picture_in_picture: boolean;
-    picture_in_picture_config: {
-      radius: number;
-      x_cordinate: number;
-      y_cordinate: number;
-    } | null;
-    s3_url: string;
-    s3_thumbnail_url: string;
-    reference_id: string | null;
-    created_at: string;
-    render_settings: RenderSetting;
-    user_label: string | null;
-  }
+  video_id: string;
+  cluster_id: string;
+  voice_over: boolean;
+  video_name: string;
+  voice_over_config: Array<{
+    iso: string;
+    content: string;
+  }>;
+  picture_in_picture: boolean;
+  picture_in_picture_config: {
+    radius: number;
+    x_cordinate: number;
+    y_cordinate: number;
+  } | null;
+  s3_url: string;
+  s3_thumbnail_url: string;
+  reference_id: string | null;
+  created_at: string;
+  render_settings: RenderSetting;
+  user_label: string | null;
+}
 export interface ContentVideo {
   cluster_id: string;
   cluster_name: string;
@@ -103,4 +113,3 @@ export interface ContentVideo {
   standard_videos: string[];
   videos: Array<Video>;
 }
-

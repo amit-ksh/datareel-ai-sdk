@@ -7,6 +7,7 @@ import type {
   Persona,
   Template,
   Voice,
+  CreateAvatarRequest,
 } from "../../types";
 import { prepareAssetFilters } from "../common";
 
@@ -72,4 +73,30 @@ export const getPersonas = async (
   });
 
   return resp.data;
+};
+
+export const createAvatar = async (
+  request: CreateAvatarRequest
+): Promise<{ video_id: string }> => {
+  const params = new URLSearchParams();
+ params.append("persona_id", request.data.persona_id);
+ 
+  const formData = new FormData();
+  formData.append("video", request.data.video);
+  formData.append("avatar_name", request.data.avatar_name);
+  formData.append("reference_id", request.data.reference_id);
+
+  if (request.data.settings_id === "default") request.data.settings_id = "";
+  formData.append("settings_id", request.data.settings_id);
+
+  return VideoAxios.post(
+    `/api/v1/video/upload?${params.toString()}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        api_key: request.apiKey,
+      },
+    }
+  );
 };

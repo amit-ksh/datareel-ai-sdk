@@ -1,5 +1,5 @@
-import type { DataReelConstructor, BaseGetAssetsRequest, PaginatedResponse, Avatar, Voice, Template, ContentVideo, Persona, Pipeline, CreateVideoRequest, GetVideoByIdRequest } from "../types";
-import { getAvatars, getVoices, getTemplates, getContentVideos, getPersonas } from "../api/assets";
+import type { DataReelConstructor, BaseGetAssetsRequest, PaginatedResponse, Avatar, Voice, Template, ContentVideo, Persona, Pipeline, CreateVideoRequest, GetVideoByIdRequest, CreateAvatarRequest } from "../types";
+import { getAvatars, getVoices, getTemplates, getContentVideos, getPersonas, createAvatar } from "../api/assets";
 import { getPipelines, createVideo, getVideoById } from "../api/pipeline";
 import { createOrganisation, loginUser } from "../api/auth";
 
@@ -150,6 +150,23 @@ export class DataReel {
     return await getContentVideos(request);
   }
 
+  async createAvatar(personaId: string, settingsId: string, referenceId: string, avatarName: string, videoFile: File) {
+    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    
+    const request: CreateAvatarRequest = {
+      apiKey: this.apiKey!,
+      data: {
+        persona_id: personaId,
+        settings_id: settingsId,
+        reference_id: referenceId,
+        avatar_name: avatarName,
+        video: videoFile
+      }
+    };
+
+    return await createAvatar(request);
+  }
+
   async getPipelines(labels: string[] = [], emails: string[] = [], languages: string[] = []): Promise<PaginatedResponse<Pipeline>> {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
     
@@ -166,7 +183,6 @@ export class DataReel {
   }
 
   // VIDEO GENERATION
-
   async generateVideo(pipelineId: string, body: JSON, emails: string[] = []) {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
     

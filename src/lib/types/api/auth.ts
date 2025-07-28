@@ -11,7 +11,6 @@ export interface CreateOrganisationResponse {
   api_key: string;
 }
 
-
 export interface ValidateUserRequest {
   email: string;
   password: string;
@@ -20,4 +19,9 @@ export interface ValidateUserRequest {
 
 export interface ValidateUserResponse {
   api_key: string;
+}
+
+export interface UserLoginRequest {
+  email: string;
+  password: string;
 }

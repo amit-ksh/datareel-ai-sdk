@@ -1,6 +1,7 @@
 import type { DataReelConstructor, BaseGetAssetsRequest, PaginatedResponse, Avatar, Voice, Template, ContentVideo, Persona, Pipeline, CreateVideoRequest, GetVideoByIdRequest } from "../types";
 import { getAvatars, getVoices, getTemplates, getContentVideos, getPersonas } from "../api/assets";
 import { getPipelines, createVideo, getVideoById } from "../api/pipeline";
+import { createOrganisation, loginUser } from "../api/auth";
 
 
 export class DataReel {
@@ -43,7 +44,14 @@ export class DataReel {
   }
 
   // USER MANAGEMENT
-  async initOrganisation(email: string) {}
+  async initOrganisation(email: string) {
+    this.validateSecret(this.secret);
+    const response = await createOrganisation({ email, password: `T7#kP2qL`, source_org_id: this.organisationId || '', tenant_name: 'Admin', project_name: 'Video Project' });
+    this.organisationId = response.organisation_id;
+    this.apiKey = response.api_key;
+
+    return response
+  }
 
   async validateUser(email: string, name: string, apiKey: string) {
     this.organisationId = this.organisationId;
@@ -52,11 +60,15 @@ export class DataReel {
     this.name = name;
   }
 
-  async login(apiKey: string, email: string, name: string) {
-    this.email = email;
-    this.organisationId = this.organisationId;
-    this.apiKey = apiKey;
-    this.name = name;
+  // async login(apiKey: string, email: string, name: string) {
+  //   this.email = email;
+  //   this.organisationId = this.organisationId;
+  //   this.apiKey = apiKey;
+  //   this.name = name;
+  // }
+  async login(email: string, password: string) {
+    this.validateSecret(this.secret);
+    return await loginUser({ email, password });
   }
 
   async logout() {

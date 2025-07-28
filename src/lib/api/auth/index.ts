@@ -1,10 +1,17 @@
 import { AuthAxios } from "..";
-import type { CreateOrganisationRequest, CreateOrganisationResponse, ValidateUserRequest, ValidateUserResponse } from "../../types";
+import type { CreateOrganisationRequest, CreateOrganisationResponse, UserLoginRequest, ValidateUserRequest, ValidateUserResponse } from "../../types";
 
 export const createOrganisation = async (data: CreateOrganisationRequest): Promise<CreateOrganisationResponse> => {
-  return AuthAxios.post('/api/v1/admin/admin/create_org', data)
+  const resp  = await AuthAxios.post('/api/v1/admin/admin/create_org', data)
+  return resp.data;
 }
 
 export const validateUser = async (data: ValidateUserRequest): Promise<ValidateUserResponse> => {
-  return AuthAxios.post('/api/v1/admin/admin/validate_user', data)
+  const resp = await AuthAxios.post('/api/v1/admin/admin/validate_user', data)
+  return resp.data;
+}
+
+export const loginUser = async (data: UserLoginRequest): Promise<{success: boolean}> => {
+  const resp = await AuthAxios.post('/api/v1/auth/tenant/login', data)
+  return resp.data;
 }

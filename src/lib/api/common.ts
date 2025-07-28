@@ -8,5 +8,9 @@ export const prepareAssetFilters = (data: BaseGetAssetsRequest) => {
   if (data.filters.emails) {
     params.append("from_email", data.filters.emails.join(","));
   }
+  if (data.filters.languages) {
+    params.append("language", data.filters.languages.join(","));
+  }
+
   return params;
 }

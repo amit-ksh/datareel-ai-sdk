@@ -247,9 +247,6 @@ export const Interactive: Story = {
     onForgotPassword: () => {
       console.log("Forgot password clicked");
     },
-    onRegularSignIn: () => {
-      console.log("Regular sign-in clicked");
-    },
     onSSOLogin: (providerId: string) => {
       console.log("SSO Login with:", providerId);
     },

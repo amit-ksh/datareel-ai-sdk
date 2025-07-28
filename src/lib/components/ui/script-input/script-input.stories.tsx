@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ScriptInput } from "./index";
 
 const meta = {
-  title: "Atoms/ScriptInput",
+  title: "UI/ScriptInput",
   component: ScriptInput,
   parameters: {
     layout: "centered",

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FileUpload } from "./index";
 
 const meta = {
-  title: "Atoms/FileUpload",
+  title: "UI/FileUpload",
   component: FileUpload,
   parameters: {
     layout: "centered",

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Input } from "./index";
 
 const meta = {
-  title: "Atoms/Input",
+  title: "UI/Input",
   component: Input,
   parameters: {
     layout: "centered",

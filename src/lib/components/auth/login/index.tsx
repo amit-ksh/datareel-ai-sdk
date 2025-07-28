@@ -47,7 +47,7 @@ export const Login = ({
   };
 
   return (
-    <div className="max-w-md w-full mx-auto bg-white rounded-lg shadow-lg p-8">
+    <div className="max-w-md w-[448px] mx-auto bg-white rounded-lg shadow-lg p-8">
       {/* Logo and Title */}
       <div className="text-center mb-8">
         {organisation?.logo && (

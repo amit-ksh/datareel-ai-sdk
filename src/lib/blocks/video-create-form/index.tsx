@@ -55,6 +55,10 @@ export const VideoCreateForm = ({
       }),
     enabled: !!datareel,
   });
+  const dynamicClusterComponents = selectedVideoType?.data?.data.filter(
+    (component) =>
+      component.type === "content" && component.content?.type === "dynamic"
+  );
 
   const { data: templatesData, isLoading: templatesLoading } = useQuery({
     queryKey: ["templates", selectedVideoType?.pipeline_id],
@@ -90,7 +94,7 @@ export const VideoCreateForm = ({
   const renderAvatarSelection = () => (
     <ItemSelector step={1} title="Choose Your Avatar">
       {avatarsLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="animate-pulse">
               <div className="bg-gray-200 aspect-square rounded-lg mb-3"></div>
@@ -100,7 +104,7 @@ export const VideoCreateForm = ({
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {avatarsData?.data?.map((avatar) => (
             <ImageCard
               key={avatar.avatar_id}
@@ -128,7 +132,7 @@ export const VideoCreateForm = ({
   const renderLanguageSelection = () => (
     <ItemSelector step={2} title="Select Language">
       {languagesLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="animate-pulse p-4 border rounded-lg">
               <div className="h-6 bg-gray-200 rounded mb-2"></div>
@@ -137,7 +141,7 @@ export const VideoCreateForm = ({
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {languagesData?.map((language) => (
             <LanguageCard
               key={language}
@@ -186,7 +190,7 @@ export const VideoCreateForm = ({
   const renderVideoTypeSelection = () => (
     <ItemSelector step={3} title="Select Video Type">
       {pipelinesLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="animate-pulse">
               <div className="bg-gray-200 aspect-video rounded-lg mb-3"></div>
@@ -196,7 +200,7 @@ export const VideoCreateForm = ({
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {pipelinesData?.data?.map((pipeline) => (
             <ImageCard
               key={pipeline.pipeline_id}
@@ -248,7 +252,7 @@ export const VideoCreateForm = ({
   const renderTemplateSelection = () => (
     <ItemSelector step={4} title="Select Template">
       {templatesLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="animate-pulse">
               <div className="bg-gray-200 aspect-video rounded-lg mb-3"></div>
@@ -262,9 +266,9 @@ export const VideoCreateForm = ({
         templatesData.map((template, index) => (
           <div key={template.data.cluster_id}>
             <div className="text-lg font-semibold mb-4">
-              {template.data.cluster_name || "Video Templates"}
+              {dynamicClusterComponents?.[index]?.name || "Video Templates"}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {template?.data?.videos?.map(
                 (video: ContentVideo["videos"][number]) => (
                   <ImageCard
@@ -295,7 +299,7 @@ export const VideoCreateForm = ({
     <div className="min-h-screen">
       {/* Sub-Header */}
       <div className="">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <button
@@ -323,7 +327,7 @@ export const VideoCreateForm = ({
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
         <CreateAvatarForm
           onAvatarCreated={(avatarData) => {
             console.log("Avatar created:", avatarData);
@@ -343,14 +347,14 @@ export const VideoCreateForm = ({
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen max-w-7xl mx-auto">
       {showCustomAvatarForm ? (
         renderCustomAvatarForm()
       ) : (
         <>
           {/* Sub-Header */}
           <div className="">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className=" px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between h-16">
                 <div className="flex items-center">
                   <button
@@ -379,7 +383,7 @@ export const VideoCreateForm = ({
             </div>
           </div>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex">
               <div className="flex-1 space-y-6">
                 {renderAvatarSelection()}

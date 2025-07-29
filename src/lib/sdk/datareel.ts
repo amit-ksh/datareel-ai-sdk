@@ -7,7 +7,7 @@ import { createOrganisation, loginUser } from "../api/auth";
 export class DataReel {
   organisationId?: string;
   private apiKey?: string;
-  secret: string;
+  private secret: string;
 
   // User information
   email?: string;
@@ -50,6 +50,7 @@ export class DataReel {
     this.organisationId = response.organisation_id;
     this.apiKey = response.api_key;
 
+    console.log("Organisation initialized:", response);
     return response
   }
 
@@ -68,6 +69,9 @@ export class DataReel {
   // }
   async login(email: string, password: string) {
     this.validateSecret(this.secret);
+    if (!this.organisationId) {
+      throw new Error("Organisation ID is required for login");
+    }
     return await loginUser({ email, password });
   }
 

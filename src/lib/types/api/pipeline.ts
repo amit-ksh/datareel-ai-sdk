@@ -3,7 +3,12 @@ import type { BaseGetAssetsRequest, BaseVideoRequest, RenderSetting } from "./co
 export interface GetPipelinesRequest extends BaseGetAssetsRequest {}
 
 export interface CreateVideoRequest extends BaseVideoRequest {
-  videoId: string;
+  pipelineId: string;
+  name: string;
+  assignee: string;
+  approve: boolean;
+  lip_optimization: boolean;
+  lip_sync_model: string;
   data: JSON;
   emails?: string[];
 }

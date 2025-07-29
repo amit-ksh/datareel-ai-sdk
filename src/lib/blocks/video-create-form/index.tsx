@@ -86,8 +86,7 @@ export const VideoCreateForm = ({
       !!selectedAvatar &&
       !!selectedLanguage &&
       !!selectedVideoType &&
-      !!selectedTemplate &&
-      templatesData?.length > 0
+      (!!selectedTemplate || !templatesData?.length)
     );
   };
 
@@ -396,14 +395,12 @@ export const VideoCreateForm = ({
                     size="lg"
                     className="px-12 sm:min-w-[400px] rounded-xl lg:text-lg py-4 font-semibold"
                     onClick={() => {
-                      if (onVideoGenerate) {
-                        onVideoGenerate({
-                          avatar: selectedAvatar,
-                          language: selectedLanguage,
-                          videoType: selectedVideoType,
-                          template: selectedTemplate,
-                        });
-                      }
+                      datareel.generateVideo({
+                        avatar: selectedAvatar,
+                        language: selectedLanguage,
+                        videoType: selectedVideoType,
+                        contentVideos: selectedTemplate,
+                      });
                     }}
                     disabled={!canProceed()}
                   >

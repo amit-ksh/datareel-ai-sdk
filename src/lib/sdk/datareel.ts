@@ -1,6 +1,6 @@
 import type { DataReelConstructor, BaseGetAssetsRequest, PaginatedResponse, Avatar, Voice, Template, ContentVideo, Persona, Pipeline, CreateVideoRequest, GetVideoByIdRequest, CreateAvatarRequest } from "../types";
 import { getAvatars, getVoices, getTemplates, getContentVideos, getPersonas, createAvatar } from "../api/assets";
-import { getPipelines, createVideo, getVideoById,  getOrganisationLanguages } from "../api/pipeline";
+import { getPipelines, createVideo, getVideoById,  getOrganisationLanguages, fetchPipelineFormData } from "../api/pipeline";
 import { createOrganisation, loginUser } from "../api/auth";
 
 import * as Yup from 'yup'
@@ -149,19 +149,19 @@ export class DataReel {
     return await getVoices(request);
   }
 
-  async getTemplates(labels: string[] = [], emails: string[] = []): Promise<PaginatedResponse<Template>> {
-    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+  // async getTemplates(labels: string[] = [], emails: string[] = []): Promise<PaginatedResponse<Template>> {
+  //   this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
     
-    const request: BaseGetAssetsRequest = {
-      apiKey: this.apiKey!,
-      filters: {
-        labels,
-        emails,
-      }
-    };
+  //   const request: BaseGetAssetsRequest = {
+  //     apiKey: this.apiKey!,
+  //     filters: {
+  //       labels,
+  //       emails,
+  //     }
+  //   };
 
-    return await getTemplates(request);
-  }
+  //   return await getTemplates(request);
+  // }
 
   async getContentVideos({labels = [], emails = [], clusterIds = []}: {
     labels?: string[];
@@ -191,7 +191,6 @@ export class DataReel {
       return response;
     }));
 
-    console.log(contentVideos)
 
     return contentVideos
   }
@@ -251,11 +250,21 @@ export class DataReel {
   }
 
   // VIDEO GENERATION
+  private async getPipelineFormData(pipelineId: string) {
+    this.validateApiKey(this.apiKey || '');
+
+    return await fetchPipelineFormData({
+      apiKey: this.apiKey!,
+      pipelineId
+    })
+  }
+
+
   async generateVideo(data: {
     avatar: Avatar | null;
     language: string | null;
     videoType: Pipeline | null;
-    contentVideos: ContentVideo[];
+    contentVideos: ContentVideo['videos'];
   }) {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
 
@@ -265,13 +274,39 @@ export class DataReel {
     }
 
     const pipelineId = videoType.pipeline_id;
-    const body = avatar as any
+    const pipelineFormDataResp = await this.getPipelineFormData(pipelineId) as any;
+    const pipelineFormData = pipelineFormDataResp.data.body.data as any[];
+    
+    const body: any = []
+    pipelineFormData.forEach((component: any, componentIndex) => {
+      const data = Object.keys(component).reduce((acc, key: string) => {
+        if (key === 'avatar') {
+          acc[key] = videoType.avatar_id
+        } else if (key === 'voice') {
+          acc[key] = videoType.voice_id
+        } else if (key === 'template') {
+          acc[key] = videoType.template_id
+        } else if (key === 'language') {
+          acc[key] = videoType.language
+        } else if (key === 'content') {
+          acc[key] = contentVideos.pop().video_id
+        }
+
+        return acc;
+      }, {id: componentIndex} as Record<string, string | number>);
+
+      body.push(data);
+    })
 
     const request: CreateVideoRequest = {
+      pipelineId: videoType.pipeline_id,
       apiKey: this.apiKey!,
-      videoId: pipelineId,
+      name: `Video-${Date.now()}`,
+      assignee: this.email || '',
+      approve: videoType.lip_sync_model !== 'preview',
+      lip_sync_model: videoType.lip_sync_model,
+      lip_optimization: videoType.lip_optimization,
       data: body,
-      emails: [],
     };
 
     return await createVideo(request);

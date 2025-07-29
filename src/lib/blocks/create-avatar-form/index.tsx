@@ -175,7 +175,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
               id: "upload",
               label: "📁 Upload File",
               content: (
-                <div className="space-y-4">
+                <label htmlFor="video" className="space-y-4 cursor-pointer">
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                     <svg
                       className="mx-auto h-12 w-12 text-gray-400 mb-4"
@@ -192,7 +192,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
                     </svg>
                     <label
                       htmlFor="video"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block font-medium text-gray-700 mb-2"
                     >
                       Upload Video File
                       <span className="text-red-500 ml-1">*</span>
@@ -201,7 +201,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
                       id="video"
                       name="video"
                       type="file"
-                      className="mt-2"
+                      className="mt-2 sr-only"
                       accept=".mp4,.mov"
                       onChange={handleVideoFileChange}
                       label=""
@@ -210,7 +210,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
                       MP4 or MOV files only. Long files may take time to upload.
                     </p>
                   </div>
-                </div>
+                </label>
               ),
             },
             {
@@ -218,7 +218,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
               label: "🎥 Record Yourself",
               content: (
                 <div className="space-y-4">
-                  <div className="border-2 border-gray-300 rounded-lg p-4">
+                  <div className="p-4">
                     <VideoRecorder
                       onRecordingComplete={async (media) => {
                         setVideoURL(media.url);

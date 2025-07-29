@@ -295,14 +295,14 @@ export const VideoCreateForm = ({
   );
 
   const renderCustomAvatarForm = () => (
-    <div className="min-h-screen">
+    <div className="min-h-screen max-w-3xl mx-auto">
       {/* Sub-Header */}
       <div className="">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <button
-                className="mr-4 p-2 rounded-md text-gray-700 bg-white shadow-sm"
+                className="mr-4 p-2 rounded-md text-gray-700 bg-white shadow-sm hover:shadow-md transition-shadow"
                 onClick={() => setShowCustomAvatarForm(false)}
               >
                 <ArrowLeftIcon className="w-6 h-6" />
@@ -315,12 +315,6 @@ export const VideoCreateForm = ({
                   Upload or record a video to create your personalized avatar
                 </p>
               </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="px-3 py-1 bg-blue-50 text-blue-500 text-sm font-medium rounded-full flex items-center">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                AI Powered
-              </span>
             </div>
           </div>
         </div>
@@ -353,18 +347,18 @@ export const VideoCreateForm = ({
         <>
           {/* Sub-Header */}
           <div className="">
-            <div className=" px-4 sm:px-6 lg:px-8">
+            <div className="px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between h-16">
                 <div className="flex items-center">
                   <button
-                    className="mr-4 p-2 rounded-md text-gray-700 bg-white shadow-sm"
+                    className="mr-4 p-2 rounded-md text-gray-700 bg-white shadow-sm hover:shadow-md transition-shadow"
                     onClick={onCancel}
                   >
                     <ArrowLeftIcon className="w-6 h-6" />
                   </button>
                   <div>
                     <h1 className="text-xl font-semibold text-gray-900">
-                      Generate Video
+                      Generated Video
                     </h1>
                     <p className="text-sm text-gray-500 font-medium">
                       Create personalized medical video content with AI-powered
@@ -373,9 +367,9 @@ export const VideoCreateForm = ({
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="px-3 py-1 bg-blue-50 text-blue-500 text-sm font-medium rounded-full flex items-center">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                    AI Powered
+                  <span className="px-3 py-1 bg-brand-light text-brand text-sm font-medium rounded-full flex items-center">
+                    <span className="w-2 h-2 bg-brand rounded-full mr-2"></span>
+                    AI Generated
                   </span>
                 </div>
               </div>

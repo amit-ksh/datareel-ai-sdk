@@ -646,7 +646,7 @@ export const VideoView: React.FC<VideoViewProps> = ({
                   Generated Video
                 </h1>
                 <p className="text-sm text-gray-500 font-medium">
-                  Your personalized medical video is ready
+                  Your personalized video is ready
                 </p>
               </div>
             </div>

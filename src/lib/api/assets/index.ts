@@ -53,12 +53,14 @@ export const getContentVideos = async (
   data: BaseGetAssetsRequest
 ): Promise<PaginatedResponse<ContentVideo>> => {
   const params = prepareAssetFilters(data);
+  console.log(`Fetching content videos with API key: ${data.apiKey}`, data, params);
 
-  const resp = await VideoAxios.get(`/api/v1/video/list`, {
+  const resp = await VideoAxios.get(`/api/v1/cluster/organisation/list`, {
     headers: { api_key: data.apiKey },
     params,
   });
 
+  console.log(`Content videos fetched:`, resp.data);
   return resp.data;
 };
 

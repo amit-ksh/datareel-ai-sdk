@@ -12,7 +12,13 @@ export interface ItemSelectorProps {
 export const ItemSelector = React.forwardRef<HTMLDivElement, ItemSelectorProps>(
   ({ title, subtitle, children, className, step }, ref) => {
     return (
-      <div ref={ref} className={clsx("w-full max-w-4xl mx-auto", className)}>
+      <div
+        ref={ref}
+        className={clsx(
+          "w-full max-w-4xl mx-auto shadow-lg p-4 border border-gray-300 rounded-xl",
+          className
+        )}
+      >
         <div className="mb-6">
           {step && (
             <div className="flex items-center mb-4">

@@ -24,6 +24,10 @@
   color: var(--datareel-brand-color);
 }
 
+.text-brand-hover:hover {
+  color: var(--datareel-brand-color-hover);
+}
+
 .border-brand {
   border-color: var(--datareel-brand-color);
 }

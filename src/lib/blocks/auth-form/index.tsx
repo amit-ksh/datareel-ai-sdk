@@ -19,11 +19,13 @@ const AuthFormContent: React.FC<{
   const [currentStep, setCurrentStep] = useState<AuthStep>("login");
   const [isLoading, setIsLoading] = useState(false);
   const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
 
   const handleLoginSubmit = useCallback(
     async (email: string, password: string, rememberMe: boolean) => {
       setIsLoading(true);
       setUserEmail(email);
+      setUserPassword(password);
 
       try {
         // Check if organization ID is present
@@ -51,7 +53,7 @@ const AuthFormContent: React.FC<{
 
     setIsLoading(true);
     try {
-      await datareel.initOrganisation(userEmail);
+      await datareel.initOrganisation(userEmail, userPassword);
       onAuthSuccess?.();
     } catch (error) {
       const errorMessage =

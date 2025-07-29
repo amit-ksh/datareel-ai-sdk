@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 
 export interface ImageCardProps {
   name: string;
-  description: string;
+  description?: string;
   image?: string;
   selected?: boolean;
   onClick?: () => void;
@@ -49,8 +49,10 @@ export const ImageCard = React.forwardRef<HTMLDivElement, ImageCardProps>(
             </div>
           )}
 
-          <h3 className="text-sm font-medium text-gray-900 mb-1">{name}</h3>
-          <p className="text-xs text-gray-500">{description}</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-1">{name}</h3>
+          {description && (
+            <p className="text-sm text-gray-500">{description}</p>
+          )}
         </div>
 
         {selected && (

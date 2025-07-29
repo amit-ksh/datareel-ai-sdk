@@ -5,7 +5,7 @@ import useMediaRecorder from "../../../hooks/use-media-recorder";
 import { trimVideoAudio } from "../../../api/cropper";
 import { cx } from "class-variance-authority";
 import { Button } from "../button";
-import { LiveAudioVisualizer } from "react-audio-visualize";
+// import { LiveAudioVisualizer } from "react-audio-visualize";
 import { MediaErrorDisplay } from "./media-error-display";
 import {
   Video,
@@ -493,7 +493,7 @@ export const VideoRecorder = ({
             )}
 
             {/* Audio Visualizer */}
-            {record.audio &&
+            {/* {record.audio &&
               recordingStatus === "recording" &&
               mediaRecorder && (
                 <div className="flex justify-center rounded-full bg-white px-6 py-2">
@@ -506,7 +506,7 @@ export const VideoRecorder = ({
                     gap={5}
                   />
                 </div>
-              )}
+              )} */}
 
             {/* Cancel button  */}
             {/* {recordingStatus === 'recording' && (
@@ -563,14 +563,14 @@ export const VideoRecorder = ({
                 </div>
               ) : recordingStatus === "recording" && mediaRecorder ? (
                 <div className="flex flex-col items-center gap-6">
-                  <LiveAudioVisualizer
+                  {/* <LiveAudioVisualizer
                     mediaRecorder={mediaRecorder}
                     width={350}
                     height={50}
                     barColor="#3b82f6"
                     barWidth={4}
                     gap={4}
-                  />
+                  /> */}
 
                   {/* <Button
                     type='button'

@@ -76,3 +76,10 @@ export interface Pipeline {
   render_settings: RenderSetting;
   user_label: string | null;
 }
+
+export interface Language {
+  code: string;
+  name: string;
+  native_name?: string;
+  is_popular?: boolean;
+}

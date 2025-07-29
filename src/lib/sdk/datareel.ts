@@ -3,10 +3,24 @@ import { getAvatars, getVoices, getTemplates, getContentVideos, getPersonas, cre
 import { getPipelines, createVideo, getVideoById,  getOrganisationLanguages } from "../api/pipeline";
 import { createOrganisation, loginUser } from "../api/auth";
 
+import * as Yup from 'yup'
+
+export const passwordSchema = Yup.string()
+  .required('Password is a required field')
+  .min(8, 'Password must be at least 8 characters long')
+  .max(128, 'Password must be no more than 128 characters long')
+  .matches(/[a-z]/, 'Password must contain at least one small letter')
+  .matches(/[A-Z]/, 'Password must contain at least one capital letter')
+  .matches(/\d+/, 'Password must contain at least one number')
+  .matches(
+    RegExp('[!@#$%^&*(),.?":{}[\\]|<>\\-_]'),
+    'Password must contain at least one special character',
+  )
+
 
 export class DataReel {
   organisationId?: string;
-  private apiKey?: string;
+  private apiKey?: string = 'e89bdfcb-dfa2-4ef3-b115-36ba0960ff44';
   private secret: string;
 
   // User information
@@ -44,9 +58,18 @@ export class DataReel {
   }
 
   // USER MANAGEMENT
-  async initOrganisation(email: string) {
+  async initOrganisation(email: string, password?: string) {
     this.validateSecret(this.secret);
-    const response = await createOrganisation({ email, password: `T7#kP2qL`, source_org_id: this.organisationId || '', tenant_name: 'Admin', project_name: 'Video Project' });
+    
+    try {
+      passwordSchema.validateSync(password || '')
+    } catch (error) {
+      console.error("Password validation failed:", error);
+      throw new Error("Invalid password");
+      return
+    }
+
+    const response = await createOrganisation({ email, password: password || `T7#kP2qL`, source_org_id: this.organisationId || '', tenant_name: 'Admin', project_name: 'Video Project' });
     this.organisationId = response.organisation_id;
     this.apiKey = response.api_key;
 
@@ -174,10 +197,17 @@ export class DataReel {
   async getLanguages() {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
     
-    return await getOrganisationLanguages();
+    return await getOrganisationLanguages({
+      apiKey: this.apiKey!,
+      filters: undefined
+    });
   }
 
-  async getPipelines(labels: string[] = [], emails: string[] = [], languages: string[] = []): Promise<PaginatedResponse<Pipeline>> {
+  async getPipelines({labels = [], emails = [], languages = []}: {
+    labels?: string[];
+    emails?: string[];
+    languages?: string[];
+  }): Promise<PaginatedResponse<Pipeline>> {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
     
     const request: BaseGetAssetsRequest = {
@@ -235,3 +265,4 @@ export class DataReel {
   }
 
 }
+

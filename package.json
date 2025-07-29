@@ -26,7 +26,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "storybook dev -p 3000",
+    "dev": "storybook dev -p 6006",
     "build": "storybook build",
     "build:lib": "tsc && vite build",
     "lint": "npx @biomejs/biome lint --write ./src",

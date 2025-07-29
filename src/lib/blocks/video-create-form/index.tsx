@@ -7,6 +7,7 @@ import { ImageCard } from "../../components/ui/image-card";
 import { LanguageCard } from "../../components/ui/language-card";
 import type { Avatar, ContentVideo, Pipeline } from "../../types";
 import { ItemSelector } from "../../components";
+import { CreateAvatarForm } from "../create-avatar-form";
 
 interface VideoCreateFormProps {
   onVideoGenerate: (data: {
@@ -30,6 +31,7 @@ export const VideoCreateForm = ({
   const [selectedTemplate, setSelectedTemplate] = useState<ContentVideo | null>(
     null
   );
+  const [showCustomAvatarForm, setShowCustomAvatarForm] = useState(false);
 
   // Data fetching
   const { data: avatarsData, isLoading: avatarsLoading } = useQuery({
@@ -90,10 +92,10 @@ export const VideoCreateForm = ({
             name="Custom Avatar"
             description="Create your own"
             selected={false}
-            onClick={() => {}}
+            onClick={() => setShowCustomAvatarForm(true)}
           >
-            <div className="w-full aspect-square bg-green-100 rounded-lg flex items-center justify-center">
-              <Plus className="w-12 h-12 text-green-600" />
+            <div className="w-full aspect-square bg-brand-light rounded-lg flex items-center justify-center">
+              <Plus className="w-12 h-12 text-brand" />
             </div>
           </ImageCard>
         </div>
@@ -278,7 +280,7 @@ export const VideoCreateForm = ({
     </ItemSelector>
   );
 
-  return (
+  const renderCustomAvatarForm = () => (
     <div className="min-h-screen">
       {/* Sub-Header */}
       <div className="">
@@ -287,17 +289,16 @@ export const VideoCreateForm = ({
             <div className="flex items-center">
               <button
                 className="mr-4 p-2 rounded-md text-gray-700 bg-white shadow-sm"
-                onClick={onCancel}
+                onClick={() => setShowCustomAvatarForm(false)}
               >
                 <ArrowLeftIcon className="w-6 h-6" />
               </button>
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">
-                  Generate Video
+                  Create Custom Avatar
                 </h1>
                 <p className="text-sm text-gray-500 font-medium">
-                  Create personalized medical video content with AI-powered
-                  avatars
+                  Upload or record a video to create your personalized avatar
                 </p>
               </div>
             </div>
@@ -312,33 +313,91 @@ export const VideoCreateForm = ({
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex">
-          <div className="flex-1 space-y-6">
-            {renderAvatarSelection()}
-            {renderLanguageSelection()}
-            {renderVideoTypeSelection()}
+        <CreateAvatarForm
+          onAvatarCreated={(avatarData) => {
+            console.log("Avatar created:", avatarData);
+            setShowCustomAvatarForm(false);
+          }}
+          onCancel={() => setShowCustomAvatarForm(false)}
+          selectedAspectRatio={{
+            settings_id: "default",
+            video_dimensions: {
+              width: 1038,
+              height: 778,
+            },
+          }}
+        />
+      </div>
+    </div>
+  );
 
-            <div className="mt-12 text-center">
-              <Button
-                size="lg"
-                className="px-12 sm:min-w-[400px] rounded-xl lg:text-lg py-4 font-semibold"
-                onClick={() => {
-                  if (onVideoGenerate) {
-                    onVideoGenerate({
-                      avatar: selectedAvatar,
-                      language: selectedLanguage,
-                      videoType: selectedVideoType,
-                    });
-                  }
-                }}
-                disabled={!canProceed()}
-              >
-                Create Video
-              </Button>
+  return (
+    <div className="min-h-screen">
+      {showCustomAvatarForm ? (
+        renderCustomAvatarForm()
+      ) : (
+        <>
+          {/* Sub-Header */}
+          <div className="">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between h-16">
+                <div className="flex items-center">
+                  <button
+                    className="mr-4 p-2 rounded-md text-gray-700 bg-white shadow-sm"
+                    onClick={onCancel}
+                  >
+                    <ArrowLeftIcon className="w-6 h-6" />
+                  </button>
+                  <div>
+                    <h1 className="text-xl font-semibold text-gray-900">
+                      Generate Video
+                    </h1>
+                    <p className="text-sm text-gray-500 font-medium">
+                      Create personalized medical video content with AI-powered
+                      avatars
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="px-3 py-1 bg-blue-50 text-blue-500 text-sm font-medium rounded-full flex items-center">
+                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                    AI Powered
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex">
+              <div className="flex-1 space-y-6">
+                {renderAvatarSelection()}
+                {renderLanguageSelection()}
+                {renderVideoTypeSelection()}
+
+                <div className="mt-12 text-center">
+                  <Button
+                    size="lg"
+                    className="px-12 sm:min-w-[400px] rounded-xl lg:text-lg py-4 font-semibold"
+                    onClick={() => {
+                      if (onVideoGenerate) {
+                        onVideoGenerate({
+                          avatar: selectedAvatar,
+                          language: selectedLanguage,
+                          videoType: selectedVideoType,
+                        });
+                      }
+                    }}
+                    disabled={!canProceed()}
+                  >
+                    Create Video
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

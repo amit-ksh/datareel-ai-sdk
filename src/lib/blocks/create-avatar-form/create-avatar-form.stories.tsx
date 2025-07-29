@@ -44,13 +44,6 @@ const meta: Meta<typeof CreateAvatarForm> = {
 export default meta;
 type Story = StoryObj<typeof CreateAvatarForm>;
 
-// Mock functions for demo purposes
-const mockAddAvatar = async (formData: any) => {
-  console.log("Creating avatar with data:", formData);
-  // Simulate API call delay
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-};
-
 const mockAvatarVideoFileValid = (file: File) => {
   const validTypes = ["video/mp4", "video/mov", "video/quicktime"];
   const maxSize = 100 * 1024 * 1024; // 100MB
@@ -72,7 +65,6 @@ export const Default: Story = {
   args: {
     onAvatarCreated: (data: any) => console.log("Avatar created:", data),
     onCancel: () => console.log("Form cancelled"),
-    onSubmit: mockAddAvatar,
     avatarVideoFileValid: mockAvatarVideoFileValid,
     selectedAspectRatio: {
       settings_id: "default",

@@ -5,23 +5,27 @@ import { DatareelProvider, useDatareel } from "../../context/datareel-context";
 import { Button } from "../../components/ui/button";
 import { ImageCard } from "../../components/ui/image-card";
 import { LanguageCard } from "../../components/ui/language-card";
-import type { Avatar, ContentVideo, Pipeline, Language } from "../../types";
+import type { Avatar, ContentVideo, Pipeline } from "../../types";
 import { ItemSelector } from "../../components";
 
 interface VideoCreateFormProps {
   secret?: string;
   organizationId?: string;
   brandColor?: string;
-  onVideoGenerated?: (videoId: string) => void;
-  onCancel?: () => void;
+  onVideoGenerated: (data: {
+    avatar: Avatar | null;
+    language: string | null;
+    videoType: Pipeline | null;
+  }) => Promise<void>;
+  onCancel: () => void;
 }
 
 const VideoCreateFormContent = ({
   onVideoGenerated,
   onCancel,
 }: {
-  onVideoGenerated?: (videoId: string) => void;
-  onCancel?: () => void;
+  onVideoGenerated: VideoCreateFormProps["onVideoGenerated"];
+  onCancel: VideoCreateFormProps["onCancel"];
 }) => {
   const { datareel } = useDatareel();
   const [selectedAvatar, setSelectedAvatar] = useState<Avatar | null>(null);
@@ -186,16 +190,6 @@ const VideoCreateFormContent = ({
               </div>
             </ImageCard>
           ))}
-          <ImageCard
-            name="Reports"
-            description="Create videos with custom script"
-            selected={false}
-            onClick={() => {}}
-          >
-            <div className="w-full aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
-              <span className="text-gray-500">🔒</span>
-            </div>
-          </ImageCard>
         </div>
       )}
 
@@ -339,7 +333,11 @@ const VideoCreateFormContent = ({
                 onClick={() => {
                   // Handle video generation
                   if (onVideoGenerated) {
-                    onVideoGenerated("generated-video-id");
+                    onVideoGenerated({
+                      avatar: selectedAvatar,
+                      language: selectedLanguage,
+                      videoType: selectedVideoType,
+                    });
                   }
                 }}
                 disabled={!canProceed()}

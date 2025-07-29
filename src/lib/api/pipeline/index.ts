@@ -38,7 +38,7 @@ export const createVideo = async (data: CreateVideoRequest) => {
 }
 
 export const getVideoById = async (data: GetVideoByIdRequest) => {
-  const resp = await VideoAxios.get(`/api/v1/video/view?video_id=${data.videoId}`, {
+  const resp = await VideoAxios.get(`/api/v1/list/pipeline/results/${data.videoId}`, {
     headers: { api_key: data.apiKey },
   })
   return resp.data

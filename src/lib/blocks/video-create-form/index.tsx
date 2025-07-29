@@ -14,6 +14,7 @@ interface VideoCreateFormProps {
     avatar: Avatar | null;
     language: string | null;
     videoType: Pipeline | null;
+    template: ContentVideo["videos"] | null;
   }) => Promise<void>;
   onCancel: () => void;
 }
@@ -28,9 +29,9 @@ export const VideoCreateForm = ({
   const [selectedVideoType, setSelectedVideoType] = useState<Pipeline | null>(
     null
   );
-  const [selectedTemplate, setSelectedTemplate] = useState<ContentVideo | null>(
-    null
-  );
+  const [selectedTemplate, setSelectedTemplate] = useState<
+    ContentVideo["videos"]
+  >([]);
   const [showCustomAvatarForm, setShowCustomAvatarForm] = useState(false);
 
   // Data fetching
@@ -56,13 +57,34 @@ export const VideoCreateForm = ({
   });
 
   const { data: templatesData, isLoading: templatesLoading } = useQuery({
-    queryKey: ["templates"],
-    queryFn: () => datareel.getContentVideos(),
-    enabled: !!datareel,
+    queryKey: ["templates", selectedVideoType?.pipeline_id],
+    queryFn: () =>
+      datareel.getContentVideos({
+        clusterIds: selectedVideoType.data.data
+          .map((component) => {
+            if (
+              component.type === "content" &&
+              component.content?.type === "dynamic"
+            ) {
+              // @ts-ignore
+              return component.content?.cluster_id;
+            }
+
+            return null;
+          })
+          .filter(Boolean),
+      }),
+    enabled: !!datareel && !!selectedVideoType,
   });
 
   const canProceed = () => {
-    return !!selectedAvatar && !!selectedLanguage && !!selectedVideoType;
+    return (
+      !!selectedAvatar &&
+      !!selectedLanguage &&
+      !!selectedVideoType &&
+      !!selectedTemplate &&
+      templatesData?.length > 0
+    );
   };
 
   const renderAvatarSelection = () => (
@@ -126,6 +148,7 @@ export const VideoCreateForm = ({
               onClick={() => {
                 setSelectedLanguage(language);
                 setSelectedVideoType(null); // Reset video type when language changes
+                setSelectedTemplate([]); // Reset template when language changes
               }}
             />
           ))}
@@ -179,7 +202,10 @@ export const VideoCreateForm = ({
               key={pipeline.pipeline_id}
               name={pipeline.pipeline_name}
               selected={selectedVideoType?.pipeline_id === pipeline.pipeline_id}
-              onClick={() => setSelectedVideoType(pipeline)}
+              onClick={() => {
+                setSelectedVideoType(pipeline);
+                setSelectedTemplate([]); // Reset template when video type changes
+              }}
             >
               <div className="w-full aspect-video bg-blue-100 rounded-lg flex items-center justify-center">
                 <span className="text-blue-600 text-2xl">📹</span>
@@ -232,50 +258,35 @@ export const VideoCreateForm = ({
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {templatesData?.data?.map((template) => (
-            <div
-              key={template.cluster_id}
-              className={`relative p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
-                selectedTemplate?.cluster_id === template.cluster_id
-                  ? "border-brand ring-2 ring-brand"
-                  : "border-gray-200 hover:border-gray-300"
-              }`}
-              onClick={() => setSelectedTemplate(template)}
-            >
-              <div className="aspect-video bg-gradient-to-br from-orange-400 to-red-500 rounded-lg mb-3 overflow-hidden">
-                <div className="w-full h-full flex items-center justify-center text-white text-lg font-bold">
-                  {template.cluster_name?.charAt(0) || "T"}
-                </div>
-              </div>
-              <h3 className="font-medium text-gray-900 mb-1">
-                {template.cluster_name}
-              </h3>
-              <p className="text-sm text-gray-600 line-clamp-3">
-                {template.videos?.length
-                  ? `${template.videos.length} video templates available`
-                  : "Video template collection"}
-              </p>
-              {selectedTemplate?.cluster_id === template.cluster_id && (
-                <div className="absolute bottom-2 right-2">
-                  <div className="w-6 h-6 bg-brand rounded-full flex items-center justify-center">
-                    <svg
-                      className="w-3 h-3 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                </div>
+        templatesData.length > 0 &&
+        templatesData.map((template, index) => (
+          <div key={template.data.cluster_id}>
+            <div className="text-lg font-semibold mb-4">
+              {template.data.cluster_name || "Video Templates"}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {template?.data?.videos?.map(
+                (video: ContentVideo["videos"][number]) => (
+                  <ImageCard
+                    key={video.video_id}
+                    name={video.video_name}
+                    image={video.s3_thumbnail_url}
+                    selected={
+                      selectedTemplate?.[index]?.video_id === video.video_id
+                    }
+                    onClick={() =>
+                      setSelectedTemplate((prev) => {
+                        const newTemplates = [...prev];
+                        newTemplates[index] = video;
+                        return newTemplates;
+                      })
+                    }
+                  />
+                )
               )}
             </div>
-          ))}
-        </div>
+          </div>
+        ))
       )}
     </ItemSelector>
   );
@@ -374,6 +385,7 @@ export const VideoCreateForm = ({
                 {renderAvatarSelection()}
                 {renderLanguageSelection()}
                 {renderVideoTypeSelection()}
+                {templatesData?.length > 0 && renderTemplateSelection()}
 
                 <div className="mt-12 text-center">
                   <Button
@@ -385,6 +397,7 @@ export const VideoCreateForm = ({
                           avatar: selectedAvatar,
                           language: selectedLanguage,
                           videoType: selectedVideoType,
+                          template: selectedTemplate,
                         });
                       }
                     }}

@@ -1,8 +1,8 @@
-import type { BaseGetAssetsRequest, RenderSetting } from "./common";
+import type { BaseGetAssetsRequest, BaseVideoRequest, RenderSetting } from "./common";
 
 export interface GetPipelinesRequest extends BaseGetAssetsRequest {}
 
-export interface CreateVideoRequest extends BaseGetAssetsRequest {
+export interface CreateVideoRequest extends BaseVideoRequest {
   videoId: string;
   data: JSON;
   emails?: string[];

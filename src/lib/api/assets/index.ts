@@ -50,17 +50,22 @@ export const getTemplates = async (
 };
 
 export const getContentVideos = async (
-  data: BaseGetAssetsRequest
-): Promise<PaginatedResponse<ContentVideo>> => {
+  data: BaseGetAssetsRequest & {
+    cluster_id?: string;
+  }
+): Promise<{
+  data: ContentVideo;
+  total_pages: number;
+  current_page: number;
+}> => {
   const params = prepareAssetFilters(data);
-  console.log(`Fetching content videos with API key: ${data.apiKey}`, data, params);
+  params.append("cluster_id", data.cluster_id || "");
 
-  const resp = await VideoAxios.get(`/api/v1/cluster/organisation/list`, {
+  const resp = await VideoAxios.get(`/api/v1/view/cluster`, {
     headers: { api_key: data.apiKey },
     params,
   });
 
-  console.log(`Content videos fetched:`, resp.data);
   return resp.data;
 };
 

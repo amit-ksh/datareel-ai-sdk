@@ -163,9 +163,21 @@ export class DataReel {
     return await getTemplates(request);
   }
 
-  async getContentVideos(labels: string[] = [], emails: string[] = []): Promise<PaginatedResponse<ContentVideo>> {
+  async getContentVideos({labels = [], emails = [], clusterIds = []}: {
+    labels?: string[];
+    emails?: string[];
+    clusterIds?: string[];
+  }): Promise<{
+    current_page: number;
+    total_pages: number;
+    data: ContentVideo
+  }[]> {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
-    
+
+    if (clusterIds.length === 0) {
+      return []
+    }
+
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
       filters: {
@@ -174,7 +186,14 @@ export class DataReel {
       }
     };
 
-    return await getContentVideos(request);
+    const contentVideos = await Promise.all(clusterIds.map(async (clusterId) => {
+      const response = await getContentVideos({ ...request, cluster_id: clusterId, filters: { ...request.filters } });
+      return response;
+    }));
+
+    console.log(contentVideos)
+
+    return contentVideos
   }
 
   async createAvatar({
@@ -232,17 +251,27 @@ export class DataReel {
   }
 
   // VIDEO GENERATION
-  async generateVideo(pipelineId: string, body: JSON, emails: string[] = []) {
+  async generateVideo(data: {
+    avatar: Avatar | null;
+    language: string | null;
+    videoType: Pipeline | null;
+    contentVideos: ContentVideo[];
+  }) {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
-    
+
+    const { avatar, language, videoType, contentVideos } = data;
+    if (!avatar || !language || !videoType) {
+      throw new Error("Avatar, language, and video type are required to generate a video");
+    }
+
+    const pipelineId = videoType.pipeline_id;
+    const body = avatar as any
+
     const request: CreateVideoRequest = {
       apiKey: this.apiKey!,
       videoId: pipelineId,
       data: body,
-      emails,
-      filters: {
-        emails
-      }
+      emails: [],
     };
 
     return await createVideo(request);

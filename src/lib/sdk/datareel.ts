@@ -177,14 +177,23 @@ export class DataReel {
     return await getContentVideos(request);
   }
 
-  async createAvatar(personaId: string, settingsId: string, referenceId: string, avatarName: string, videoFile: File) {
+  async createAvatar({
+    settingsId,
+    referenceId,
+    avatarName,
+    videoFile
+  }: {
+    settingsId: string;
+    referenceId: string;
+    avatarName: string;
+    videoFile: File;
+  }) {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
     
     const request: CreateAvatarRequest = {
       apiKey: this.apiKey!,
       data: {
-        persona_id: personaId,
-        settings_id: settingsId,
+        settings_id: settingsId || 'default',
         reference_id: referenceId,
         avatar_name: avatarName,
         video: videoFile

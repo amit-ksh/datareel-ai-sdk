@@ -45,6 +45,7 @@
     "react": "19.1.0",
     "react-audio-visualize": "^1.2.0",
     "react-dom": "19.1.0",
+    "react-easy-crop": "^5.5.0",
     "yup": "^1.6.1"
   },
   "devDependencies": {

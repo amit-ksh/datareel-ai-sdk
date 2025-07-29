@@ -1,9 +1,41 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { VideoCreateForm } from "./index";
+import { Avatar, Pipeline } from "../../types";
+import { DatareelProvider } from "../../context";
 
-const meta: Meta<typeof VideoCreateForm> = {
+interface VideoCreateFormProps {
+  secret?: string;
+  organizationId?: string;
+  brandColor?: string;
+  onVideoGenerate: (data: {
+    avatar: Avatar | null;
+    language: string | null;
+    videoType: Pipeline | null;
+  }) => Promise<void>;
+  onCancel: () => void;
+}
+
+const VideoCreateFormWrapper = ({
+  secret = "zBsBEtLn4PgIrj0CNEbHSGNQjhJGoyaAmTvQikqQlZ+K1yhMU7i4htz9MoUlap48Dwwknw+9WB8oMxWl",
+  organizationId = "org_" + Math.random().toString(36).substr(2, 9),
+  brandColor = "#3B82F6",
+  onVideoGenerate,
+  onCancel,
+}: VideoCreateFormProps) => {
+  return (
+    <DatareelProvider
+      secret={secret}
+      organisationId={organizationId}
+      brandColor={brandColor}
+    >
+      <VideoCreateForm onVideoGenerate={onVideoGenerate} onCancel={onCancel} />
+    </DatareelProvider>
+  );
+};
+
+const meta: Meta<typeof VideoCreateFormWrapper> = {
   title: "Blocks/VideoCreateForm",
-  component: VideoCreateForm,
+  component: VideoCreateFormWrapper,
   parameters: {
     layout: "fullscreen",
   },
@@ -20,7 +52,7 @@ const meta: Meta<typeof VideoCreateForm> = {
       control: "color",
       description: "Brand color for the component",
     },
-    onVideoGenerated: {
+    onVideoGenerate: {
       action: "video-generated",
       description: "Callback when video is generated",
     },
@@ -32,7 +64,7 @@ const meta: Meta<typeof VideoCreateForm> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof VideoCreateForm>;
+type Story = StoryObj<typeof VideoCreateFormWrapper>;
 
 export const Default: Story = {
   args: {

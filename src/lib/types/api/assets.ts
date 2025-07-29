@@ -17,7 +17,6 @@ export interface Avatar {
 export interface CreateAvatarRequest {
   apiKey: string;
   data: {
-    persona_id: string;
     settings_id: string;
     reference_id: string;
     avatar_name: string;

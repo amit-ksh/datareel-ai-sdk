@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeftIcon, Plus } from "lucide-react";
-import { DatareelProvider, useDatareel } from "../../context/datareel-context";
+import { useDatareel } from "../../context/datareel-context";
 import { Button } from "../../components/ui/button";
 import { ImageCard } from "../../components/ui/image-card";
 import { LanguageCard } from "../../components/ui/language-card";
@@ -9,10 +9,7 @@ import type { Avatar, ContentVideo, Pipeline } from "../../types";
 import { ItemSelector } from "../../components";
 
 interface VideoCreateFormProps {
-  secret?: string;
-  organizationId?: string;
-  brandColor?: string;
-  onVideoGenerated: (data: {
+  onVideoGenerate: (data: {
     avatar: Avatar | null;
     language: string | null;
     videoType: Pipeline | null;
@@ -20,13 +17,10 @@ interface VideoCreateFormProps {
   onCancel: () => void;
 }
 
-const VideoCreateFormContent = ({
-  onVideoGenerated,
+export const VideoCreateForm = ({
+  onVideoGenerate,
   onCancel,
-}: {
-  onVideoGenerated: VideoCreateFormProps["onVideoGenerated"];
-  onCancel: VideoCreateFormProps["onCancel"];
-}) => {
+}: VideoCreateFormProps) => {
   const { datareel } = useDatareel();
   const [selectedAvatar, setSelectedAvatar] = useState<Avatar | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
@@ -319,21 +313,18 @@ const VideoCreateFormContent = ({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex">
-          {/* Main Content */}
           <div className="flex-1 space-y-6">
             {renderAvatarSelection()}
             {renderLanguageSelection()}
             {renderVideoTypeSelection()}
 
-            {/* Create Video Button */}
             <div className="mt-12 text-center">
               <Button
                 size="lg"
                 className="px-12 sm:min-w-[400px] rounded-xl lg:text-lg py-4 font-semibold"
                 onClick={() => {
-                  // Handle video generation
-                  if (onVideoGenerated) {
-                    onVideoGenerated({
+                  if (onVideoGenerate) {
+                    onVideoGenerate({
                       avatar: selectedAvatar,
                       language: selectedLanguage,
                       videoType: selectedVideoType,
@@ -351,26 +342,3 @@ const VideoCreateFormContent = ({
     </div>
   );
 };
-
-export const VideoCreateForm = ({
-  secret = "zBsBEtLn4PgIrj0CNEbHSGNQjhJGoyaAmTvQikqQlZ+K1yhMU7i4htz9MoUlap48Dwwknw+9WB8oMxWl",
-  organizationId = "org_" + Math.random().toString(36).substr(2, 9),
-  brandColor = "#3B82F6",
-  onVideoGenerated,
-  onCancel,
-}: VideoCreateFormProps) => {
-  return (
-    <DatareelProvider
-      secret={secret}
-      organisationId={organizationId}
-      brandColor={brandColor}
-    >
-      <VideoCreateFormContent
-        onVideoGenerated={onVideoGenerated}
-        onCancel={onCancel}
-      />
-    </DatareelProvider>
-  );
-};
-
-export default VideoCreateForm;

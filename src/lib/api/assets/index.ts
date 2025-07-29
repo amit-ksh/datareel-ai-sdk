@@ -81,7 +81,7 @@ export const createAvatar = async (
   request: CreateAvatarRequest
 ): Promise<{ video_id: string }> => {
   const params = new URLSearchParams();
- params.append("persona_id", request.data.persona_id);
+//  params.append("persona_id", request.data.persona_id);
  
   const formData = new FormData();
   formData.append("video", request.data.video);

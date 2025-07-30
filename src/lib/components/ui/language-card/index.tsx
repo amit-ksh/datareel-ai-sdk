@@ -1,5 +1,6 @@
 import React from "react";
 import { clsx } from "clsx";
+import { by639_1 } from "iso-language-codes";
 
 export interface LanguageCardProps {
   flag?: string;
@@ -41,7 +42,11 @@ export const LanguageCard = React.forwardRef<HTMLDivElement, LanguageCardProps>(
             {/* Content */}
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="font-medium text-gray-900">{name}</h3>
+                <h3 className="font-medium text-gray-900">
+                  {by639_1[name as keyof typeof by639_1]?.name ||
+                    name ||
+                    "Unknown Language"}
+                </h3>
                 {isPopular && (
                   <span className="px-2 py-1 text-xs bg-orange-100 text-orange-600 rounded">
                     Popular

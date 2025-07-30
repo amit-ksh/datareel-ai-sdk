@@ -20,7 +20,7 @@ export const passwordSchema = Yup.string()
 
 export class DataReel {
   organisationId?: string;
-  private apiKey?: string = 'e845465a-4d27-4892-ae73-295300cf7c3d';
+  private apiKey?: string;
   private secret: string;
 
   // User information
@@ -265,6 +265,16 @@ export class DataReel {
     language: string | null;
     videoType: Pipeline | null;
     contentVideos: ContentVideo['videos'];
+    shareWith?: {
+      emailData: {
+        to: string[];
+        subject: string;
+      }
+      whatsappData: {
+        contacts: string[];
+        caption: string;
+      }
+    };
   }) {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
 
@@ -307,7 +317,22 @@ export class DataReel {
       lip_sync_model: videoType.lip_sync_model,
       lip_optimization: videoType.lip_optimization,
       data: body,
+      
     };
+
+    if (data.shareWith.emailData.to.length > 0) {
+      request.email_data = {
+        to: data.shareWith.emailData.to,
+        subject: data.shareWith.emailData.subject 
+      };
+    }
+
+    if (data.shareWith.whatsappData.contacts.length > 0) {
+      request.whatsapp_data = {
+        contacts: data.shareWith.whatsappData.contacts,
+        caption: data.shareWith.whatsappData.caption 
+      };
+    }
 
     return await createVideo(request);
   }

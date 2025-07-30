@@ -34,3 +34,9 @@ export type { HeaderProps } from './header';
 
 export { VideoRecorder } from './video-recorder';
 export type { VideoRecorderProps } from './video-recorder';
+
+export { MultiInput } from './multi-input';
+export type { MultiInputProps } from './multi-input';
+
+export { ContactForm } from './contact-form';
+export type { ContactFormProps, ContactData } from './contact-form';

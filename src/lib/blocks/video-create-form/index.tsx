@@ -5,6 +5,7 @@ import { useDatareel } from "../../context/datareel-context";
 import { Button } from "../../components/ui/button";
 import { ImageCard } from "../../components/ui/image-card";
 import { LanguageCard } from "../../components/ui/language-card";
+import { ContactForm, ContactData } from "../../components/ui/contact-form";
 import type { Avatar, ContentVideo, Pipeline } from "../../types";
 import { ItemSelector } from "../../components";
 import { CreateAvatarForm } from "../create-avatar-form";
@@ -15,6 +16,16 @@ interface VideoCreateFormProps {
     language: string | null;
     videoType: Pipeline | null;
     template: ContentVideo["videos"] | null;
+    shareWith?: {
+      emailData: {
+        to: string[];
+        subject: string;
+      };
+      whatsappData: {
+        contacts: string[];
+        caption: string;
+      };
+    };
   }) => Promise<void>;
   onCancel: () => void;
 }
@@ -33,6 +44,12 @@ export const VideoCreateForm = ({
     ContentVideo["videos"]
   >([]);
   const [showCustomAvatarForm, setShowCustomAvatarForm] = useState(false);
+  const [contactData, setContactData] = useState<ContactData>({
+    emails: [],
+    phoneNumbers: [],
+    emailSubject: "",
+    whatsappCaption: "",
+  });
 
   // Data fetching
   const { data: avatarsData, isLoading: avatarsLoading } = useQuery({
@@ -189,7 +206,7 @@ export const VideoCreateForm = ({
   const renderVideoTypeSelection = () => (
     <ItemSelector step={3} title="Select Video Type">
       {pipelinesLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="animate-pulse">
               <div className="bg-gray-200 aspect-video rounded-lg mb-3"></div>
@@ -199,7 +216,7 @@ export const VideoCreateForm = ({
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {pipelinesData?.data?.map((pipeline) => (
             <ImageCard
               key={pipeline.pipeline_id}
@@ -251,7 +268,7 @@ export const VideoCreateForm = ({
   const renderTemplateSelection = () => (
     <ItemSelector step={4} title="Select Template">
       {templatesLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="animate-pulse">
               <div className="bg-gray-200 aspect-video rounded-lg mb-3"></div>
@@ -267,7 +284,7 @@ export const VideoCreateForm = ({
             <div className="text-lg font-semibold mb-4">
               {dynamicClusterComponents?.[index]?.name || "Video Templates"}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               {template?.data?.videos?.map(
                 (video: ContentVideo["videos"][number]) => (
                   <ImageCard
@@ -292,6 +309,23 @@ export const VideoCreateForm = ({
         ))
       )}
     </ItemSelector>
+  );
+
+  const renderContactForm = () => (
+    <div className="space-y-6">
+      <ContactForm
+        type="whatsapp"
+        contactData={contactData}
+        onContactDataChange={setContactData}
+        isOptional={true}
+      />
+      <ContactForm
+        type="email"
+        contactData={contactData}
+        onContactDataChange={setContactData}
+        isOptional={true}
+      />
+    </div>
   );
 
   const renderCustomAvatarForm = () => (
@@ -383,6 +417,7 @@ export const VideoCreateForm = ({
                 {renderLanguageSelection()}
                 {renderVideoTypeSelection()}
                 {templatesData?.length > 0 && renderTemplateSelection()}
+                {renderContactForm()}
 
                 <div className="mt-12 text-center">
                   <Button
@@ -394,6 +429,18 @@ export const VideoCreateForm = ({
                         language: selectedLanguage,
                         videoType: selectedVideoType,
                         contentVideos: selectedTemplate,
+                        shareWith: {
+                          emailData: {
+                            to: contactData.emails,
+                            subject:
+                              contactData.emailSubject ||
+                              "Your Video is Ready!",
+                          },
+                          whatsappData: {
+                            contacts: contactData.phoneNumbers,
+                            caption: contactData.whatsappCaption,
+                          },
+                        },
                       });
                     }}
                     disabled={!canProceed()}

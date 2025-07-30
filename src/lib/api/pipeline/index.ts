@@ -31,6 +31,8 @@ export const createVideo = async (data: CreateVideoRequest) => {
     lip_optimization: data.lip_optimization,
     approve: data.approve,
     data: data.data,
+    whatsapp_data: data.whatsapp_data,
+    email_data: data.email_data,
   }, {
     headers: { api_key: data.apiKey },
   })

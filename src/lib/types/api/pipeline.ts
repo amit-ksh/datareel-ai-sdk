@@ -1,4 +1,8 @@
-import type { BaseGetAssetsRequest, BaseVideoRequest, RenderSetting } from "./common";
+import type {
+  BaseGetAssetsRequest,
+  BaseVideoRequest,
+  RenderSetting,
+} from "./common";
 
 export interface GetPipelinesRequest extends BaseGetAssetsRequest {}
 
@@ -10,7 +14,14 @@ export interface CreateVideoRequest extends BaseVideoRequest {
   lip_optimization: boolean;
   lip_sync_model: string;
   data: JSON;
-  emails?: string[];
+  whatsapp_data?: {
+    contacts: string[];
+    caption: string;
+  };
+  email_data?: {
+    to: string[];
+    subject: string;
+  };
 }
 
 export interface GetVideoByIdRequest extends BaseGetAssetsRequest {
@@ -81,4 +92,3 @@ export interface Pipeline {
   render_settings: RenderSetting;
   user_label: string | null;
 }
-

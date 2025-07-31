@@ -12,10 +12,7 @@ import {
   Loader2,
   Calendar,
   Hash,
-  User,
   Settings,
-  ChevronDown,
-  ChevronUp,
   Mail,
   MessageCircle,
   Code,
@@ -26,7 +23,7 @@ import { VideoPlayer } from "../../components/ui/video-player";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 
-interface VideoViewProps {
+interface DatareelVideoPlayerProps {
   videoId: string;
   apiKey: string;
   organisationId: string;
@@ -69,7 +66,7 @@ const getUTCDateTimeFormatted = () => {
   return new Date().toISOString();
 };
 
-export const VideoView: React.FC<VideoViewProps> = ({
+export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
   videoId,
   apiKey,
   organisationId,
@@ -735,5 +732,3 @@ export const VideoView: React.FC<VideoViewProps> = ({
     </div>
   );
 };
-
-export default VideoView;

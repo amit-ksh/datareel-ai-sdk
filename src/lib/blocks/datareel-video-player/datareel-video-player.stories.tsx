@@ -1,21 +1,21 @@
-import { VideoView } from "./index";
+import { DatareelVideoPlayer } from "./index";
 import { DatareelProvider } from "../../context/datareel-context";
 
-function VideoViewStory(props) {
+function DatareelVideoPlayerStory(props) {
   return (
     <DatareelProvider
       secret="demo-secret"
       organisationId="demo-org"
       brandColor="#3B82F6"
     >
-      <VideoView {...props} />
+      <DatareelVideoPlayer {...props} />
     </DatareelProvider>
   );
 }
 
 const meta = {
-  title: "Blocks/VideoView",
-  component: VideoViewStory,
+  title: "Blocks/DatareelVideoPlayer",
+  component: DatareelVideoPlayerStory,
   parameters: {
     layout: "fullscreen",
   },

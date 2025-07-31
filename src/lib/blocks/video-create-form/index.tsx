@@ -106,13 +106,43 @@ export const VideoCreateForm = ({
       !!selectedAvatar &&
       !!selectedLanguage &&
       !!selectedVideoType &&
-      (!!selectedTemplate || !templatesData?.length);
+      (!selectedTemplate.length ||
+        selectedTemplate.every((template) => Boolean(template.video_id)));
 
     const hasRequiredScripts =
       !textComponents?.length ||
-      textComponents.every((_, index) => scripts[index]?.trim());
+      textComponents.every((_, index) => Boolean(scripts[index]?.trim()));
 
     return hasRequiredFields && hasRequiredScripts && !isGenerating;
+  };
+
+  const handleGenerateVideo = async () => {
+    try {
+      setIsGenerating(true);
+      const response = await datareel.generateVideo({
+        avatar: selectedAvatar,
+        language: selectedLanguage,
+        videoType: selectedVideoType,
+        contentVideos: selectedTemplate,
+        scripts: scripts.filter((script) => script?.trim()),
+        shareWith: {
+          emailData: {
+            to: contactData.emails || [],
+            subject: contactData.emailSubject || "",
+          },
+          whatsappData: {
+            contacts: contactData.phoneNumbers || [],
+            caption: contactData.whatsappCaption || "",
+          },
+        },
+      });
+      onVideoGenerate(response.data.message.results_id);
+    } catch (error) {
+      console.error("Error generating video:", error);
+      onError(error);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const renderAvatarSelection = () => (
@@ -461,35 +491,12 @@ export const VideoCreateForm = ({
                 <div className="mt-12 text-center">
                   <Button
                     size="lg"
-                    className="px-12 sm:min-w-[400px] rounded-xl lg:text-lg py-4 font-semibold"
-                    onClick={async () => {
-                      try {
-                        setIsGenerating(true);
-                        const response = await datareel.generateVideo({
-                          avatar: selectedAvatar,
-                          language: selectedLanguage,
-                          videoType: selectedVideoType,
-                          contentVideos: selectedTemplate,
-                          scripts: scripts.filter((script) => script?.trim()),
-                          shareWith: {
-                            emailData: {
-                              to: contactData.emails || [],
-                              subject: contactData.emailSubject || "",
-                            },
-                            whatsappData: {
-                              contacts: contactData.phoneNumbers || [],
-                              caption: contactData.whatsappCaption || "",
-                            },
-                          },
-                        });
-                        onVideoGenerate(response.data.message.results_id);
-                      } catch (error) {
-                        console.error("Error generating video:", error);
-                        onError(error);
-                      } finally {
-                        setIsGenerating(false);
-                      }
-                    }}
+                    className={`px-12 sm:min-w-[400px] rounded-xl lg:text-lg py-4 font-semibold transition-all ${
+                      !canProceed() && !isGenerating
+                        ? "!bg-gray-300 !hover:bg-gray-400 !text-gray-700 cursor-not-allowed"
+                        : "bg-brand hover:bg-brand-dark"
+                    }`}
+                    onClick={handleGenerateVideo}
                     disabled={!canProceed()}
                   >
                     {isGenerating ? (
@@ -497,8 +504,54 @@ export const VideoCreateForm = ({
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         <span>Creating Video...</span>
                       </div>
+                    ) : !canProceed() ? (
+                      <div className="flex items-center space-x-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="lucide lucide-lock"
+                        >
+                          <rect
+                            width="18"
+                            height="11"
+                            x="3"
+                            y="11"
+                            rx="2"
+                            ry="2"
+                          />
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <span>Complete All Steps</span>
+                      </div>
                     ) : (
-                      "Create Video"
+                      <div className="flex items-center space-x-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="lucide lucide-sparkles"
+                        >
+                          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                          <path d="M5 3v4" />
+                          <path d="M19 17v4" />
+                          <path d="M3 5h4" />
+                          <path d="M17 19h4" />
+                        </svg>
+                        <span>Create AI Video</span>
+                      </div>
                     )}
                   </Button>
                 </div>

@@ -15,6 +15,7 @@ export const getAvatars = async (
   data: BaseGetAssetsRequest
 ): Promise<PaginatedResponse<Avatar>> => {
   const params = prepareAssetFilters(data);
+  params.append("page", data.page?.toString() || "1");
 
   const resp = await VideoAxios.get(`/api/v1/video/list`, {
     headers: { api_key: data.apiKey },
@@ -28,6 +29,7 @@ export const getVoices = async (
   data: BaseGetAssetsRequest
 ): Promise<PaginatedResponse<Voice>> => {
   const params = prepareAssetFilters(data);
+  params.append("page", data.page?.toString() || "1");
 
   const resp = await VideoAxios.get(`/api/v1/voice/list`, {
     headers: { api_key: data.apiKey },
@@ -40,6 +42,7 @@ export const getTemplates = async (
   data: BaseGetAssetsRequest
 ): Promise<PaginatedResponse<Template>> => {
   const params = prepareAssetFilters(data);
+  params.append("page", data.page?.toString() || "1");
 
   const resp = await VideoAxios.get(`/api/v1/template/list`, {
     headers: { api_key: data.apiKey },
@@ -60,6 +63,7 @@ export const getContentVideos = async (
 }> => {
   const params = prepareAssetFilters(data);
   params.append("cluster_id", data.cluster_id || "");
+  params.append("page", data.page?.toString() || "1");
 
   const resp = await VideoAxios.get(`/api/v1/view/cluster`, {
     headers: { api_key: data.apiKey },

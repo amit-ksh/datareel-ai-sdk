@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeftIcon, Plus } from "lucide-react";
+import { ArrowLeftIcon, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useDatareel } from "../../context/datareel-context";
 import { Button } from "../../components/ui/button";
 import { ImageCard } from "../../components/ui/image-card";
 import { LanguageCard } from "../../components/ui/language-card";
 import { ContactForm, ContactData } from "../../components/ui/contact-form";
 import { ScriptInput } from "../../components/ui/script-input";
-import type { Avatar, ContentVideo, Pipeline } from "../../types";
+import type { Avatar, ContentVideo, Pipeline, Voice } from "../../types";
 import { ItemSelector } from "../../components";
 import { CreateAvatarForm } from "../create-avatar-form";
 
@@ -24,6 +24,7 @@ export const VideoCreateForm = ({
 }: VideoCreateFormProps) => {
   const { datareel } = useDatareel();
   const [selectedAvatar, setSelectedAvatar] = useState<Avatar | null>(null);
+  const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [selectedVideoType, setSelectedVideoType] = useState<Pipeline | null>(
     null
@@ -41,10 +42,24 @@ export const VideoCreateForm = ({
   const [scripts, setScripts] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // Pagination states
+  const [avatarsPage, setAvatarsPage] = useState(1);
+  const [voicesPage, setVoicesPage] = useState(1);
+  const [pipelinesPage, setPipelinesPage] = useState(1);
+  const [templatesPages, setTemplatesPages] = useState<{
+    [key: string]: number;
+  }>({});
+
   // Data fetching
   const { data: avatarsData, isLoading: avatarsLoading } = useQuery({
-    queryKey: ["avatars"],
-    queryFn: () => datareel.getAvatars(),
+    queryKey: ["avatars", avatarsPage],
+    queryFn: () => datareel.getAvatars({ page: avatarsPage }),
+    enabled: !!datareel,
+  });
+
+  const { data: voicesData, isLoading: voicesLoading } = useQuery({
+    queryKey: ["voices", voicesPage],
+    queryFn: () => datareel.getVoices({ page: voicesPage }),
     enabled: !!datareel,
   });
 
@@ -55,9 +70,10 @@ export const VideoCreateForm = ({
   });
 
   const { data: pipelinesData, isLoading: pipelinesLoading } = useQuery({
-    queryKey: ["pipelines", selectedLanguage],
+    queryKey: ["pipelines", selectedLanguage, pipelinesPage],
     queryFn: () =>
       datareel.getPipelines({
+        page: pipelinesPage,
         languages: selectedLanguage ? [selectedLanguage] : [],
       }),
     enabled: !!datareel,
@@ -81,29 +97,41 @@ export const VideoCreateForm = ({
   );
 
   const { data: templatesData, isLoading: templatesLoading } = useQuery({
-    queryKey: ["templates", selectedVideoType?.pipeline_id],
-    queryFn: () =>
-      datareel.getContentVideos({
-        clusterIds: selectedVideoType.data.data
-          .map((component) => {
-            if (
-              component.type === "content" &&
-              component.content?.type === "dynamic"
-            ) {
-              // @ts-ignore
-              return component.content?.cluster_id;
-            }
+    queryKey: ["templates", selectedVideoType?.pipeline_id, templatesPages],
+    queryFn: (): Promise<
+      {
+        current_page: number;
+        total_pages: number;
+        data: ContentVideo;
+      }[]
+    > => {
+      if (!selectedVideoType) return Promise.resolve([]);
 
-            return null;
-          })
-          .filter(Boolean),
-      }),
+      const clusterIds = selectedVideoType.data.data
+        .map((component) => {
+          if (
+            component.type === "content" &&
+            component.content?.type === "dynamic"
+          ) {
+            // @ts-ignore
+            return component.content?.cluster_id;
+          }
+          return null;
+        })
+        .filter(Boolean);
+
+      return datareel.getContentVideos({
+        page: templatesPages[selectedVideoType.pipeline_id] || 1,
+        clusterIds,
+      });
+    },
     enabled: !!datareel && !!selectedVideoType,
   });
 
   const canProceed = () => {
     const hasRequiredFields =
       !!selectedAvatar &&
+      !!selectedVoice &&
       !!selectedLanguage &&
       !!selectedVideoType &&
       (!selectedTemplate.length ||
@@ -121,6 +149,7 @@ export const VideoCreateForm = ({
       setIsGenerating(true);
       const response = await datareel.generateVideo({
         avatar: selectedAvatar,
+        voice: selectedVoice,
         language: selectedLanguage,
         videoType: selectedVideoType,
         contentVideos: selectedTemplate,
@@ -145,10 +174,73 @@ export const VideoCreateForm = ({
     }
   };
 
+  // Helper function to reset pagination and selections when needed
+  const resetPaginationAndSelections = (level: "language" | "videoType") => {
+    if (level === "language") {
+      setSelectedVideoType(null);
+      setSelectedTemplate([]);
+      setScripts([]);
+      setTemplatesPages({});
+      setPipelinesPage(1); // Reset pipelines pagination when language changes
+    } else if (level === "videoType") {
+      setSelectedTemplate([]);
+      setScripts([]);
+      setTemplatesPages({});
+    }
+  };
+
+  const PaginationControls = ({
+    currentPage,
+    totalPages,
+    onPageChange,
+    isLoading,
+  }: {
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+    isLoading: boolean;
+  }) => {
+    if (totalPages <= 1) return null;
+
+    return (
+      <div className="flex items-center justify-center gap-3 mt-6 bg-gradient-to-r from-brand-light/30 to-brand-light/20 rounded-xl">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage <= 1 || isLoading}
+          className={`p-2 transition-all duration-200 ${
+            currentPage <= 1 || isLoading
+              ? "border-gray-200 text-gray-400 cursor-not-allowed"
+              : "border-brand/20 hover:bg-brand hover:border-brand"
+          }`}
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </Button>
+        <span className="text-sm font-semibold text-brand px-4 py-2 bg-white rounded-lg border border-brand/20 shadow-sm min-w-[120px] text-center">
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage >= totalPages || isLoading}
+          className={`p-2 transition-all duration-200 ${
+            currentPage >= totalPages || isLoading
+              ? "border-gray-200 text-gray-400 cursor-not-allowed"
+              : "border-brand/20 hover:bg-brand hover:border-brand"
+          }`}
+        >
+          <ChevronRight className="w-4 h-4" />
+        </Button>
+      </div>
+    );
+  };
+
   const renderAvatarSelection = () => (
     <ItemSelector step={1} title="Choose Your Avatar">
       {avatarsLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="animate-pulse">
               <div className="bg-gray-200 aspect-square rounded-lg mb-3"></div>
@@ -158,33 +250,81 @@ export const VideoCreateForm = ({
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {avatarsData?.data?.map((avatar) => (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {avatarsData?.data?.map((avatar) => (
+              <ImageCard
+                key={avatar.avatar_id}
+                name={avatar.avatar_name}
+                image={avatar.s3_url_thumbnail}
+                selected={selectedAvatar?.avatar_id === avatar.avatar_id}
+                onClick={() => setSelectedAvatar(avatar)}
+              />
+            ))}
             <ImageCard
-              key={avatar.avatar_id}
-              name={avatar.avatar_name}
-              image={avatar.s3_url_thumbnail}
-              selected={selectedAvatar?.avatar_id === avatar.avatar_id}
-              onClick={() => setSelectedAvatar(avatar)}
-            />
-          ))}
-          <ImageCard
-            name="Custom Avatar"
-            description="Create your own"
-            selected={false}
-            onClick={() => setShowCustomAvatarForm(true)}
-          >
-            <div className="w-full aspect-square bg-brand-light rounded-lg flex items-center justify-center">
-              <Plus className="w-12 h-12 text-brand" />
+              name="Custom Avatar"
+              description="Create your own"
+              selected={false}
+              onClick={() => setShowCustomAvatarForm(true)}
+            >
+              <div className="w-full aspect-square bg-brand-light rounded-lg flex items-center justify-center">
+                <Plus className="w-12 h-12 text-brand" />
+              </div>
+            </ImageCard>
+          </div>
+          <PaginationControls
+            currentPage={avatarsPage}
+            totalPages={avatarsData?.total_pages || 1}
+            onPageChange={setAvatarsPage}
+            isLoading={avatarsLoading}
+          />
+        </>
+      )}
+    </ItemSelector>
+  );
+
+  const renderVoiceSelection = () => (
+    <ItemSelector step={2} title="Choose Your Voice">
+      {voicesLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="bg-gray-200 aspect-square rounded-lg mb-3"></div>
+              <div className="h-4 bg-gray-200 rounded mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded"></div>
             </div>
-          </ImageCard>
+          ))}
         </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {voicesData?.data?.map((voice) => (
+              <ImageCard
+                key={voice._id}
+                name={voice.voice_label}
+                description={`${voice.type} • ${voice.model_configuration.language}`}
+                selected={selectedVoice?._id === voice._id}
+                onClick={() => setSelectedVoice(voice)}
+              >
+                <div className="w-full aspect-square bg-purple-100 rounded-lg flex items-center justify-center">
+                  <span className="text-purple-600 text-2xl">🎤</span>
+                </div>
+              </ImageCard>
+            ))}
+          </div>
+          <PaginationControls
+            currentPage={voicesPage}
+            totalPages={voicesData?.total_pages || 1}
+            onPageChange={setVoicesPage}
+            isLoading={voicesLoading}
+          />
+        </>
       )}
     </ItemSelector>
   );
 
   const renderLanguageSelection = () => (
-    <ItemSelector step={2} title="Select Language">
+    <ItemSelector step={3} title="Select Language">
       {languagesLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
@@ -205,9 +345,7 @@ export const VideoCreateForm = ({
               selected={selectedLanguage === language}
               onClick={() => {
                 setSelectedLanguage(language);
-                setSelectedVideoType(null); // Reset video type when language changes
-                setSelectedTemplate([]); // Reset template when language changes
-                setScripts([]); // Reset scripts when language changes
+                resetPaginationAndSelections("language");
               }}
             />
           ))}
@@ -243,9 +381,9 @@ export const VideoCreateForm = ({
   );
 
   const renderVideoTypeSelection = () => (
-    <ItemSelector step={3} title="Select Video Type">
+    <ItemSelector step={4} title="Select Video Type">
       {pipelinesLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="animate-pulse">
               <div className="bg-gray-200 aspect-video rounded-lg mb-3"></div>
@@ -255,24 +393,33 @@ export const VideoCreateForm = ({
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {pipelinesData?.data?.map((pipeline) => (
-            <ImageCard
-              key={pipeline.pipeline_id}
-              name={pipeline.pipeline_name}
-              selected={selectedVideoType?.pipeline_id === pipeline.pipeline_id}
-              onClick={() => {
-                setSelectedVideoType(pipeline);
-                setSelectedTemplate([]); // Reset template when video type changes
-                setScripts([]); // Reset scripts when video type changes
-              }}
-            >
-              <div className="w-full aspect-video bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="text-blue-600 text-2xl">📹</span>
-              </div>
-            </ImageCard>
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {pipelinesData?.data?.map((pipeline) => (
+              <ImageCard
+                key={pipeline.pipeline_id}
+                name={pipeline.pipeline_name}
+                selected={
+                  selectedVideoType?.pipeline_id === pipeline.pipeline_id
+                }
+                onClick={() => {
+                  setSelectedVideoType(pipeline);
+                  resetPaginationAndSelections("videoType");
+                }}
+              >
+                <div className="w-full aspect-video bg-blue-100 rounded-lg flex items-center justify-center">
+                  <span className="text-blue-600 text-2xl">📹</span>
+                </div>
+              </ImageCard>
+            ))}
+          </div>
+          <PaginationControls
+            currentPage={pipelinesPage}
+            totalPages={pipelinesData?.total_pages || 1}
+            onPageChange={setPipelinesPage}
+            isLoading={pipelinesLoading}
+          />
+        </>
       )}
 
       <div className="text-center flex items-center justify-center">
@@ -306,7 +453,7 @@ export const VideoCreateForm = ({
   );
 
   const renderTemplateSelection = () => (
-    <ItemSelector step={4} title="Select Template">
+    <ItemSelector step={5} title="Select Template">
       {templatesLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {[...Array(3)].map((_, i) => (
@@ -318,11 +465,11 @@ export const VideoCreateForm = ({
           ))}
         </div>
       ) : (
-        templatesData.length > 0 &&
+        templatesData?.length > 0 &&
         templatesData.map((template, index) => (
-          <div key={template.data.cluster_id}>
+          <div key={template.data.cluster_id} className="space-y-4">
             <div className="text-lg font-semibold mb-4">
-              {selectedVideoType.data.data[index]?.name || "Video Templates"}
+              {selectedVideoType?.data?.data[index]?.name || "Video Templates"}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               {template?.data?.videos?.map(
@@ -345,6 +492,17 @@ export const VideoCreateForm = ({
                 )
               )}
             </div>
+            <PaginationControls
+              currentPage={template.current_page}
+              totalPages={template.total_pages}
+              onPageChange={(page) => {
+                setTemplatesPages((prev) => ({
+                  ...prev,
+                  [selectedVideoType?.pipeline_id || ""]: page,
+                }));
+              }}
+              isLoading={templatesLoading}
+            />
           </div>
         ))
       )}
@@ -355,7 +513,7 @@ export const VideoCreateForm = ({
     if (!textComponents?.length) return null;
 
     return (
-      <ItemSelector step={5} title="Enter Scripts">
+      <ItemSelector step={6} title="Enter Scripts">
         <div className="space-y-6">
           {textComponents.map((component, index) => (
             <ScriptInput
@@ -482,6 +640,7 @@ export const VideoCreateForm = ({
             <div className="flex">
               <div className="flex-1 space-y-6">
                 {renderAvatarSelection()}
+                {renderVoiceSelection()}
                 {renderLanguageSelection()}
                 {renderVideoTypeSelection()}
                 {templatesData?.length > 0 && renderTemplateSelection()}

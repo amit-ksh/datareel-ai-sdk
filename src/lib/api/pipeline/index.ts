@@ -4,14 +4,13 @@ import { prepareAssetFilters } from "../common"
 
 export const getPipelines = async (data: GetAvatarsRequest): Promise<PaginatedResponse<Pipeline>> => {
   const params = prepareAssetFilters(data)
+  params.append("page", data.page?.toString() || "1");
 
-  console.log(`Fetching pipelines with API key: ${data.apiKey}`, data, params)
   const resp = await VideoAxios.get(`/api/v1/pipeline/list`, {
     headers: { api_key: data.apiKey },
     params,
   })
 
-  console.log(`Pipelines fetched:`, resp.data)
   return resp.data
 }
 
@@ -46,12 +45,11 @@ export const getVideoById = async (data: GetVideoByIdRequest) => {
   return resp.data
 }
 
-export const getOrganisationLanguages = async (data: BaseGetAssetsRequest): Promise<string[]> => {
+export const getOrganisationLanguages = async (data: Omit<BaseGetAssetsRequest, 'page'>): Promise<string[]> => {
   const resp = await VideoAxios.get(`/api/v1/pipeline/languages`, {
     headers: { api_key: data.apiKey },
   })
 
-  console.log(resp?.data)
   return resp.data.languages
 }
 

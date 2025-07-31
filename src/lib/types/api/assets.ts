@@ -38,6 +38,7 @@ export interface Persona {
 
 export interface Voice {
   _id: string;
+  voice_id: string;
   organisation_id: string;
   voice_label: string;
   eleven_labs_voice_id: string;

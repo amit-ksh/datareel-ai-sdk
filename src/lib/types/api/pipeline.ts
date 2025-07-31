@@ -24,7 +24,7 @@ export interface CreateVideoRequest extends BaseVideoRequest {
   };
 }
 
-export interface GetVideoByIdRequest extends BaseGetAssetsRequest {
+export interface GetVideoByIdRequest extends Omit<BaseGetAssetsRequest, 'page'> {
   videoId: string;
 }
 

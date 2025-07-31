@@ -20,7 +20,7 @@ export const passwordSchema = Yup.string()
 
 export class DataReel {
   organisationId?: string;
-  private apiKey?: string = 'e845465a-4d27-4892-ae73-295300cf7c3d';
+  private apiKey?: string;
   private secret: string;
 
   // User information
@@ -101,51 +101,53 @@ export class DataReel {
 
 
   // GET ASSETS
-  async getPersonas(labels: string[] = [], emails: string[] = []): Promise<PaginatedResponse<Persona>> {
+  async getPersonas({page=1}: {page?: number}): Promise<PaginatedResponse<Persona>> {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
 
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
+      page,
       filters: {
-        labels,
-        emails,
+        labels: [],
+        emails: [],
       }
     };
 
     return await getPersonas(request);
   }
 
-  async getAvatars(labels: string[] = [], emails: string[] = []): Promise<PaginatedResponse<Avatar>> {
+  async getAvatars({page=1}: {page?: number}): Promise<PaginatedResponse<Avatar>> {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
     
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
+      page,
       filters: {
-        labels,
-        emails,
+        labels: [],
+        emails: [],
       }
     };
 
     return await getAvatars(request);
   }
 
-  async getVoices(labels: string[] = [], emails: string[] = []): Promise<PaginatedResponse<Voice>> {
+  async getVoices({page=1}: {page?: number}): Promise<PaginatedResponse<Voice>> {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
     
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
+      page,
       filters: {
-        labels,
-        emails,
+        labels: [],
+        emails: [],
       }
     };
 
     return await getVoices(request);
   }
 
-  async getContentVideos({labels = [], emails = [], clusterIds = []}: {
-    labels?: string[];
-    emails?: string[];
+  async getContentVideos({page=1, clusterIds = []}: {
+    page?: number;
     clusterIds?: string[];
   }): Promise<{
     current_page: number;
@@ -160,9 +162,10 @@ export class DataReel {
 
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
+      page,
       filters: {
-        labels,
-        emails,
+        labels: [],
+        emails: [],
       }
     };
 
@@ -210,18 +213,18 @@ export class DataReel {
     });
   }
 
-  async getPipelines({labels = [], emails = [], languages = []}: {
-    labels?: string[];
-    emails?: string[];
+  async getPipelines({page=1, languages = []}: {
+    page?: number;
     languages?: string[];
   }): Promise<PaginatedResponse<Pipeline>> {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
     
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
+      page,
       filters: {
-        labels,
-        emails,
+        labels: [],
+        emails: [],
         languages
       }
     };
@@ -242,6 +245,7 @@ export class DataReel {
 
   async generateVideo(data: {
     avatar: Avatar | null;
+    voice: Voice | null;
     language: string | null;
     videoType: Pipeline | null;
     contentVideos: ContentVideo['videos'];
@@ -259,9 +263,9 @@ export class DataReel {
   }) {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
 
-    const { avatar, language, videoType, contentVideos, scripts = [] } = data;
-    if (!avatar || !language || !videoType) {
-      throw new Error("Avatar, language, and video type are required to generate a video");
+    const { avatar, voice, language, videoType, contentVideos, scripts = [] } = data;
+    if (!avatar || !voice || !language || !videoType) {
+      throw new Error("Avatar, voice, language, and video type are required to generate a video");
     }
 
     const pipelineId = videoType.pipeline_id;
@@ -273,13 +277,13 @@ export class DataReel {
     pipelineFormData.forEach((component: any, componentIndex) => {
       const data = Object.keys(component).reduce((acc, key: string) => {
         if (key === 'avatar') {
-          acc[key] = videoType.avatar_id
+          acc[key] = avatar.avatar_id
         } else if (key === 'voice') {
-          acc[key] = videoType.voice_id
+          acc[key] = voice._id || voice.voice_id
         } else if (key === 'template') {
           acc[key] = videoType.template_id
         } else if (key === 'language') {
-          acc[key] = videoType.language
+          acc[key] = language
         } else if (key === 'text') {
           acc[key] = scripts[scriptIndex] || '';
           scriptIndex++;

@@ -3,6 +3,7 @@ export interface BaseVideoRequest {
 }
 
 export interface BaseGetAssetsRequest extends BaseVideoRequest {
+  page: number;
   filters: {
     labels?: string[];
     emails?: string[];

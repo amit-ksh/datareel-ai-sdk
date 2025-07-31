@@ -20,7 +20,7 @@ export const passwordSchema = Yup.string()
 
 export class DataReel {
   organisationId?: string;
-  private apiKey?: string;
+  private apiKey?: string = 'e845465a-4d27-4892-ae73-295300cf7c3d';
   private secret: string;
 
   // User information

@@ -184,7 +184,7 @@ export const VideoView: React.FC<VideoViewProps> = ({
   const wsUrl = useMemo(() => {
     if (!videoId || !apiKey || isVideoCreated || isResultPending) return null;
 
-    return `${process.env.NEXT_PUBLIC_VIDEO_WEBSOCKET_API_BASE_URL}/api/v1/ws/${videoId}/${apiKey}`;
+    return `wss://video.dev.datareel.ai/api/v1/ws/${videoId}/${apiKey}`;
   }, [videoId, apiKey, isVideoCreated, isResultPending]);
 
   const { lastMessage, readyState } = useWebSocket(wsUrl, {
@@ -443,7 +443,7 @@ export const VideoView: React.FC<VideoViewProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Share Link
           </label>
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 items-center">
             <Input
               value={shareUrl}
               readOnly
@@ -452,7 +452,6 @@ export const VideoView: React.FC<VideoViewProps> = ({
             />
             <Button
               variant="outline"
-              size="sm"
               onClick={() => copyToClipboard(shareUrl, "url")}
               leftIcon={
                 copied.url ? (
@@ -461,7 +460,7 @@ export const VideoView: React.FC<VideoViewProps> = ({
                   <Copy className="w-4 h-4" />
                 )
               }
-              className="px-4"
+              className="px-4 h-12 mt-2"
             >
               {copied.url ? "Copied!" : "Copy"}
             </Button>
@@ -514,9 +513,6 @@ export const VideoView: React.FC<VideoViewProps> = ({
                 {embedCode}
               </code>
             </div>
-            <p className="text-xs text-gray-500">
-              Use this code to embed the video on your website or blog.
-            </p>
           </div>
         )}
       </div>
@@ -671,7 +667,7 @@ export const VideoView: React.FC<VideoViewProps> = ({
           {/* Video Section */}
           <div
             className={cx(
-              "w-full sticky top-4",
+              "w-full lg:sticky top-4",
               isVideoCreated && !isPortrait && "lg:w-2/3",
               isPortrait &&
                 "mx-auto flex h-[80vh] w-full flex-col items-center lg:w-1/2"

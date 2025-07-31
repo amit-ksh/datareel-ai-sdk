@@ -84,19 +84,13 @@ export class DataReel {
     this.name = name;
   }
 
-  // async login(apiKey: string, email: string, name: string) {
-  //   this.email = email;
-  //   this.organisationId = this.organisationId;
-  //   this.apiKey = apiKey;
-  //   this.name = name;
-  // }
-  async login(email: string, password: string) {
-    this.validateSecret(this.secret);
-    if (!this.organisationId) {
-      throw new Error("Organisation ID is required for login");
-    }
-    return await loginUser({ email, password });
+  async login(apiKey: string, email: string, name: string) {
+    this.email = email;
+    this.organisationId = this.organisationId;
+    this.apiKey = apiKey;
+    this.name = name;
   }
+ 
 
   async logout() {
     this.organisationId = undefined;
@@ -148,20 +142,6 @@ export class DataReel {
 
     return await getVoices(request);
   }
-
-  // async getTemplates(labels: string[] = [], emails: string[] = []): Promise<PaginatedResponse<Template>> {
-  //   this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
-    
-  //   const request: BaseGetAssetsRequest = {
-  //     apiKey: this.apiKey!,
-  //     filters: {
-  //       labels,
-  //       emails,
-  //     }
-  //   };
-
-  //   return await getTemplates(request);
-  // }
 
   async getContentVideos({labels = [], emails = [], clusterIds = []}: {
     labels?: string[];

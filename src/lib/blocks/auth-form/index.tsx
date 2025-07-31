@@ -3,17 +3,22 @@ import { DatareelProvider, useDatareel } from "../../context";
 import { Login } from "../../components/auth/login";
 import { Organization } from "../../components/auth/organization";
 
+type AuthFormData = {
+  email: string;
+  password: string;
+};
+
 interface AuthFormProps {
   brandColor?: string;
-  onAuthSuccess?: () => void;
-  onAuthError?: (error: string) => void;
+  onAuthSuccess: (data: AuthFormData) => Promise<void> | void;
+  onAuthError?: (error: string, data: AuthFormData) => void;
 }
 
 type AuthStep = "login" | "organization";
 
 const AuthFormContent: React.FC<{
-  onAuthSuccess?: () => void;
-  onAuthError?: (error: string) => void;
+  onAuthSuccess: AuthFormProps["onAuthSuccess"];
+  onAuthError: AuthFormProps["onAuthError"];
 }> = ({ onAuthSuccess, onAuthError }) => {
   const { datareel } = useDatareel();
   const [currentStep, setCurrentStep] = useState<AuthStep>("login");
@@ -34,13 +39,12 @@ const AuthFormContent: React.FC<{
           setCurrentStep("organization");
         } else {
           // Organization ID exists, proceed with login
-          await datareel.login(email, password);
-          onAuthSuccess?.();
+          await onAuthSuccess?.({ email, password });
         }
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Login failed";
-        onAuthError?.(errorMessage);
+        onAuthError?.(errorMessage, { email, password });
       } finally {
         setIsLoading(false);
       }
@@ -54,11 +58,11 @@ const AuthFormContent: React.FC<{
     setIsLoading(true);
     try {
       await datareel.initOrganisation(userEmail, userPassword);
-      onAuthSuccess?.();
+      await onAuthSuccess?.({ email: userEmail, password: userPassword });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Organization creation failed";
-      onAuthError?.(errorMessage);
+      onAuthError?.(errorMessage, { email: userEmail, password: userPassword });
     } finally {
       setIsLoading(false);
     }

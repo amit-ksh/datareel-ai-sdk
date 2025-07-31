@@ -22,11 +22,11 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     brandColor: "#3b82f6",
-    onAuthSuccess: () => {
-      console.log("Authentication successful");
+    onAuthSuccess: (data) => {
+      console.log("Authentication successful", data);
     },
-    onAuthError: (error: string) => {
-      console.error("Authentication error:", error);
+    onAuthError: (error: string, data) => {
+      console.error("Authentication error:", error, data);
     },
   },
 };
@@ -34,11 +34,11 @@ export const Default: Story = {
 export const CustomBrandColor: Story = {
   args: {
     brandColor: "#10b981",
-    onAuthSuccess: () => {
-      console.log("Authentication successful");
+    onAuthSuccess: (data) => {
+      console.log("Authentication successful", data);
     },
-    onAuthError: (error: string) => {
-      console.error("Authentication error:", error);
+    onAuthError: (error, data) => {
+      console.error("Authentication error:", error, data);
     },
   },
 };

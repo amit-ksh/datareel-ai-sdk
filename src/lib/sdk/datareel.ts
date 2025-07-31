@@ -230,7 +230,7 @@ export class DataReel {
   }
 
   // VIDEO GENERATION
-  private async getPipelineFormData(pipelineId: string) {
+  async getPipelineFormData(pipelineId: string) {
     this.validateApiKey(this.apiKey || '');
 
     return await fetchPipelineFormData({
@@ -245,6 +245,7 @@ export class DataReel {
     language: string | null;
     videoType: Pipeline | null;
     contentVideos: ContentVideo['videos'];
+    scripts?: string[];
     shareWith?: {
       emailData: {
         to: string[];
@@ -258,7 +259,7 @@ export class DataReel {
   }) {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
 
-    const { avatar, language, videoType, contentVideos } = data;
+    const { avatar, language, videoType, contentVideos, scripts = [] } = data;
     if (!avatar || !language || !videoType) {
       throw new Error("Avatar, language, and video type are required to generate a video");
     }
@@ -268,6 +269,7 @@ export class DataReel {
     const pipelineFormData = pipelineFormDataResp.data.body.data as any[];
     
     const body: any = []
+    let scriptIndex = 0;
     pipelineFormData.forEach((component: any, componentIndex) => {
       const data = Object.keys(component).reduce((acc, key: string) => {
         if (key === 'avatar') {
@@ -278,6 +280,9 @@ export class DataReel {
           acc[key] = videoType.template_id
         } else if (key === 'language') {
           acc[key] = videoType.language
+        } else if (key === 'text') {
+          acc[key] = scripts[scriptIndex] || '';
+          scriptIndex++;
         } else if (key === 'content') {
           acc[key] = contentVideos.pop().video_id
         }
@@ -300,14 +305,14 @@ export class DataReel {
       
     };
 
-    if (data.shareWith.emailData.to.length > 0) {
+    if (data.shareWith?.emailData?.to.length > 0) {
       request.email_data = {
         to: data.shareWith.emailData.to,
         subject: data.shareWith.emailData.subject 
       };
     }
 
-    if (data.shareWith.whatsappData.contacts.length > 0) {
+    if (data.shareWith?.whatsappData?.contacts.length > 0) {
       request.whatsapp_data = {
         contacts: data.shareWith.whatsappData.contacts,
         caption: data.shareWith.whatsappData.caption 

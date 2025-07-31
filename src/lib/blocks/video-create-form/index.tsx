@@ -6,32 +6,20 @@ import { Button } from "../../components/ui/button";
 import { ImageCard } from "../../components/ui/image-card";
 import { LanguageCard } from "../../components/ui/language-card";
 import { ContactForm, ContactData } from "../../components/ui/contact-form";
+import { ScriptInput } from "../../components/ui/script-input";
 import type { Avatar, ContentVideo, Pipeline } from "../../types";
 import { ItemSelector } from "../../components";
 import { CreateAvatarForm } from "../create-avatar-form";
 
 interface VideoCreateFormProps {
-  onVideoGenerate: (data: {
-    avatar: Avatar | null;
-    language: string | null;
-    videoType: Pipeline | null;
-    template: ContentVideo["videos"] | null;
-    shareWith?: {
-      emailData: {
-        to: string[];
-        subject: string;
-      };
-      whatsappData: {
-        contacts: string[];
-        caption: string;
-      };
-    };
-  }) => Promise<void>;
+  onVideoGenerate: (videoId: string) => Promise<void>;
+  onError: (error: any) => Promise<void>;
   onCancel: () => void;
 }
 
 export const VideoCreateForm = ({
   onVideoGenerate,
+  onError,
   onCancel,
 }: VideoCreateFormProps) => {
   const { datareel } = useDatareel();
@@ -50,6 +38,8 @@ export const VideoCreateForm = ({
     emailSubject: "",
     whatsappCaption: "",
   });
+  const [scripts, setScripts] = useState<string[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // Data fetching
   const { data: avatarsData, isLoading: avatarsLoading } = useQuery({
@@ -72,9 +62,22 @@ export const VideoCreateForm = ({
       }),
     enabled: !!datareel,
   });
+
+  const [customScripts, setCustomScripts] = useState<string[]>([]);
+  const { data: pipelineFormDataData, isLoading: pipelineFormDataLoading } =
+    useQuery({
+      queryKey: ["pipelines", selectedVideoType?.pipeline_id],
+      queryFn: () =>
+        datareel.getPipelineFormData(selectedVideoType?.pipeline_id),
+      enabled: !!datareel && !!selectedVideoType?.pipeline_id,
+    });
   const dynamicClusterComponents = selectedVideoType?.data?.data.filter(
     (component) =>
       component.type === "content" && component.content?.type === "dynamic"
+  );
+
+  const textComponents = selectedVideoType?.data?.data.filter(
+    (component) => component.text && component.text.type === "dynamic"
   );
 
   const { data: templatesData, isLoading: templatesLoading } = useQuery({
@@ -99,12 +102,17 @@ export const VideoCreateForm = ({
   });
 
   const canProceed = () => {
-    return (
+    const hasRequiredFields =
       !!selectedAvatar &&
       !!selectedLanguage &&
       !!selectedVideoType &&
-      (!!selectedTemplate || !templatesData?.length)
-    );
+      (!!selectedTemplate || !templatesData?.length);
+
+    const hasRequiredScripts =
+      !textComponents?.length ||
+      textComponents.every((_, index) => scripts[index]?.trim());
+
+    return hasRequiredFields && hasRequiredScripts && !isGenerating;
   };
 
   const renderAvatarSelection = () => (
@@ -169,6 +177,7 @@ export const VideoCreateForm = ({
                 setSelectedLanguage(language);
                 setSelectedVideoType(null); // Reset video type when language changes
                 setSelectedTemplate([]); // Reset template when language changes
+                setScripts([]); // Reset scripts when language changes
               }}
             />
           ))}
@@ -225,6 +234,7 @@ export const VideoCreateForm = ({
               onClick={() => {
                 setSelectedVideoType(pipeline);
                 setSelectedTemplate([]); // Reset template when video type changes
+                setScripts([]); // Reset scripts when video type changes
               }}
             >
               <div className="w-full aspect-video bg-blue-100 rounded-lg flex items-center justify-center">
@@ -282,7 +292,7 @@ export const VideoCreateForm = ({
         templatesData.map((template, index) => (
           <div key={template.data.cluster_id}>
             <div className="text-lg font-semibold mb-4">
-              {dynamicClusterComponents?.[index]?.name || "Video Templates"}
+              {selectedVideoType.data.data[index]?.name || "Video Templates"}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               {template?.data?.videos?.map(
@@ -310,6 +320,34 @@ export const VideoCreateForm = ({
       )}
     </ItemSelector>
   );
+
+  const renderScriptInput = () => {
+    if (!textComponents?.length) return null;
+
+    return (
+      <ItemSelector step={5} title="Enter Scripts">
+        <div className="space-y-6">
+          {textComponents.map((component, index) => (
+            <ScriptInput
+              key={component.id}
+              label={`Script for ${component.name || `Component ${index + 1}`}`}
+              placeholder="Enter your script here..."
+              value={scripts[index] || ""}
+              onChange={(e) => {
+                setScripts((prev) => {
+                  const newScripts = [...prev];
+                  newScripts[index] = e.target.value;
+                  return newScripts;
+                });
+              }}
+              helperText="Enter the text that will be spoken in your video"
+              rows={4}
+            />
+          ))}
+        </div>
+      </ItemSelector>
+    );
+  };
 
   const renderContactForm = () => (
     <div className="space-y-6">
@@ -417,35 +455,51 @@ export const VideoCreateForm = ({
                 {renderLanguageSelection()}
                 {renderVideoTypeSelection()}
                 {templatesData?.length > 0 && renderTemplateSelection()}
+                {renderScriptInput()}
                 {renderContactForm()}
 
                 <div className="mt-12 text-center">
                   <Button
                     size="lg"
                     className="px-12 sm:min-w-[400px] rounded-xl lg:text-lg py-4 font-semibold"
-                    onClick={() => {
-                      datareel.generateVideo({
-                        avatar: selectedAvatar,
-                        language: selectedLanguage,
-                        videoType: selectedVideoType,
-                        contentVideos: selectedTemplate,
-                        shareWith: {
-                          emailData: {
-                            to: contactData.emails,
-                            subject:
-                              contactData.emailSubject ||
-                              "Your Video is Ready!",
+                    onClick={async () => {
+                      try {
+                        setIsGenerating(true);
+                        const response = await datareel.generateVideo({
+                          avatar: selectedAvatar,
+                          language: selectedLanguage,
+                          videoType: selectedVideoType,
+                          contentVideos: selectedTemplate,
+                          scripts: scripts.filter((script) => script?.trim()),
+                          shareWith: {
+                            emailData: {
+                              to: contactData.emails || [],
+                              subject: contactData.emailSubject || "",
+                            },
+                            whatsappData: {
+                              contacts: contactData.phoneNumbers || [],
+                              caption: contactData.whatsappCaption || "",
+                            },
                           },
-                          whatsappData: {
-                            contacts: contactData.phoneNumbers,
-                            caption: contactData.whatsappCaption,
-                          },
-                        },
-                      });
+                        });
+                        onVideoGenerate(response.data.message.results_id);
+                      } catch (error) {
+                        console.error("Error generating video:", error);
+                        onError(error);
+                      } finally {
+                        setIsGenerating(false);
+                      }
                     }}
                     disabled={!canProceed()}
                   >
-                    Create Video
+                    {isGenerating ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Creating Video...</span>
+                      </div>
+                    ) : (
+                      "Create Video"
+                    )}
                   </Button>
                 </div>
               </div>

@@ -11,6 +11,7 @@ export interface Organisation {
 export interface LoginOptions {
   credentials?: boolean;
   google?: boolean;
+  auth0?: boolean;
   showForgotPassword?: boolean;
 }
 
@@ -31,6 +32,7 @@ export const Login = ({
   loginOptions = {
     credentials: true,
     google: false,
+    auth0: false,
     showForgotPassword: true,
   },
   organisation,
@@ -176,7 +178,7 @@ export const Login = ({
       )}
 
       {/* SSO Options */}
-      {loginOptions.google && (
+      {(loginOptions.google || loginOptions.auth0) && (
         <div className={loginOptions.credentials ? "mt-6" : ""}>
           {loginOptions.credentials && (
             <div className="relative">
@@ -195,32 +197,53 @@ export const Login = ({
             className={`space-y-3 ${loginOptions.credentials ? "mt-6" : ""}`}
           >
             {/* Google SSO */}
-            <button
-              type="button"
-              onClick={() => onSSOLogin?.("google")}
-              disabled={isLoading}
-              className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                />
-              </svg>
-              Continue with Google
-            </button>
+            {loginOptions.google && (
+              <button
+                type="button"
+                onClick={() => onSSOLogin?.("google")}
+                disabled={isLoading}
+                className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                  <path
+                    fill="#4285F4"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  />
+                </svg>
+                Continue with Google
+              </button>
+            )}
+
+            {/* Auth0 SSO */}
+            {loginOptions.auth0 && (
+              <button
+                type="button"
+                onClick={() => onSSOLogin?.("auth0")}
+                disabled={isLoading}
+                className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg
+                  fill="currentColor"
+                  viewBox="0 0 53 64"
+                  className="size-5 mr-4"
+                >
+                  <path d="M3.372 27.782c10.475-1.728 18.686-10.4 20.407-20.892l.577-5.043c.143-.802-.4-1.918-1.412-1.838C15.03.628 7.56 3.243 3.406 4.943A5.488 5.488 0 000 10.027v16.451c0 .973.874 1.717 1.834 1.563l1.538-.252v-.006zM28.831 6.89c1.726 10.492 9.938 19.164 20.407 20.893l1.537.252c.96.16 1.835-.584 1.835-1.563v-16.45a5.488 5.488 0 00-3.406-5.084C45.044 3.232 37.58.622 29.666.004c-1.018-.08-1.538 1.048-1.418 1.837l.577 5.043.006.006zM49.23 32.39C34.915 35.219 28.27 44.75 28.27 62.79c0 .905.897 1.535 1.651 1.031 6.584-4.447 21.07-16.056 22.562-30.577.057-1.826-2.223-.968-3.252-.853zM3.377 32.39c14.315 2.828 20.961 12.359 20.961 30.4 0 .905-.897 1.535-1.651 1.031C16.103 59.374 1.617 47.765.125 33.244c-.057-1.826 2.223-.968 3.252-.853z"></path>
+                </svg>
+                Continue with Auth0
+              </button>
+            )}
           </div>
         </div>
       )}

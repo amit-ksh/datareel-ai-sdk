@@ -27,7 +27,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "storybook dev -p 3000",
+    "dev": "storybook dev -p 6006",
     "build": "storybook build",
     "build:lib": "tsc && vite build",
     "lint": "npx @biomejs/biome lint --write ./src",
@@ -37,11 +37,13 @@
     "prepack": "json -f package.json -I -e \"delete this.devDependencies; delete this.dependencies\""
   },
   "dependencies": {
+    "@auth0/auth0-react": "^2.4.0",
     "@radix-ui/react-dialog": "^1.1.14",
     "@tanstack/react-query": "^5.83.0",
     "axios": "^1.11.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "install": "^0.13.0",
     "iso-language-codes": "^2.0.0",
     "lucide-react": "^0.525.0",
     "react": "19.1.0",

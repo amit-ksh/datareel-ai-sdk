@@ -3,6 +3,7 @@ import type { GetAvatarsRequest, GetVideoByIdRequest, CreateVideoRequest, BaseGe
 import { prepareAssetFilters } from "../common"
 
 export const getPipelines = async (data: GetAvatarsRequest): Promise<PaginatedResponse<Pipeline>> => {
+  console.log(data)
   const params = prepareAssetFilters(data)
   params.append("page", data.page?.toString() || "1");
 

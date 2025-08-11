@@ -13,7 +13,7 @@ export const passwordSchema = Yup.string()
   .matches(/[A-Z]/, 'Password must contain at least one capital letter')
   .matches(/\d+/, 'Password must contain at least one number')
   .matches(
-    RegExp('[!@#$%^&*(),.?":{}[\\]|<>\\-_]'),
+    /[!@#$%^&*(),.?":{}[\]|<>\-_]/,
     'Password must contain at least one special character',
   )
 
@@ -24,9 +24,9 @@ export class DataReel {
   private secret: string = '';
 
   // User information
-  email?: string = 'amit@mail.com';
-  name?: string = 'Test';
-  referenceId?: string = 'Test'
+  email?: string;
+  name?: string;
+  referenceId?: string;
 
   constructor({secret, organisationId}: DataReelConstructor) {
     this.secret = secret
@@ -74,7 +74,6 @@ export class DataReel {
     this.organisationId = response.organisation_id;
     this.apiKey = response.api_key;
 
-    console.log("Organisation initialized:", response);
     return response
   }
 
@@ -102,54 +101,46 @@ export class DataReel {
 
 
   // GET ASSETS
-  async getPersonas({page=1}: {page?: number}): Promise<PaginatedResponse<Persona>> {
+  async getPersonas({page=1, filters}: {page?: number, filters?: BaseGetAssetsRequest['filters']}): Promise<PaginatedResponse<Persona>> {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
 
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
       page,
-      filters: {
-        labels: [],
-        emails: [],
-      }
-    };
+      filters
+    }
 
     return await getPersonas(request);
   }
 
-  async getAvatars({page=1}: {page?: number}): Promise<PaginatedResponse<Avatar>> {
+  async getAvatars({page=1, filters}: {page?: number, filters?: BaseGetAssetsRequest['filters']}): Promise<PaginatedResponse<Avatar>> {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
     
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
       page,
-      filters: {
-        labels: [],
-        emails: [],
-      }
+      filters
     };
 
     return await getAvatars(request);
   }
 
-  async getVoices({page=1}: {page?: number}): Promise<PaginatedResponse<Voice>> {
+  async getVoices({page=1, filters}: {page?: number, filters?: BaseGetAssetsRequest['filters']}): Promise<PaginatedResponse<Voice>> {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
     
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
       page,
-      filters: {
-        labels: [],
-        emails: [],
-      }
+      filters
     };
 
     return await getVoices(request);
   }
 
-  async getContentVideos({page=1, clusterIds = []}: {
+  async getContentVideos({page=1, clusterIds = [], filters}: {
     page?: number;
     clusterIds?: string[];
+    filters: BaseGetAssetsRequest['filters']
   }): Promise<{
     current_page: number;
     total_pages: number;
@@ -164,10 +155,7 @@ export class DataReel {
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
       page,
-      filters: {
-        labels: [],
-        emails: [],
-      }
+      filters
     };
 
     const contentVideos = await Promise.all(clusterIds.map(async (clusterId) => {
@@ -273,22 +261,20 @@ export class DataReel {
     });
   }
 
-  async getPipelines({page=1, languages = []}: {
+  async getPipelines({page=1, languages = [], filters}: {
     page?: number;
     languages?: string[];
+    filters: BaseGetAssetsRequest['filters'];
   }): Promise<PaginatedResponse<Pipeline>> {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
     
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
       page,
-      filters: {
-        labels: [],
-        emails: [],
-        languages
-      }
+      filters
     };
 
+    console.log(languages, request.filters)
     return await getPipelines(request);
   }
 

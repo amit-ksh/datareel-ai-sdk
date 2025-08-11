@@ -4,7 +4,7 @@ import { cx } from "class-variance-authority";
 import { QUALITY_OPTIONS, useVideoPlayer } from "./use-video-player";
 
 import { useRef, useState } from "react";
-import { RenderSetting } from "../../../types";
+import type { RenderSetting } from "../../../types";
 import {
   Play,
   Pause,

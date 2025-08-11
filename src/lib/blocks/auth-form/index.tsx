@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from "react";
+import type React from "react";
+import { useState, useCallback } from "react";
 import { DatareelProvider, useDatareel } from "../../context";
 import { Login } from "../../components/auth/login";
 import { Organization } from "../../components/auth/organization";

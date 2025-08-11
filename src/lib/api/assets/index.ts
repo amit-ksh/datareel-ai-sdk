@@ -77,6 +77,7 @@ export const getPersonas = async (
   data: BaseGetAssetsRequest
 ): Promise<PaginatedResponse<Persona>> => {
   const params = prepareAssetFilters(data);
+  params.set('page_num', data.page?.toString() || "1");
 
   const resp = await VideoAxios.get(`/api/v1/persona/list`, {
     headers: { api_key: data.apiKey },
@@ -183,6 +184,6 @@ export const getOrganisationUserLabels = async ({
   const response = await VideoAxios.get(USER_LABEL_ASSET_API_MAP[assetType].endpoint, {
     headers: { api_key: apiKey },
   });
-  
-  return response.data;
+
+  return {data: response.data.user_labels.filter(Boolean) || []};
 }

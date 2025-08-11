@@ -5,9 +5,18 @@ import { useDatareel } from "../../context/datareel-context";
 import { Button } from "../../components/ui/button";
 import { ImageCard } from "../../components/ui/image-card";
 import { LanguageCard } from "../../components/ui/language-card";
-import { ContactForm, ContactData } from "../../components/ui/contact-form";
+import {
+  ContactForm,
+  type ContactData,
+} from "../../components/ui/contact-form";
 import { ScriptInput } from "../../components/ui/script-input";
-import type { Avatar, ContentVideo, Pipeline, Voice } from "../../types";
+import type {
+  Avatar,
+  ContentVideo,
+  Pipeline,
+  Voice,
+  Persona,
+} from "../../types";
 import { ItemSelector } from "../../components";
 import { CreateAvatarForm } from "../create-avatar-form";
 
@@ -23,6 +32,7 @@ export const VideoCreateForm = ({
   onCancel,
 }: VideoCreateFormProps) => {
   const { datareel } = useDatareel();
+  const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null);
   const [selectedAvatar, setSelectedAvatar] = useState<Avatar | null>(null);
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
@@ -41,25 +51,25 @@ export const VideoCreateForm = ({
   });
   const [scripts, setScripts] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedUserLabel, setSelectedUserLabel] = useState<string | null>(
+    (datareel as any)?.userLabel || null
+  );
 
   // Pagination states
-  const [avatarsPage, setAvatarsPage] = useState(1);
-  const [voicesPage, setVoicesPage] = useState(1);
+  const [personasPage, setPersonasPage] = useState(1);
   const [pipelinesPage, setPipelinesPage] = useState(1);
   const [templatesPages, setTemplatesPages] = useState<{
     [key: string]: number;
   }>({});
 
   // Data fetching
-  const { data: avatarsData, isLoading: avatarsLoading } = useQuery({
-    queryKey: ["avatars", avatarsPage],
-    queryFn: () => datareel.getAvatars({ page: avatarsPage }),
-    enabled: !!datareel,
-  });
-
-  const { data: voicesData, isLoading: voicesLoading } = useQuery({
-    queryKey: ["voices", voicesPage],
-    queryFn: () => datareel.getVoices({ page: voicesPage }),
+  const { data: personasData, isLoading: personasLoading } = useQuery({
+    queryKey: ["personas", personasPage, selectedUserLabel],
+    queryFn: () =>
+      datareel.getPersonas({
+        page: personasPage,
+        filters: { user_label: selectedUserLabel },
+      }),
     enabled: !!datareel,
   });
 
@@ -70,12 +80,21 @@ export const VideoCreateForm = ({
   });
 
   const { data: pipelinesData, isLoading: pipelinesLoading } = useQuery({
-    queryKey: ["pipelines", selectedLanguage, pipelinesPage],
+    queryKey: ["pipelines", selectedLanguage, pipelinesPage, selectedUserLabel],
     queryFn: () =>
       datareel.getPipelines({
         page: pipelinesPage,
-        languages: selectedLanguage ? [selectedLanguage] : [],
+        filters: {
+          user_label: selectedUserLabel,
+          languages: selectedLanguage ? [selectedLanguage] : [],
+        },
       }),
+    enabled: !!datareel,
+  });
+
+  const { data: userLabelsData } = useQuery({
+    queryKey: ["userLabels"],
+    queryFn: () => datareel.getUserLabels(),
     enabled: !!datareel,
   });
 
@@ -96,46 +115,23 @@ export const VideoCreateForm = ({
     (component) => component.text && component.text.type === "dynamic"
   );
 
-  const { data: templatesData, isLoading: templatesLoading } = useQuery({
-    queryKey: ["templates", selectedVideoType?.pipeline_id, templatesPages],
-    queryFn: (): Promise<
-      {
-        current_page: number;
-        total_pages: number;
-        data: ContentVideo;
-      }[]
-    > => {
-      if (!selectedVideoType) return Promise.resolve([]);
-
-      const clusterIds = selectedVideoType.data.data
-        .map((component) => {
-          if (
-            component.type === "content" &&
-            component.content?.type === "dynamic"
-          ) {
-            // @ts-ignore
-            return component.content?.cluster_id;
-          }
-          return null;
-        })
-        .filter(Boolean);
-
-      return datareel.getContentVideos({
-        page: templatesPages[selectedVideoType.pipeline_id] || 1,
-        clusterIds,
-      });
-    },
-    enabled: !!datareel && !!selectedVideoType,
-  });
+  // Content selection moved to a new UI section; not fetched here anymore
 
   const canProceed = () => {
+    const contentRequiredCount = dynamicClusterComponents?.length || 0;
+    const hasRequiredContent =
+      contentRequiredCount === 0 ||
+      (selectedTemplate.length >= contentRequiredCount &&
+        selectedTemplate
+          .slice(0, contentRequiredCount)
+          .every((t) => Boolean(t?.video_id)));
+
     const hasRequiredFields =
       !!selectedAvatar &&
       !!selectedVoice &&
       !!selectedLanguage &&
       !!selectedVideoType &&
-      (!selectedTemplate.length ||
-        selectedTemplate.every((template) => Boolean(template.video_id)));
+      hasRequiredContent;
 
     const hasRequiredScripts =
       !textComponents?.length ||
@@ -237,9 +233,9 @@ export const VideoCreateForm = ({
     );
   };
 
-  const renderAvatarSelection = () => (
-    <ItemSelector step={1} title="Choose Your Avatar">
-      {avatarsLoading ? (
+  const renderPersonaSelection = () => (
+    <ItemSelector step={1} title="Choose Avatar">
+      {personasLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="animate-pulse">
@@ -252,17 +248,40 @@ export const VideoCreateForm = ({
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {avatarsData?.data?.map((avatar) => (
+            {personasData?.data?.map((persona) => (
               <ImageCard
-                key={avatar.avatar_id}
-                name={avatar.avatar_name}
-                image={avatar.s3_url_thumbnail}
-                selected={selectedAvatar?.avatar_id === avatar.avatar_id}
-                onClick={() => setSelectedAvatar(avatar)}
-              />
+                key={persona._id}
+                name={persona.name}
+                description={persona.email}
+                selected={selectedPersona?._id === persona._id}
+                onClick={() => {
+                  setSelectedPersona(persona);
+                  // Use default avatar and voice from persona
+                  // Create minimal objects with required ids
+                  setSelectedAvatar(
+                    persona.default_avatar
+                      ? ({ avatar_id: persona.default_avatar } as any)
+                      : null
+                  );
+                  setSelectedVoice(
+                    persona.default_voice
+                      ? ({
+                          _id: persona.default_voice,
+                          voice_id: persona.default_voice,
+                        } as any)
+                      : null
+                  );
+                }}
+              >
+                <div className="w-full aspect-square bg-brand-light rounded-lg flex items-center justify-center">
+                  <span className="text-brand text-2xl">
+                    {persona.name?.charAt(0)?.toUpperCase() || "P"}
+                  </span>
+                </div>
+              </ImageCard>
             ))}
             <ImageCard
-              name="Custom Avatar"
+              name="Create Persona"
               description="Create your own"
               selected={false}
               onClick={() => setShowCustomAvatarForm(true)}
@@ -273,50 +292,10 @@ export const VideoCreateForm = ({
             </ImageCard>
           </div>
           <PaginationControls
-            currentPage={avatarsPage}
-            totalPages={avatarsData?.total_pages || 1}
-            onPageChange={setAvatarsPage}
-            isLoading={avatarsLoading}
-          />
-        </>
-      )}
-    </ItemSelector>
-  );
-
-  const renderVoiceSelection = () => (
-    <ItemSelector step={2} title="Choose Your Voice">
-      {voicesLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="bg-gray-200 aspect-square rounded-lg mb-3"></div>
-              <div className="h-4 bg-gray-200 rounded mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded"></div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {voicesData?.data?.map((voice) => (
-              <ImageCard
-                key={voice._id}
-                name={voice.voice_label}
-                description={`${voice.type} • ${voice.model_configuration.language}`}
-                selected={selectedVoice?._id === voice._id}
-                onClick={() => setSelectedVoice(voice)}
-              >
-                <div className="w-full aspect-square bg-purple-100 rounded-lg flex items-center justify-center">
-                  <span className="text-purple-600 text-2xl">🎤</span>
-                </div>
-              </ImageCard>
-            ))}
-          </div>
-          <PaginationControls
-            currentPage={voicesPage}
-            totalPages={voicesData?.total_pages || 1}
-            onPageChange={setVoicesPage}
-            isLoading={voicesLoading}
+            currentPage={personasPage}
+            totalPages={personasData?.total_pages || 1}
+            onPageChange={setPersonasPage}
+            isLoading={personasLoading}
           />
         </>
       )}
@@ -324,7 +303,7 @@ export const VideoCreateForm = ({
   );
 
   const renderLanguageSelection = () => (
-    <ItemSelector step={3} title="Select Language">
+    <ItemSelector step={2} title="Select Language">
       {languagesLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
@@ -376,6 +355,33 @@ export const VideoCreateForm = ({
           </svg>
           <span>Need a custom language?</span>
         </button>
+      </div>
+    </ItemSelector>
+  );
+
+  const renderUserLabels = () => (
+    <ItemSelector step={3} title="User Labels">
+      <div className="flex flex-wrap gap-2">
+        {userLabelsData?.data?.map((label) => (
+          <Button
+            key={label}
+            type="button"
+            variant={selectedUserLabel === label ? "default" : "outline"}
+            size="lg"
+            className={`rounded-full text-lg px-6 py-3 ${
+              selectedUserLabel === label ? "ring-2 ring-brand" : ""
+            }`}
+            aria-pressed={selectedUserLabel === label}
+            onClick={() => {
+              setSelectedUserLabel(label);
+            }}
+          >
+            {label}
+          </Button>
+        ))}
+        {!userLabelsData?.data?.length && (
+          <span className="text-sm text-gray-500">No labels</span>
+        )}
       </div>
     </ItemSelector>
   );
@@ -452,68 +458,11 @@ export const VideoCreateForm = ({
     </ItemSelector>
   );
 
-  const renderTemplateSelection = () => (
-    <ItemSelector step={5} title="Select Template">
-      {templatesLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="bg-gray-200 aspect-video rounded-lg mb-3"></div>
-              <div className="h-4 bg-gray-200 rounded mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded"></div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        templatesData?.length > 0 &&
-        templatesData.map((template, index) => (
-          <div key={template.data.cluster_id} className="space-y-4">
-            <div className="text-lg font-semibold mb-4">
-              {selectedVideoType?.data?.data[index]?.name || "Video Templates"}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              {template?.data?.videos?.map(
-                (video: ContentVideo["videos"][number]) => (
-                  <ImageCard
-                    key={video.video_id}
-                    name={video.video_name}
-                    image={video.s3_thumbnail_url}
-                    selected={
-                      selectedTemplate?.[index]?.video_id === video.video_id
-                    }
-                    onClick={() =>
-                      setSelectedTemplate((prev) => {
-                        const newTemplates = [...prev];
-                        newTemplates[index] = video;
-                        return newTemplates;
-                      })
-                    }
-                  />
-                )
-              )}
-            </div>
-            <PaginationControls
-              currentPage={template.current_page}
-              totalPages={template.total_pages}
-              onPageChange={(page) => {
-                setTemplatesPages((prev) => ({
-                  ...prev,
-                  [selectedVideoType?.pipeline_id || ""]: page,
-                }));
-              }}
-              isLoading={templatesLoading}
-            />
-          </div>
-        ))
-      )}
-    </ItemSelector>
-  );
-
   const renderScriptInput = () => {
     if (!textComponents?.length) return null;
 
     return (
-      <ItemSelector step={6} title="Enter Scripts">
+      <ItemSelector step={5} title="Enter Scripts">
         <div className="space-y-6">
           {textComponents.map((component, index) => (
             <ScriptInput
@@ -639,11 +588,11 @@ export const VideoCreateForm = ({
           <div className="px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex">
               <div className="flex-1 space-y-6">
-                {renderAvatarSelection()}
-                {renderVoiceSelection()}
+                {renderPersonaSelection()}
                 {renderLanguageSelection()}
+                {renderUserLabels()}
                 {renderVideoTypeSelection()}
-                {templatesData?.length > 0 && renderTemplateSelection()}
+                {/* Content selection moved to a new UI section */}
                 {renderScriptInput()}
                 {renderContactForm()}
 

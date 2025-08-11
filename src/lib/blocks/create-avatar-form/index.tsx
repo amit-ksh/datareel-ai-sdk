@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import type React from "react";
+import { useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import Cropper from "react-easy-crop";
 import { VideoRecorder } from "../../components/ui/video-recorder";
@@ -323,10 +324,15 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
         </Button>
         <Button
           type="submit"
-          disabled={!videoURL || render}
+          disabled={!videoURL || render || !datareel?.email}
           className="min-w-[120px]"
+          title={!datareel?.email ? "Set your email to enable" : undefined}
         >
-          {render ? "Creating..." : "Create Avatar"}
+          {render
+            ? "Creating..."
+            : !datareel?.email
+            ? "Create Avatar (locked)"
+            : "Create Avatar"}
         </Button>
       </div>
     </form>

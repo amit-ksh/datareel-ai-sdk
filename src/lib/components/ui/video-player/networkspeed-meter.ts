@@ -70,7 +70,6 @@ export class NetworkSpeedMeter {
         }
       } catch (error) {
         console.warn(`Download test failed for ${test.size} bytes:`, error)
-        continue
       }
     }
 

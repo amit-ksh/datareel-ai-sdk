@@ -9,7 +9,7 @@ import {
 import { useGetDeliveryVideoByQualityStatus, useGetVideoByQualityDelivery } from '../../../api/video-player'
 import { NetworkSpeedMeter } from './networkspeed-meter'
 import { createVideoComponentsFromQualityResponse } from './utils/formater'
-import { RenderSetting } from '../../../types';
+import type { RenderSetting } from '../../../types';
 
 // Helper function to clean S3 URLs by removing query parameters
 const cleanUrl = (url: string) => {
@@ -1097,10 +1097,10 @@ export function useVideoPlayer(
 
       switchVideo(index)
 
-      actualVideoRef.current = Boolean(index & 1)
+      actualVideoRef.current = index & 1
         ? video1Ref.current
         : hiddenVideoRef.current
-      actualAvatarVideoRef.current = Boolean(index & 1)
+      actualAvatarVideoRef.current = index & 1
         ? avatarVideo1Ref.current
         : avatarVideoRef.current
 

@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from "react";
+import type React from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { cx } from "class-variance-authority";
@@ -217,7 +218,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
         if ((data as any).message === "PROCESSING") {
           const updatedProgress = [
             ...baseData?.progress?.map((progress: any) => {
-              let currentProgress = (data as any).current_progress.find(
+              const currentProgress = (data as any).current_progress.find(
                 (d: any) => d.index === progress.index
               );
               if (!currentProgress) return progress;

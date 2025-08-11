@@ -45,8 +45,8 @@ export const trimVideoAudio = async ({
   const formData = new FormData()
 
   formData.append('file', videoFile)
-  formData.set('trim_start', trim.from)
-  formData.set('trim_end', trim.to)
+  formData.set('trim_start', String(trim.from))
+  formData.set('trim_end', String(trim.to))
   formData.set('video', media.video.toString())
   formData.set('audio', media.audio.toString())
   if (scale) {

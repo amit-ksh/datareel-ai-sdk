@@ -7,7 +7,7 @@ import { VideoRecorder } from "../../components/ui/video-recorder";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Tabs } from "../../components/ui/tabs";
-import { cropVideo } from "../../api/cropper";
+import { cropVideo, separateVideoAndAudio } from "../../api/cropper";
 import { useDatareel } from "../../context";
 
 interface CreateAvatarFormProps {
@@ -93,8 +93,21 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
         return;
       }
 
+      const file = new File([croppedVideoBlob], "cropped-video.mp4", {
+        type: "video/mp4",
+      });
+      const { video: videoWithoutAudio, audio: audioWithoutVideo } =
+        await separateVideoAndAudio({
+          videoFile: file,
+          crop: croppedAreaPixels,
+          scale: {
+            width: selectedAspectRatio?.video_dimensions?.width || 1038,
+            height: selectedAspectRatio?.video_dimensions?.height || 778,
+          },
+        });
+
       const formData = new FormData(e.target as HTMLFormElement);
-      formData.set("video", croppedVideoBlob, "cropped-video.mp4");
+      formData.set("video", videoWithoutAudio.data, "cropped-video.mp4");
       formData.set(
         "avatar_name",
         (formData.get("avatar_name") as string)?.trim() || ""
@@ -116,9 +129,14 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
         settingsId: formObject.settings_id,
         referenceId: formObject.reference_id,
         avatarName: formObject.avatar_name,
-        videoFile: new File([croppedVideoBlob], "cropped-video.mp4", {
+        videoFile: new File([videoWithoutAudio.data], "cropped-video.mp4", {
           type: "video/mp4",
         }),
+        audioFiles: [
+          new File([audioWithoutVideo.data], "audio.mp4", {
+            type: "audio/mp4",
+          }),
+        ],
       });
 
       queryClient.invalidateQueries({
@@ -233,7 +251,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
                       }}
                       onReset={handleReset}
                       record={{
-                        audio: false,
+                        audio: true,
                         video: true,
                       }}
                     />

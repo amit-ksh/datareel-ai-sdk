@@ -1,3 +1,5 @@
+import type { AxiosResponse } from "axios";
+
 export interface CropParameters {
   x: number;
   y: number;
@@ -35,4 +37,27 @@ export interface TrimVideoAudioRequest {
 
 export interface VideoEditResponse {
   data: Blob;
+}
+
+export interface ExtractVideoRequest {
+  videoFile: File;
+  crop: CropParameters;
+  scale: ScaleParameters;
+}
+
+export interface ExtractAudioRequest {
+  videoFile: File;
+  crop: CropParameters;
+  scale: ScaleParameters;
+}
+
+export interface SeparateVideoAndAudioRequest {
+  videoFile: File;
+  crop: CropParameters;
+  scale: ScaleParameters;
+}
+
+export interface SeparateVideoAndAudioResponse {
+  video: AxiosResponse<Blob>;
+  audio: AxiosResponse<Blob>;
 }

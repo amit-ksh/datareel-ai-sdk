@@ -12,8 +12,8 @@ import { ItemSelector } from "../../components";
 import { CreateAvatarForm } from "../create-avatar-form";
 
 interface VideoCreateFormProps {
-  onVideoGenerate: (videoId: string) => Promise<void>;
-  onError: (error: any) => Promise<void>;
+  onVideoGenerate: (videoId: string) => Promise<void> | void;
+  onError: (error: any) => Promise<void> | void;
   onCancel: () => void;
 }
 

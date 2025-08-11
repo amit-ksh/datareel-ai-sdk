@@ -1,5 +1,5 @@
 import type { DataReelConstructor, BaseGetAssetsRequest, PaginatedResponse, Avatar, Voice, Template, ContentVideo, Persona, Pipeline, CreateVideoRequest, GetVideoByIdRequest, CreateAvatarRequest } from "../types";
-import { getAvatars, getVoices, getTemplates, getContentVideos, getPersonas, createAvatar } from "../api/assets";
+import { getAvatars, getVoices, getTemplates, getContentVideos, getPersonas, createAvatar, createVoice, updatePersona, createPersona, getOrganisationUserLabels } from "../api/assets";
 import { getPipelines, createVideo, getVideoById,  getOrganisationLanguages, fetchPipelineFormData } from "../api/pipeline";
 import { createOrganisation, loginUser } from "../api/auth";
 
@@ -19,13 +19,14 @@ export const passwordSchema = Yup.string()
 
 
 export class DataReel {
-  organisationId?: string;
-  private apiKey?: string;
-  private secret: string;
+  organisationId?: string = '64b32c00-f511-4de3-a831-2b7ebb6cb670';
+  private apiKey?: string = '48c57e7b-95c8-4be1-8961-5abbb864cbaf';
+  private secret: string = '';
 
   // User information
-  email?: string;
-  name?: string;
+  email?: string = 'amit@mail.com';
+  name?: string = 'Test';
+  referenceId?: string = 'Test'
 
   constructor({secret, organisationId}: DataReelConstructor) {
     this.secret = secret
@@ -182,15 +183,33 @@ export class DataReel {
     settingsId,
     referenceId,
     avatarName,
-    videoFile
+    videoFile,
+    audioFiles
   }: {
     settingsId: string;
     referenceId: string;
     avatarName: string;
     videoFile: File;
+    audioFiles: File[]
   }) {
     this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
-    
+
+    avatarName = this.name
+    referenceId = this.referenceId
+
+    const personaPayload = {
+      name: avatarName,
+      email: this.email || '',
+      reference_id: referenceId,
+      organisation_id: this.organisationId || '',
+    }
+    const personaFormData = new FormData()
+    for (const key in personaPayload) {
+      personaFormData.set(key, String(personaPayload[key as keyof typeof personaPayload]))
+    }
+    const newPersona = await createPersona(personaFormData, this.apiKey!)
+    const newPersonaId = newPersona?.data.data
+
     const request: CreateAvatarRequest = {
       apiKey: this.apiKey!,
       data: {
@@ -201,7 +220,39 @@ export class DataReel {
       }
     };
 
-    return await createAvatar(request);
+    const voicePayload = {
+        voice_label: avatarName.trim(),
+        reference_id: referenceId,
+        language: 'end',
+        model: 'eleven_labs',
+        stability: 0.5,
+        similarity_boost: 0.75,
+        style: 0,
+      } 
+
+    const voiceFormData = new FormData();
+    for (const key in voicePayload) {
+      voiceFormData.set(key, String(voicePayload[key as keyof typeof voicePayload]))
+    }
+    for (const audioFile of audioFiles) {
+      voiceFormData.append('audio_files', audioFile);
+    }
+
+     const [avatar, voice] = await Promise.all([await createVoice(voiceFormData, this.apiKey!),await createAvatar(request)]);
+
+    const updatePersonaPayload = {
+        persona_id: newPersonaId,
+        default_avatar: avatar?.data.video_id,
+        // @ts-ignore 
+        default_voice: voice?.data.voice_id,
+        // @ts-ignore 
+        onboarded: Boolean(voice?.data.voice_id && avatar?.data.video_id),
+        consent: true,
+      }
+
+    await updatePersona(updatePersonaPayload, this.apiKey!)
+
+    return true
   }
 
   async getLanguages() {
@@ -210,6 +261,15 @@ export class DataReel {
     return await getOrganisationLanguages({
       apiKey: this.apiKey!,
       filters: undefined
+    });
+  }
+
+  async getUserLabels() {
+    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    
+    return await getOrganisationUserLabels({
+      apiKey: this.apiKey!,
+      assetType: 'persona'
     });
   }
 

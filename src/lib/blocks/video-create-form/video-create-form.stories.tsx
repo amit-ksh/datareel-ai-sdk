@@ -7,11 +7,7 @@ interface VideoCreateFormProps {
   secret?: string;
   organizationId?: string;
   brandColor?: string;
-  onVideoGenerate: (data: {
-    avatar: Avatar | null;
-    language: string | null;
-    videoType: Pipeline | null;
-  }) => Promise<void>;
+  onVideoGenerate: (data: any) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -28,7 +24,11 @@ const VideoCreateFormWrapper = ({
       organisationId={organizationId}
       brandColor={brandColor}
     >
-      <VideoCreateForm onVideoGenerate={onVideoGenerate} onCancel={onCancel} />
+      <VideoCreateForm
+        onVideoGenerate={onVideoGenerate}
+        onError={() => {}}
+        onCancel={onCancel}
+      />
     </DatareelProvider>
   );
 };

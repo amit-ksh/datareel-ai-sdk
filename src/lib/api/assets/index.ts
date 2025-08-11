@@ -90,7 +90,9 @@ export const createAvatar = async (
   request: CreateAvatarRequest
 ): Promise<{ video_id: string }> => {
   const params = new URLSearchParams();
-//  params.append("persona_id", request.data.persona_id);
+  if (request.data.persona_id) {
+    params.append("persona_id", request.data.persona_id);
+  }
  
   const formData = new FormData();
   formData.append("video", request.data.video);
@@ -100,7 +102,7 @@ export const createAvatar = async (
   if (request.data.settings_id === "default") request.data.settings_id = "";
   formData.append("settings_id", request.data.settings_id);
 
-  return VideoAxios.post(
+  const response = await VideoAxios.post(
     `/api/v1/video/upload?${params.toString()}`,
     formData,
     {
@@ -110,4 +112,77 @@ export const createAvatar = async (
       },
     }
   );
+
+  return response.data;
 };
+
+
+export const createVoice = async (request: FormData, apiKey: string) => {
+  return VideoAxios.post(`/api/v1/voice/upload`, request, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      api_key: apiKey,
+    },
+  })
+}
+
+
+export const createPersona = async (request: FormData, apiKey: string) => {
+  return VideoAxios.post(`/api/v1/persona/create`, request, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      api_key: apiKey,
+    },
+  })
+}
+
+
+export const updatePersona = async (request: {
+  persona_id: string;
+  default_avatar?: string;
+  default_voice?: string;
+  onboarded?: boolean;
+  consent?: boolean;
+}, apiKey: string) => {
+  return VideoAxios.put(
+    `/api/v1/persona/update?persona_id=${request.persona_id}`,
+    request,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        api_key: apiKey,
+      },
+    },
+  )
+}
+
+
+const USER_LABEL_ASSET_API_MAP = {
+  persona: {
+    endpoint: '/api/v1/persona/user_labels',
+  },
+  content: {
+    endpoint: '/api/v1/cluster/user_labels',
+  },
+  video_content: {
+    endpoint: '/api/v1/video/user_labels',
+  },
+} as const;
+
+type AssetType = keyof typeof USER_LABEL_ASSET_API_MAP;
+
+export const getOrganisationUserLabels = async ({ 
+  apiKey, 
+  assetType 
+}: {
+  apiKey: string;
+  assetType: AssetType;
+}): Promise<{
+  data: string[];
+}> => {
+  const response = await VideoAxios.get(USER_LABEL_ASSET_API_MAP[assetType].endpoint, {
+    headers: { api_key: apiKey },
+  });
+  
+  return response.data;
+}

@@ -20,6 +20,7 @@ export interface CreateAvatarRequest {
     settings_id: string;
     reference_id: string;
     avatar_name: string;
+    persona_id?: string;
     video: File;
   };
 }

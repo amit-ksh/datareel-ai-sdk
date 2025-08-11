@@ -41,11 +41,7 @@ function App() {
   return (
     <DatareelProvider
       organisationId="your-org-id"
-      brandColor="#3b82f6"
-      #hex
-      color
-      code
-      only
+      brandColor="#3b82f6" # hex color code only
       secret="your-secret-key"
     >
       <YourAppComponents />
@@ -341,14 +337,6 @@ The library is built with TypeScript and provides full type definitions. Import 
 
 ```tsx
 import type { Avatar, Pipeline, Voice } from "datareel-ai-ui";
-```
-
-## CSS Import
-
-Don't forget to import the CSS file in your application:
-
-```tsx
-import "datareel-ai-ui/styles.css";
 ```
 
 ## Browser Support

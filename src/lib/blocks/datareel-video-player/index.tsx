@@ -17,6 +17,8 @@ import {
   MessageCircle,
   Code,
   ArrowLeftIcon,
+  LinkIcon,
+  LockIcon,
 } from "lucide-react";
 import { useDatareel } from "../../context/datareel-context";
 import { VideoPlayer } from "../../components/ui/video-player";
@@ -27,6 +29,7 @@ interface DatareelVideoPlayerProps {
   videoId: string;
   apiKey: string;
   organisationId: string;
+  showShare: boolean;
   onBack?: () => void;
 }
 
@@ -70,6 +73,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
   videoId,
   apiKey,
   organisationId,
+  showShare,
   onBack,
 }) => {
   const { datareel } = useDatareel();
@@ -393,10 +397,20 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
   );
 
   const SharePanel = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center space-x-3 mb-6">
+    <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 relative">
+      {!showShare && (
+        <div className="absolute inset-0 backdrop-blur-sm bg-white/50 z-10 flex items-center justify-center">
+          <div className="text-center p-6">
+            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+              <LockIcon className="w-6 h-6 text-black" />
+            </div>
+            <p className="text-gray-600 font-medium">Login to unlock</p>
+          </div>
+        </div>
+      )}
+      <div className="flex bg-gray-50 items-center space-x-3  p-4">
         <div className="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center">
-          <Share2 className="w-5 h-5 text-brand" />
+          <Share2 className="w-5 h-5 text-gray-900" />
         </div>
         <div>
           <h3 className="text-lg font-semibold text-gray-900">
@@ -409,9 +423,9 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
       </div>
 
       {/* Share Icons */}
-      <div className="flex space-x-3 mb-6">
+      <div className="flex justify-center space-x-3 p-4">
         <button
-          className="w-12 h-12 bg-blue-500 hover:bg-blue-600 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
+          className="w-12 h-12 cursor-pointer bg-blue-500 hover:bg-blue-600 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
           onClick={() =>
             window.open(
               `mailto:?subject=Check out this video&body=${shareUrl}`,
@@ -422,7 +436,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
           <Mail className="w-5 h-5 text-white" />
         </button>
         <button
-          className="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
+          className="w-12 h-12 cursor-pointer bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
           onClick={() =>
             window.open(
               `https://wa.me/?text=${encodeURIComponent(shareUrl)}`,
@@ -435,7 +449,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
       </div>
 
       {/* Share URL */}
-      <div className="space-y-4">
+      <div className="space-y-4 p-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Share Link
@@ -447,20 +461,6 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
               className="flex-1 bg-gray-50 border-gray-200"
               label=""
             />
-            <Button
-              variant="outline"
-              onClick={() => copyToClipboard(shareUrl, "url")}
-              leftIcon={
-                copied.url ? (
-                  <CheckCircle className="w-4 h-4" />
-                ) : (
-                  <Copy className="w-4 h-4" />
-                )
-              }
-              className="px-4 h-12 mt-2"
-            >
-              {copied.url ? "Copied!" : "Copy"}
-            </Button>
           </div>
         </div>
 
@@ -468,123 +468,45 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
         <div className="grid grid-cols-2 gap-3">
           <Button
             variant="outline"
-            className="flex-1"
-            leftIcon={<Code className="w-4 h-4" />}
-            onClick={() => setShowEmbedCode(!showEmbedCode)}
+            onClick={() => copyToClipboard(shareUrl, "url")}
+            leftIcon={
+              copied.url ? (
+                <CheckCircle className="w-4 h-4" />
+              ) : (
+                <Copy className="w-4 h-4" />
+              )
+            }
           >
-            Embed Code
+            {copied.url ? "Copied!" : "Copy Link"}
           </Button>
           <Button
             variant="outline"
-            leftIcon={<ExternalLink className="w-4 h-4" />}
-            onClick={() => window.open(shareUrl, "_blank")}
+            className="flex-1"
+            onClick={() => copyToClipboard(embedCode, "embed")}
+            leftIcon={
+              copied.embed ? (
+                <CheckCircle className="w-4 h-4" />
+              ) : (
+                <Copy className="w-4 h-4" />
+              )
+            }
           >
-            Preview
+            {copied.embed ? "Copied!" : "Copy Embed Code"}
           </Button>
         </div>
 
         {/* Embed Code Section */}
-        {showEmbedCode && (
-          <div className="pt-4 border-t border-gray-200 space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-gray-700">
-                Embed Code
-              </label>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => copyToClipboard(embedCode, "embed")}
-                leftIcon={
-                  copied.embed ? (
-                    <CheckCircle className="w-4 h-4" />
-                  ) : (
-                    <Copy className="w-4 h-4" />
-                  )
-                }
-              >
-                {copied.embed ? "Copied!" : "Copy"}
-              </Button>
-            </div>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <code className="text-xs text-gray-700 font-mono whitespace-pre-wrap break-all">
-                {embedCode}
-              </code>
-            </div>
+        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
+          <div className="flex items-center gap-2">
+            <LinkIcon className="w-4 h-4 text-gray-500" />
+            <label className="block text-sm font-medium text-gray-700">
+              Embed Code Preview
+            </label>
           </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const VideoDetails = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center space-x-3 mb-6">
-        <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-          <Settings className="w-5 h-5 text-gray-600" />
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900">Video Details</h3>
-          <p className="text-sm text-gray-500">
-            Technical information and metadata
-          </p>
-        </div>
-      </div>
-
-      <div className="space-y-5">
-        <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-          <Hash className="w-5 h-5 text-gray-400 mt-0.5" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 mb-1">Video ID</p>
-            <p className="text-sm text-gray-600 font-mono break-all">
-              {videoId}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-          <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm font-medium text-gray-900 mb-1">Created</p>
-            <p className="text-sm text-gray-600">
-              {effectiveData?.created_at
-                ? new Date(effectiveData.created_at).toLocaleDateString(
-                    "en-US",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }
-                  )
-                : "Unknown"}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-          <Clock className="w-5 h-5 text-gray-400 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm font-medium text-gray-900 mb-1">
-              Processing Time
-            </p>
-            <p className="text-sm text-gray-600">{timeElapsed}</p>
-          </div>
-        </div>
-
-        <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-          <Settings className="w-5 h-5 text-gray-400 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm font-medium text-gray-900 mb-1">Format</p>
-            <div className="flex items-center space-x-2">
-              <p className="text-sm text-gray-600">
-                {renderSettings?.canvas_dimensions?.width}×
-                {renderSettings?.canvas_dimensions?.height}
-              </p>
-              <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-md">
-                {isPortrait ? "Portrait" : "Landscape"}
-              </span>
-            </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <pre className="text-xs text-gray-700 font-mono whitespace-pre-wrap break-all">
+              {embedCode}
+            </pre>
           </div>
         </div>
       </div>
@@ -725,7 +647,6 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
             )}
           >
             <SharePanel />
-            <VideoDetails />
           </div>
         </div>
       </div>

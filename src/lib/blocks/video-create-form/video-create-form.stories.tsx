@@ -19,11 +19,7 @@ const VideoCreateFormWrapper = ({
   onCancel,
 }: VideoCreateFormProps) => {
   return (
-    <DatareelProvider
-      secret={secret}
-      organisationId={organizationId}
-      brandColor={brandColor}
-    >
+    <DatareelProvider secret={secret} brandColor={brandColor}>
       <VideoCreateForm
         onVideoGenerate={onVideoGenerate}
         onError={() => {}}

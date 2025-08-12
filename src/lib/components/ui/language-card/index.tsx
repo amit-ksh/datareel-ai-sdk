@@ -5,7 +5,7 @@ import { by639_1 } from "iso-language-codes";
 export interface LanguageCardProps {
   flag?: string;
   name: string;
-  description: string;
+  description?: string;
   selected: boolean;
   onClick?: () => void;
   children?: React.ReactNode;

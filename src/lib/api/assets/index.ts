@@ -78,6 +78,7 @@ export const getPersonas = async (
 ): Promise<PaginatedResponse<Persona>> => {
   const params = prepareAssetFilters(data);
   params.set('page_num', data.page?.toString() || "1");
+  params.set('onboarded', String(true));
 
   const resp = await VideoAxios.get(`/api/v1/persona/list`, {
     headers: { api_key: data.apiKey },

@@ -64,11 +64,11 @@ export const VideoCreateForm = ({
 
   // Data fetching
   const { data: personasData, isLoading: personasLoading } = useQuery({
-    queryKey: ["personas", personasPage, selectedUserLabel],
+    queryKey: ["personas", personasPage],
     queryFn: () =>
       datareel.getPersonas({
         page: personasPage,
-        filters: { user_label: selectedUserLabel },
+        filters: {},
       }),
     enabled: !!datareel,
   });
@@ -252,7 +252,8 @@ export const VideoCreateForm = ({
               <ImageCard
                 key={persona._id}
                 name={persona.name}
-                description={persona.email}
+                image={persona.persona_thumbnail}
+                // description={persona.reference_id}
                 selected={selectedPersona?._id === persona._id}
                 onClick={() => {
                   setSelectedPersona(persona);
@@ -272,19 +273,17 @@ export const VideoCreateForm = ({
                       : null
                   );
                 }}
-              >
-                <div className="w-full aspect-square bg-brand-light rounded-lg flex items-center justify-center">
-                  <span className="text-brand text-2xl">
-                    {persona.name?.charAt(0)?.toUpperCase() || "P"}
-                  </span>
-                </div>
-              </ImageCard>
+              ></ImageCard>
             ))}
             <ImageCard
               name="Create Persona"
               description="Create your own"
               selected={false}
-              onClick={() => setShowCustomAvatarForm(true)}
+              onClick={() => {
+                if (datareel.email) {
+                  setShowCustomAvatarForm(true);
+                }
+              }}
             >
               <div className="w-full aspect-square bg-brand-light rounded-lg flex items-center justify-center">
                 <Plus className="w-12 h-12 text-brand" />
@@ -319,7 +318,7 @@ export const VideoCreateForm = ({
             <LanguageCard
               key={language}
               name={language}
-              description={language || "Native language"}
+              // description={language || "Native language"}
               flag={language.toUpperCase()}
               selected={selectedLanguage === language}
               onClick={() => {
@@ -331,7 +330,7 @@ export const VideoCreateForm = ({
         </div>
       )}
 
-      <div className="text-center flex items-center justify-center">
+      {/* <div className="text-center flex items-center justify-center">
         <button className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors text-xs sm:text-sm text-gray-600 disabled:opacity-50 cursor-pointer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -355,12 +354,12 @@ export const VideoCreateForm = ({
           </svg>
           <span>Need a custom language?</span>
         </button>
-      </div>
+      </div> */}
     </ItemSelector>
   );
 
   const renderUserLabels = () => (
-    <ItemSelector step={3} title="User Labels">
+    <ItemSelector step={3} title="Select Video Type">
       <div className="flex flex-wrap gap-2">
         {userLabelsData?.data?.map((label) => (
           <Button
@@ -387,7 +386,7 @@ export const VideoCreateForm = ({
   );
 
   const renderVideoTypeSelection = () => (
-    <ItemSelector step={4} title="Select Video Type">
+    <ItemSelector step={4} title="Select Template">
       {pipelinesLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {[...Array(3)].map((_, i) => (
@@ -413,7 +412,7 @@ export const VideoCreateForm = ({
                   resetPaginationAndSelections("videoType");
                 }}
               >
-                <div className="w-full aspect-video bg-blue-100 rounded-lg flex items-center justify-center">
+                <div className="w-full aspect-video bg-brand-light rounded-lg flex items-center justify-center">
                   <span className="text-blue-600 text-2xl">📹</span>
                 </div>
               </ImageCard>
@@ -428,7 +427,7 @@ export const VideoCreateForm = ({
         </>
       )}
 
-      <div className="text-center flex items-center justify-center">
+      {/* <div className="text-center flex items-center justify-center">
         <button className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors text-xs sm:text-sm text-gray-600 disabled:opacity-50 cursor-pointer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -454,7 +453,7 @@ export const VideoCreateForm = ({
           </svg>
           <span>Need another video type?</span>
         </button>
-      </div>
+      </div> */}
     </ItemSelector>
   );
 

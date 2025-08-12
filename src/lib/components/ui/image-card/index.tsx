@@ -34,7 +34,7 @@ export const ImageCard = React.forwardRef<HTMLDivElement, ImageCardProps>(
               {children}
             </div>
           ) : (
-            <div className="w-full aspect-square bg-gray-200 rounded-lg mx-auto mb-3 overflow-hidden">
+            <div className="w-full aspect-square rounded-lg mx-auto mb-3 overflow-hidden">
               {image ? (
                 <img
                   src={image}
@@ -42,9 +42,11 @@ export const ImageCard = React.forwardRef<HTMLDivElement, ImageCardProps>(
                   className="w-full h-full object-cover"
                 />
               ) : (
-                children || (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500"></div>
-                )
+                <div className="w-full aspect-square bg-brand-light rounded-lg flex items-center justify-center">
+                  <span className="text-brand text-2xl">
+                    {name?.charAt(0)?.toUpperCase() || "P"}
+                  </span>
+                </div>
               )}
             </div>
           )}

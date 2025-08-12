@@ -35,6 +35,7 @@ export interface Persona {
   default_voice: string;
   has_avatars: boolean;
   has_voices: boolean;
+  persona_thumbnail: string;
 }
 
 export interface Voice {

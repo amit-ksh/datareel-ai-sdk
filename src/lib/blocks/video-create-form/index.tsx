@@ -19,6 +19,7 @@ import type {
 } from "../../types";
 import { ItemSelector } from "../../components";
 import { CreateAvatarForm } from "../create-avatar-form";
+import { cx } from "class-variance-authority";
 
 interface VideoCreateFormProps {
   onVideoGenerate: (videoId: string) => Promise<void> | void;
@@ -275,20 +276,26 @@ export const VideoCreateForm = ({
                 }}
               ></ImageCard>
             ))}
-            <ImageCard
-              name="Create Persona"
-              description="Create your own"
-              selected={false}
-              onClick={() => {
-                if (datareel.email) {
-                  setShowCustomAvatarForm(true);
-                }
-              }}
+            <div
+              className={cx("relative overflow-hidden", {
+                "pointer-events-none grayscale": !datareel.email,
+              })}
             >
-              <div className="w-full aspect-square bg-brand-light rounded-lg flex items-center justify-center">
-                <Plus className="w-12 h-12 text-brand" />
-              </div>
-            </ImageCard>
+              <ImageCard
+                name="Create Persona"
+                description="Create your own"
+                selected={false}
+                onClick={() => {
+                  if (datareel.email) {
+                    setShowCustomAvatarForm(true);
+                  }
+                }}
+              >
+                <div className="w-full aspect-square bg-brand-light rounded-lg flex items-center justify-center">
+                  <Plus className="w-12 h-12 text-brand" />
+                </div>
+              </ImageCard>
+            </div>
           </div>
           <PaginationControls
             currentPage={personasPage}

@@ -6,20 +6,15 @@ import { cx } from "class-variance-authority";
 import {
   Share2,
   Copy,
-  ExternalLink,
   Clock,
   CheckCircle,
-  Circle,
   Loader2,
-  Calendar,
-  Hash,
-  Settings,
   Mail,
   MessageCircle,
-  Code,
   ArrowLeftIcon,
   LinkIcon,
   LockIcon,
+  CircleXIcon,
 } from "lucide-react";
 import { useDatareel } from "../../context/datareel-context";
 import { VideoPlayer } from "../../components/ui/video-player";
@@ -298,100 +293,171 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
   };
 
   const LoadingState = () => (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-2xl w-full">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-brand/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <Loader2 className="w-8 h-8 text-brand animate-spin" />
+    <div className="fixed inset-0 bg-white/95 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="max-w-xs sm:max-w-sm md:max-w-md w-full">
+        <div className="text-center mb-4 sm:mb-6 md:mb-8">
+          {/* Animated Logo/Icon */}
+          <div className="relative mb-3 sm:mb-4 md:mb-6">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto relative">
+              <div className="absolute inset-0 border-2 sm:border-3 md:border-4 border-brand-light rounded-full animate-spin"></div>
+              <div
+                className="absolute inset-1 sm:inset-2 border-2 sm:border-3 md:border-4 border-brand border-t-transparent rounded-full animate-spin"
+                style={{
+                  animationDirection: "reverse",
+                  animationDuration: "1.5s",
+                }}
+              ></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <svg
+                  className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-brand animate-pulse"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Creating Your Video
-          </h1>
-          <p className="text-gray-600">
-            AI is working on your personalized medical video. This usually takes
-            a few minutes.
-          </p>
+
+          {/* Progress Overview */}
+          <div className="mb-3 sm:mb-4 md:mb-6">
+            <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 mb-1 sm:mb-2">
+              Creating Your Personalized Video
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 md:mb-4 leading-tight">
+              AI is working on your personalized medical video. This usually
+              takes a few minutes.
+            </p>
+
+            {/* Overall Progress Bar */}
+            <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2 mb-1 sm:mb-2">
+              <div
+                className="bg-gradient-to-r from-brand to-brand-light h-1.5 sm:h-2 rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${totalProgress}%` }}
+              />
+            </div>
+            <div className="text-xs text-gray-500">
+              {Math.round(totalProgress)}% complete
+            </div>
+          </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center text-sm mb-3">
-            <span className="text-gray-600 font-medium">Progress</span>
-            <span className="text-brand font-semibold">
-              {Math.round(totalProgress)}%
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <div
-              className="bg-gradient-to-r from-brand to-brand/80 h-2.5 rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${totalProgress}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Processing Steps */}
-        <div className="space-y-4 mb-8">
-          <h4 className="text-sm font-semibold text-gray-900 mb-4">
-            Processing Steps
-          </h4>
+        {/* Current Step Details */}
+        <div className="bg-white rounded-xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-100 mb-4">
           {progressList?.map((step: any, index: number) => {
             const isCompleted = step?.status === "COMPLETED" || step?.completed;
             const isActive = !isCompleted && index === completed;
 
+            if (!isActive && !isCompleted) return null;
+
             return (
               <div
                 key={index}
-                className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg"
+                className="flex items-start gap-2 sm:gap-3 md:gap-4"
               >
-                <div
-                  className={cx(
-                    "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0",
-                    isCompleted && "bg-green-100",
-                    isActive && "bg-brand/10",
-                    !isCompleted && !isActive && "bg-gray-200"
-                  )}
-                >
-                  {isCompleted ? (
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  ) : isActive ? (
-                    <Loader2 className="w-5 h-5 text-brand animate-spin" />
-                  ) : (
-                    <Circle className="w-5 h-5 text-gray-400" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p
+                <div className="flex-shrink-0">
+                  <div
                     className={cx(
-                      "text-sm font-medium truncate",
-                      isCompleted && "text-green-700",
-                      isActive && "text-brand",
-                      !isCompleted && !isActive && "text-gray-500"
+                      "w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center",
+                      isCompleted ? "bg-green-500" : "bg-brand"
                     )}
                   >
+                    {isCompleted ? (
+                      <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white" />
+                    ) : (
+                      <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white animate-spin" />
+                    )}
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-gray-900 mb-0.5 sm:mb-1 text-xs sm:text-sm md:text-base">
                     {step?.component_type
                       ?.replace(/_/g, " ")
                       .replace(/\b\w/g, (l: string) => l.toUpperCase()) ||
-                      `Step ${index + 1}`}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                      `Processing Step ${index + 1}`}
+                  </h3>
+                  <p className="text-xs text-gray-600 mb-2 sm:mb-3 leading-tight">
                     {isCompleted
-                      ? "Completed"
-                      : isActive
-                      ? "Processing..."
-                      : "Waiting"}
+                      ? "Successfully completed"
+                      : "Processing component..."}
                   </p>
+
+                  {/* Step Progress Bar for active step */}
+                  {isActive && (
+                    <div className="w-full bg-gray-200 rounded-full h-1 sm:h-1.5">
+                      <div
+                        className="bg-brand h-1 sm:h-1.5 rounded-full transition-all duration-100 ease-out animate-pulse"
+                        style={{ width: "75%" }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
 
-        {/* Time Elapsed */}
-        <div className="text-center text-sm text-gray-500 flex items-center justify-center space-x-2">
-          <Clock className="w-4 h-4" />
-          <span>
-            Time elapsed: <span className="font-medium">{timeElapsed}</span>
-          </span>
+        {/* Processing Steps Summary */}
+        {progressList?.length > 0 && (
+          <div className="bg-gray-50 rounded-xl p-2 sm:p-3 md:p-4 mb-4">
+            <h4 className="font-medium text-gray-900 mb-1.5 sm:mb-2 md:mb-3 text-xs sm:text-sm">
+              Processing Steps
+            </h4>
+            <div className="space-y-2">
+              {progressList?.map((step: any, index: number) => {
+                const isCompleted =
+                  step?.status === "COMPLETED" || step?.completed;
+                const isActive = !isCompleted && index === completed;
+
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center gap-1.5 sm:gap-2 text-xs"
+                  >
+                    <div
+                      className={cx(
+                        "w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 rounded-full flex-shrink-0",
+                        isCompleted
+                          ? "bg-green-500"
+                          : isActive
+                          ? "bg-brand animate-pulse"
+                          : "bg-gray-300"
+                      )}
+                    ></div>
+                    <span
+                      className={cx(
+                        "text-gray-700 truncate",
+                        isCompleted
+                          ? "text-green-700"
+                          : isActive
+                          ? "text-brand font-medium"
+                          : "text-gray-500"
+                      )}
+                    >
+                      {step?.component_type
+                        ?.replace(/_/g, " ")
+                        .replace(/\b\w/g, (l: string) => l.toUpperCase()) ||
+                        `Step ${index + 1}`}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Technical Details */}
+        <div className="text-center">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs text-gray-500 bg-white px-2 sm:px-3 py-1 rounded-full border">
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span className="text-xs">AI Processing Engine Active</span>
+          </div>
+          <div className="mt-2 sm:mt-3 text-xs text-gray-500 flex items-center justify-center space-x-2">
+            <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span>
+              Time elapsed: <span className="font-medium">{timeElapsed}</span>
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -519,7 +585,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-md w-full text-center">
           <div className="w-16 h-16 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <Circle className="w-8 h-8 text-red-500" />
+            <CircleXIcon className="w-8 h-8 text-red-500" />
           </div>
           <h1 className="text-xl font-bold text-gray-900 mb-2">
             Unable to Load Video

@@ -23,8 +23,6 @@ import { Input } from "../../components/ui/input";
 
 interface DatareelVideoPlayerProps {
   videoId: string;
-  apiKey: string;
-  organisationId: string;
   showShare: boolean;
   onBack?: () => void;
 }
@@ -67,12 +65,12 @@ const getUTCDateTimeFormatted = () => {
 
 export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
   videoId,
-  apiKey,
-  organisationId,
   showShare,
   onBack,
 }) => {
   const { datareel } = useDatareel();
+  const apiKey = datareel?.getApiKey();
+  const organisationId = datareel?.organisationId;
   const [pipelineData, setPipelineData] = useState(null);
   const shareUrl = `https://www.datareel.ai/delivery/${videoId}`;
   const embedCode = `<iframe 
@@ -82,7 +80,6 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
   frameborder="0" 
   allowfullscreen>
 </iframe>`;
-  const [showEmbedCode, setShowEmbedCode] = useState(false);
   const [copied, setCopied] = useState({ url: false, embed: false });
 
   const {

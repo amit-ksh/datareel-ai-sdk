@@ -116,6 +116,10 @@ export class DataReel {
     this.name = undefined;
   }
 
+  getApiKey() {
+    return this.apiKey;
+  }
+
 
   // GET ASSETS
   async getPersonas({page=1, filters}: {page?: number, filters?: BaseGetAssetsRequest['filters']}): Promise<PaginatedResponse<Persona>> {

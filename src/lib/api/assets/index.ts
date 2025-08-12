@@ -186,5 +186,6 @@ export const getOrganisationUserLabels = async ({
     headers: { api_key: apiKey },
   });
 
-  return {data: response.data.user_labels.filter(Boolean) || []};
+  // return {data: ["educational video", "report", "custom script"] || response.data.user_labels.filter(Boolean) || []};
+  return {data: ["educational video", "report", "custom script"] };
 }

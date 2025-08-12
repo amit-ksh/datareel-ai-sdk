@@ -90,7 +90,8 @@ export const VideoCreateForm = ({
           languages: selectedLanguage ? [selectedLanguage] : [],
         },
       }),
-    enabled: !!datareel,
+    // Only run when we have datareel instance AND a selected user label
+    enabled: !!datareel && !!selectedUserLabel,
   });
 
   const { data: userLabelsData } = useQuery({
@@ -392,77 +393,57 @@ export const VideoCreateForm = ({
     </ItemSelector>
   );
 
-  const renderVideoTypeSelection = () => (
-    <ItemSelector step={4} title="Select Template">
-      {pipelinesLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="bg-gray-200 aspect-video rounded-lg mb-3"></div>
-              <div className="h-4 bg-gray-200 rounded mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded"></div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <>
+  const renderVideoTypeSelection = () => {
+    if (!selectedUserLabel) return null; // Hide entirely until a user label is chosen
+    return (
+      <ItemSelector step={4} title="Select Template">
+        {pipelinesLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {pipelinesData?.data?.map((pipeline) => (
-              <ImageCard
-                key={pipeline.pipeline_id}
-                name={pipeline.pipeline_name}
-                selected={
-                  selectedVideoType?.pipeline_id === pipeline.pipeline_id
-                }
-                onClick={() => {
-                  setSelectedVideoType(pipeline);
-                  resetPaginationAndSelections("videoType");
-                }}
-              >
-                <div className="w-full aspect-video bg-brand-light rounded-lg flex items-center justify-center">
-                  <span className="text-blue-600 text-2xl">📹</span>
-                </div>
-              </ImageCard>
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 aspect-video rounded-lg mb-3"></div>
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded"></div>
+              </div>
             ))}
           </div>
-          <PaginationControls
-            currentPage={pipelinesPage}
-            totalPages={pipelinesData?.total_pages || 1}
-            onPageChange={setPipelinesPage}
-            isLoading={pipelinesLoading}
-          />
-        </>
-      )}
-
-      {/* <div className="text-center flex items-center justify-center">
-        <button className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors text-xs sm:text-sm text-gray-600 disabled:opacity-50 cursor-pointer">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            className="lucide lucide-film size-4"
-            aria-hidden="true"
-          >
-            <rect width="18" height="18" x="3" y="3" rx="2"></rect>
-            <path d="M7 3v18"></path>
-            <path d="M3 7.5h4"></path>
-            <path d="M3 12h18"></path>
-            <path d="M3 16.5h4"></path>
-            <path d="M17 3v18"></path>
-            <path d="M17 7.5h4"></path>
-            <path d="M17 16.5h4"></path>
-          </svg>
-          <span>Need another video type?</span>
-        </button>
-      </div> */}
-    </ItemSelector>
-  );
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {pipelinesData?.data?.map((pipeline) => (
+                <ImageCard
+                  key={pipeline.pipeline_id}
+                  name={pipeline.pipeline_name}
+                  selected={
+                    selectedVideoType?.pipeline_id === pipeline.pipeline_id
+                  }
+                  onClick={() => {
+                    setSelectedVideoType(pipeline);
+                    resetPaginationAndSelections("videoType");
+                  }}
+                >
+                  <div className="w-full aspect-video bg-brand-light rounded-lg flex items-center justify-center">
+                    <span className="text-blue-600 text-2xl">📹</span>
+                  </div>
+                </ImageCard>
+              ))}
+              {!pipelinesData?.data?.length && (
+                <div className="col-span-full text-center text-sm text-gray-500 p-6 border border-dashed rounded-lg">
+                  No templates available for this label & language.
+                </div>
+              )}
+            </div>
+            <PaginationControls
+              currentPage={pipelinesPage}
+              totalPages={pipelinesData?.total_pages || 1}
+              onPageChange={setPipelinesPage}
+              isLoading={pipelinesLoading}
+            />
+          </>
+        )}
+      </ItemSelector>
+    );
+  };
 
   const renderScriptInput = () => {
     if (!textComponents?.length) return null;

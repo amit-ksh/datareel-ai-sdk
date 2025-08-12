@@ -17,9 +17,19 @@ export const passwordSchema = Yup.string()
     'Password must contain at least one special character',
   )
 
+
+//   org id - 7cc30ffb-f5b1-4b80-8289-85095a824680
+// api_key - 7b2ab0e4-37cd-4e8e-b7be-d29efc510f17
+// persona label - 'default'
+// pipeline labels -
+// "educational video" - 3 videos
+// "report" - 3 videos
+// "custom script" - 1 video
+
 const DEFAULT_SETTINGS = {
-  organisationId: '64b32c00-f511-4de3-a831-2b7ebb6cb670',
-  apiKey: '48c57e7b-95c8-4be1-8961-5abbb864cbaf',
+  organisationId: '7cc30ffb-f5b1-4b80-8289-85095a824680',
+  apiKey: '7b2ab0e4-37cd-4e8e-b7be-d29efc510f17',
+  user_label: 'default'
 } as const
 
 
@@ -197,6 +207,7 @@ export class DataReel {
       email: this.email || '',
       reference_id: referenceId,
       organisation_id: this.organisationId || '',
+      user_label: this.email
     }
     const personaFormData = new FormData()
     for (const key in personaPayload) {

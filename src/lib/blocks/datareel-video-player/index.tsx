@@ -569,7 +569,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
 
   const FynanciallySharePanel = () => (
     <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 relative">
-      {!showShare && (
+      {Boolean(datareel.email) && (
         <div className="absolute inset-0 backdrop-blur-sm bg-white/50 z-10 flex items-center justify-center">
           <div className="text-center p-6">
             <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -585,7 +585,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
         </div>
         <div>
           <h3 className="text-lg font-semibold text-gray-900">
-            Share Your Video
+            Share to Financially
           </h3>
           <p className="text-sm text-gray-500">
             Share via link or embed on your website
@@ -725,7 +725,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
           {/* Video Section */}
           <div
             className={cx(
-              "w-full lg:sticky top-4",
+              "w-full lg:sticky top-4 h-fit",
               isVideoCreated && !isPortrait && "lg:basis-2/3",
               isPortrait &&
                 "mx-auto flex h-fit w-full flex-col items-center lg:basis-1/2"

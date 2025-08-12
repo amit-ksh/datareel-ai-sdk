@@ -163,7 +163,9 @@ export const VideoCreateForm = ({
           },
         },
       });
-      onVideoGenerate(response.data.message.results_id);
+
+      console.log(response);
+      onVideoGenerate(response?.message?.results_id);
     } catch (error) {
       console.error("Error generating video:", error);
       onError(error);

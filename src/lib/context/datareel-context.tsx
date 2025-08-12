@@ -9,12 +9,11 @@ import { DataReel } from "../sdk/datareel";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 interface DatareelContextProps {
-  organisationId?: string;
   brandColor: string;
+  secret: string;
 }
 
 interface DatareelContextValue {
-  organisation: string;
   datareel: DataReel;
 }
 
@@ -22,18 +21,16 @@ const DatareelContext = createContext<DatareelContextValue | null>(null);
 
 interface DatareelProviderProps extends DatareelContextProps {
   children: ReactNode;
-  secret: string;
 }
 
 const queryClient = new QueryClient();
 
 export function DatareelProvider({
   children,
-  organisationId,
   brandColor,
   secret,
 }: DatareelProviderProps) {
-  const [datareel] = useState(() => new DataReel({ secret, organisationId }));
+  const [datareel] = useState(() => new DataReel({ secret }));
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -53,7 +50,6 @@ export function DatareelProvider({
   }, [brandColor]);
 
   const contextValue: DatareelContextValue = {
-    organisation: organisationId,
     datareel,
   };
 

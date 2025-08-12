@@ -17,21 +17,24 @@ export const passwordSchema = Yup.string()
     'Password must contain at least one special character',
   )
 
+const DEFAULT_SETTINGS = {
+  organisationId: '64b32c00-f511-4de3-a831-2b7ebb6cb670',
+  apiKey: '48c57e7b-95c8-4be1-8961-5abbb864cbaf',
+} as const
+
 
 export class DataReel {
-  organisationId?: string = '64b32c00-f511-4de3-a831-2b7ebb6cb670';
-  private apiKey?: string = '48c57e7b-95c8-4be1-8961-5abbb864cbaf';
-  private secret: string = '';
+  organisationId?: string = DEFAULT_SETTINGS.organisationId;
+  private apiKey?: string = DEFAULT_SETTINGS.apiKey;
+  private secret: string = undefined;
 
   // User information
   email?: string;
   name?: string;
   referenceId?: string;
 
-  constructor({secret, organisationId}: DataReelConstructor) {
-    this.secret = secret
-    if (organisationId) this.organisationId = organisationId
-
+  constructor(data: DataReelConstructor) {
+    this.secret = data.secret;
   }
 
   private validateSecret(secret: string) {
@@ -84,13 +87,17 @@ export class DataReel {
     this.name = name;
   }
 
-  async login(apiKey: string, email: string, name: string) {
+  async login(apiKey: string, organisationId: string, email: string, name: string) {
     this.email = email;
-    this.organisationId = this.organisationId;
+    this.organisationId = organisationId;
     this.apiKey = apiKey;
     this.name = name;
   }
- 
+
+  useDemoAccount() {
+    this.organisationId = DEFAULT_SETTINGS.organisationId;
+    this.apiKey = DEFAULT_SETTINGS.apiKey;
+  }
 
   async logout() {
     this.organisationId = undefined;

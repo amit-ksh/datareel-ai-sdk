@@ -9,7 +9,7 @@ import { DataReel } from "../sdk/datareel";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 interface DatareelContextProps {
-  organisationId: string;
+  organisationId?: string;
   brandColor: string;
 }
 

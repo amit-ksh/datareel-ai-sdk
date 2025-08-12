@@ -30,7 +30,7 @@ export class DataReel {
 
   constructor({secret, organisationId}: DataReelConstructor) {
     this.secret = secret
-    this.organisationId = organisationId
+    if (organisationId) this.organisationId = organisationId
 
   }
 

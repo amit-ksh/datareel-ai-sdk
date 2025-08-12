@@ -24,13 +24,11 @@ import { cx } from "class-variance-authority";
 interface VideoCreateFormProps {
   onVideoGenerate: (videoId: string) => Promise<void> | void;
   onError: (error: any) => Promise<void> | void;
-  onCancel: () => void;
 }
 
 export const VideoCreateForm = ({
   onVideoGenerate,
   onError,
-  onCancel,
 }: VideoCreateFormProps) => {
   const { datareel } = useDatareel();
   const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null);
@@ -542,120 +540,78 @@ export const VideoCreateForm = ({
       {showCustomAvatarForm ? (
         renderCustomAvatarForm()
       ) : (
-        <>
-          {/* Sub-Header */}
-          <div className="">
-            <div className="px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between h-16">
-                <div className="flex items-center">
-                  <button
-                    className="mr-4 p-2 rounded-md text-gray-700 bg-white shadow-sm hover:shadow-md transition-shadow"
-                    onClick={onCancel}
-                  >
-                    <ArrowLeftIcon className="w-6 h-6" />
-                  </button>
-                  <div>
-                    <h1 className="text-xl font-semibold text-gray-900">
-                      Generated Video
-                    </h1>
-                    <p className="text-sm text-gray-500 font-medium">
-                      Create personalized medical video content with AI-powered
-                      avatars
-                    </p>
+        <div className="flex">
+          <div className="flex-1 space-y-6">
+            {renderPersonaSelection()}
+            {renderLanguageSelection()}
+            {renderUserLabels()}
+            {renderVideoTypeSelection()}
+            {/* Content selection moved to a new UI section */}
+            {renderScriptInput()}
+            {renderContactForm()}
+
+            <div className="mt-12 text-center">
+              <Button
+                size="lg"
+                className={`px-12 sm:min-w-[400px] rounded-xl lg:text-lg py-4 font-semibold transition-all ${
+                  !canProceed() && !isGenerating
+                    ? "!bg-gray-300 !hover:bg-gray-400 !text-gray-700 cursor-not-allowed"
+                    : "bg-brand hover:bg-brand-dark"
+                }`}
+                onClick={handleGenerateVideo}
+                disabled={!canProceed()}
+              >
+                {isGenerating ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Creating Video...</span>
                   </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="px-3 py-1 bg-brand-light text-brand text-sm font-medium rounded-full flex items-center">
-                    <span className="w-2 h-2 bg-brand rounded-full mr-2"></span>
-                    AI Generated
-                  </span>
-                </div>
-              </div>
+                ) : !canProceed() ? (
+                  <div className="flex items-center space-x-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-lock"
+                    >
+                      <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    <span>Complete All Steps</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-sparkles"
+                    >
+                      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                      <path d="M5 3v4" />
+                      <path d="M19 17v4" />
+                      <path d="M3 5h4" />
+                      <path d="M17 19h4" />
+                    </svg>
+                    <span>Create AI Video</span>
+                  </div>
+                )}
+              </Button>
             </div>
           </div>
-
-          <div className="px-4 sm:px-6 lg:px-8 py-8">
-            <div className="flex">
-              <div className="flex-1 space-y-6">
-                {renderPersonaSelection()}
-                {renderLanguageSelection()}
-                {renderUserLabels()}
-                {renderVideoTypeSelection()}
-                {/* Content selection moved to a new UI section */}
-                {renderScriptInput()}
-                {renderContactForm()}
-
-                <div className="mt-12 text-center">
-                  <Button
-                    size="lg"
-                    className={`px-12 sm:min-w-[400px] rounded-xl lg:text-lg py-4 font-semibold transition-all ${
-                      !canProceed() && !isGenerating
-                        ? "!bg-gray-300 !hover:bg-gray-400 !text-gray-700 cursor-not-allowed"
-                        : "bg-brand hover:bg-brand-dark"
-                    }`}
-                    onClick={handleGenerateVideo}
-                    disabled={!canProceed()}
-                  >
-                    {isGenerating ? (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Creating Video...</span>
-                      </div>
-                    ) : !canProceed() ? (
-                      <div className="flex items-center space-x-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-lock"
-                        >
-                          <rect
-                            width="18"
-                            height="11"
-                            x="3"
-                            y="11"
-                            rx="2"
-                            ry="2"
-                          />
-                          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                        </svg>
-                        <span>Complete All Steps</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center space-x-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-sparkles"
-                        >
-                          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-                          <path d="M5 3v4" />
-                          <path d="M19 17v4" />
-                          <path d="M3 5h4" />
-                          <path d="M17 19h4" />
-                        </svg>
-                        <span>Create AI Video</span>
-                      </div>
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
+        </div>
       )}
     </div>
   );

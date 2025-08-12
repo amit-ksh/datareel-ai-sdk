@@ -13,14 +13,18 @@ import { useVideoData } from "../../hooks/use-video-data";
 
 interface SharePanelProps {
   videoId: string;
+  className?: string;
 }
 
-export const SharePanel: React.FC<SharePanelProps> = ({ videoId }) => {
+export const SharePanel: React.FC<SharePanelProps> = ({
+  videoId,
+  className = "",
+}) => {
   const { shareData } = useVideoData(videoId, { realtime: false });
   const { shareUrl, embedCode, copied, copyToClipboard } = shareData;
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 relative">
+    <div className={`h-fit relative bg-white ${className}`}>
       <div className="flex bg-gray-50 items-center space-x-3  p-4">
         <div className="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center">
           <Share2 className="w-5 h-5 text-gray-900" />

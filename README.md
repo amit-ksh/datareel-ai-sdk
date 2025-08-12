@@ -41,8 +41,7 @@ import "@dr-team/datareel-ai-ui/styles.css";
 function App() {
   return (
     <DatareelProvider
-      organisationId="your-org-id"
-      brandColor="#3b82f6" # hex color code only
+      brandColor="#3b82f6" // hex color code only
       secret="your-secret-key"
     >
       <YourAppComponents />
@@ -173,16 +172,14 @@ Access the Datareel SDK directly using the `useDatareel` hook:
 import { useDatareel } from "@dr-team/datareel-ai-ui";
 
 function CustomComponent() {
-  const { organisation, datareel } = useDatareel();
+  const { datareel } = useDatareel();
 
-  const handleGenerateVideo = async () => {
+  const handleCreateVideo = async () => {
     try {
-      const result = await datareel.generateVideo({
-        avatar: selectedAvatar,
-        voice: selectedVoice,
-        // ... other options
-      });
-      console.log("Video generated:", result);
+      const result = await datareel.createVideo({
+        // ...payload matching createVideo request
+      } as any);
+      console.log("Video created:", result);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -190,8 +187,7 @@ function CustomComponent() {
 
   return (
     <div>
-      <h2>Organization: {organisation}</h2>
-      <button onClick={handleGenerateVideo}>Generate Video</button>
+      <button onClick={handleCreateVideo}>Create Video</button>
     </div>
   );
 }
@@ -219,7 +215,7 @@ The library uses CSS custom properties for theming. The `DatareelProvider` autom
 
 ## Complete Example
 
-Here's a complete example showing authentication, video creation, and playback:
+Here's a complete example showing authentication, video creation, playback and sharing:
 
 ```tsx
 import React, { useState } from "react";
@@ -262,11 +258,16 @@ function App() {
       )}
 
       {currentView === "player" && generatedVideoId && (
-        <DatareelVideoPlayer
-          videoId={generatedVideoId}
-          apiKey="your-api-key"
-          organisationId="your-org-id"
-        />
+        <>
+          <DatareelVideoPlayer
+            videoId={generatedVideoId}
+            apiKey="your-api-key"
+            organisationId="your-org-id"
+          />
+          <div style={{ marginTop: 24 }}>
+            <SharePanel videoId={generatedVideoId} />
+          </div>
+        </>
       )}
     </DatareelProvider>
   );
@@ -274,10 +275,6 @@ function App() {
 
 // AuthFlow component would be implemented as shown in the examples above
 ```
-
-## Development
-
-For library development and contributions:
 
 ## Development
 
@@ -371,10 +368,10 @@ import type { Avatar, Pipeline, Voice } from "@dr-team/datareel-ai-ui";
 
 ## CSS Import
 
-Don't forget to import the CSS file in your application:
+Don't forget to import the CSS file in your application (include it once, near your root):
 
 ```tsx
-import "datareel-ai-ui/styles.css";
+import "@dr-team/datareel-ai-ui/styles.css";
 ```
 
 ## Browser Support
@@ -392,4 +389,4 @@ This library supports all modern browsers that support ES2020+ features.
 
 ## License
 
-[MIT](LICENSE)
+Apache-2.0 © Datareel.ai. See [LICENSE](LICENSE) for full text.

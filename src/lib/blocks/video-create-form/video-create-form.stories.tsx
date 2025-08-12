@@ -20,11 +20,7 @@ const VideoCreateFormWrapper = ({
 }: VideoCreateFormProps) => {
   return (
     <DatareelProvider secret={secret} brandColor={brandColor}>
-      <VideoCreateForm
-        onVideoGenerate={onVideoGenerate}
-        onError={() => {}}
-        onCancel={onCancel}
-      />
+      <VideoCreateForm onVideoGenerate={onVideoGenerate} onError={() => {}} />
     </DatareelProvider>
   );
 };
@@ -51,10 +47,6 @@ const meta: Meta<typeof VideoCreateFormWrapper> = {
     onVideoGenerate: {
       action: "video-generated",
       description: "Callback when video is generated",
-    },
-    onCancel: {
-      action: "cancelled",
-      description: "Callback when user cancels the form",
     },
   },
 };

@@ -15,7 +15,7 @@ export const ItemSelector = React.forwardRef<HTMLDivElement, ItemSelectorProps>(
       <div
         ref={ref}
         className={clsx(
-          "w-full shadow-lg p-4 border border-gray-300 rounded-xl",
+          "w-full shadow-lg p-4 bg-white border border-gray-300 rounded-xl",
           className
         )}
       >

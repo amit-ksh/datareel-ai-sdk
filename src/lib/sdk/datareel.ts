@@ -124,7 +124,9 @@ export class DataReel {
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
       page,
-      filters
+      filters: {
+        user_label: DEFAULT_SETTINGS.user_label
+      }
     }
 
     return await getPersonas(request);

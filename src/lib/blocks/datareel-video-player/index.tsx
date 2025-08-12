@@ -465,16 +465,6 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
 
   const SharePanel = () => (
     <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 relative">
-      {!showShare && (
-        <div className="absolute inset-0 backdrop-blur-sm bg-white/50 z-10 flex items-center justify-center">
-          <div className="text-center p-6">
-            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
-              <LockIcon className="w-6 h-6 text-black" />
-            </div>
-            <p className="text-gray-600 font-medium">Login to unlock</p>
-          </div>
-        </div>
-      )}
       <div className="flex bg-gray-50 items-center space-x-3  p-4">
         <div className="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center">
           <Share2 className="w-5 h-5 text-gray-900" />
@@ -580,6 +570,91 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
     </div>
   );
 
+  const FynanciallySharePanel = () => (
+    <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 relative">
+      {!showShare && (
+        <div className="absolute inset-0 backdrop-blur-sm bg-white/50 z-10 flex items-center justify-center">
+          <div className="text-center p-6">
+            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+              <LockIcon className="w-6 h-6 text-black" />
+            </div>
+            <p className="text-gray-600 font-medium">Login to unlock</p>
+          </div>
+        </div>
+      )}
+      <div className="flex bg-gray-50 items-center space-x-3  p-4">
+        <div className="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center">
+          <Share2 className="w-5 h-5 text-gray-900" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Share Your Video
+          </h3>
+          <p className="text-sm text-gray-500">
+            Share via link or embed on your website
+          </p>
+        </div>
+      </div>
+
+      {/* Share Icons */}
+      <div className="flex justify-center space-x-3 p-4">
+        <button
+          className="w-12 h-12 cursor-pointer bg-blue-500 hover:bg-blue-600 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
+          onClick={() =>
+            window.open(
+              `mailto:?subject=Check out this video&body=${shareUrl}`,
+              "_blank"
+            )
+          }
+        >
+          <Mail className="w-5 h-5 text-white" />
+        </button>
+        <button
+          className="w-12 h-12 cursor-pointer bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
+          onClick={() =>
+            window.open(
+              `https://wa.me/?text=${encodeURIComponent(shareUrl)}`,
+              "_blank"
+            )
+          }
+        >
+          <MessageCircle className="w-5 h-5 text-white" />
+        </button>
+      </div>
+
+      {/* Share URL */}
+      <div className="space-y-4 p-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Share Link
+          </label>
+          <div className="flex space-x-2 items-center">
+            <Input
+              value={shareUrl}
+              readOnly
+              className="flex-1 bg-gray-50 border-gray-200"
+              label=""
+            />
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <Button
+          onClick={() => copyToClipboard(shareUrl, "url")}
+          leftIcon={
+            copied.url ? (
+              <CheckCircle className="w-4 h-4" />
+            ) : (
+              <Copy className="w-4 h-4" />
+            )
+          }
+        >
+          {copied.url ? "Copied!" : "Copy Link"}
+        </Button>
+      </div>
+    </div>
+  );
+
   if (isResultError) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -611,7 +686,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 max-w-7xl mx-auto">
+    <div className="min-h-screen max-w-7xl mx-auto">
       {/* Header Section */}
       <div className="">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -646,7 +721,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
       <div className="px-4 sm:px-6 lg:px-8 py-8">
         <div
           className={cx(
-            "flex flex-col gap-8",
+            "flex flex-col justify-center gap-8",
             isVideoCreated ? "lg:flex-row" : "lg:flex-col"
           )}
         >
@@ -654,19 +729,36 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
           <div
             className={cx(
               "w-full lg:sticky top-4",
-              isVideoCreated && !isPortrait && "lg:w-2/3",
+              isVideoCreated && !isPortrait && "lg:basis-2/3",
               isPortrait &&
-                "mx-auto flex h-[80vh] w-full flex-col items-center lg:w-1/2"
+                "mx-auto flex h-fit w-full flex-col items-center lg:basis-1/2"
             )}
+            style={{
+              aspectRatio: `${
+                renderSettings?.canvas_dimensions?.width || 1
+              } / ${renderSettings?.canvas_dimensions?.height || 1}`,
+            }}
           >
             {/* Video Player Container */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div
+              className=""
+              style={{
+                aspectRatio: `${
+                  renderSettings?.canvas_dimensions?.width || 1
+                } / ${renderSettings?.canvas_dimensions?.height || 1}`,
+              }}
+            >
               <div
                 className={cx(
                   "w-full",
-                  !isPortrait && "aspect-video",
-                  isPortrait && "h-[80vh] w-fit mx-auto"
+                  !isPortrait && "",
+                  isPortrait && "w-fit mx-auto"
                 )}
+                style={{
+                  aspectRatio: `${
+                    renderSettings?.canvas_dimensions?.width || 1
+                  } / ${renderSettings?.canvas_dimensions?.height || 1}`,
+                }}
               >
                 {resultData?.data.data?.s3_url ? (
                   <video
@@ -697,7 +789,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
                     bgThumbnail={resultData?.data.data?.template_url}
                     video={VideoComponents || []}
                     renderSettings={renderSettings}
-                    className="w-full h-full"
+                    className="w-full h-full shadow"
                     preview={preview}
                   />
                 )}
@@ -709,11 +801,13 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
           <div
             className={cx(
               "w-full space-y-6",
-              isVideoCreated && !isPortrait && "lg:w-1/3",
-              isPortrait && "lg:w-1/2"
+              isVideoCreated && !isPortrait && "lg:basis-1/3",
+              isPortrait && "lg:basis-1/2"
             )}
           >
             <SharePanel />
+
+            <FynanciallySharePanel />
           </div>
         </div>
       </div>

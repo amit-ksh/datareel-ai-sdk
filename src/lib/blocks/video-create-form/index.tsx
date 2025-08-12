@@ -254,7 +254,7 @@ export const VideoCreateForm = ({
               <ImageCard
                 key={persona._id}
                 name={persona.name}
-                image={persona.persona_thumbnail}
+                image={persona.default_avatar_thumbnail}
                 // description={persona.reference_id}
                 selected={selectedPersona?._id === persona._id}
                 onClick={() => {

@@ -798,7 +798,10 @@ export function useVideoPlayer(
             return {
               videoUrl,
               audioUrl:
-                videoObj.avatar && !preview ? null : videoObj.audio || null,
+                previewAndLipSyncComponent ||
+                (videoObj.type === 'content' && !videoObj.avatar)
+                  ? videoObj.audio
+                  : null,
               template: videoObj.template || null,
               avatar: videoObj.avatar
                 ? {
@@ -973,7 +976,7 @@ export function useVideoPlayer(
     combinedVideoAttributesRef.current.duration = accumulatedDuration
   }
 
-  const cleanupCurrentMedia = useCallback(() => {
+ const cleanupCurrentMedia = useCallback(() => {
     const videoEl = actualVideoRef.current
     if (!videoEl) return
 
@@ -1097,10 +1100,10 @@ export function useVideoPlayer(
 
       switchVideo(index)
 
-      actualVideoRef.current = index & 1
+      actualVideoRef.current = Boolean(index & 1)
         ? video1Ref.current
         : hiddenVideoRef.current
-      actualAvatarVideoRef.current = index & 1
+      actualAvatarVideoRef.current = Boolean(index & 1)
         ? avatarVideo1Ref.current
         : avatarVideoRef.current
 
@@ -1148,9 +1151,7 @@ export function useVideoPlayer(
       if (media?.avatar && media?.avatar.videoUrl) {
         actualAvatarVideoRef.current.src = media.avatar.videoUrl
 
-        if (currentTime)
-          if (currentTime)
-            actualAvatarVideoRef.current.currentTime = currentTime
+        if (currentTime) actualAvatarVideoRef.current.currentTime = currentTime
         actualAvatarVideoRef.current.volume =
           combinedVideoAttributesRef.current.volume
         actualAvatarVideoRef.current.muted =
@@ -1171,12 +1172,12 @@ export function useVideoPlayer(
           setAvatarDimensions(dimensions)
           avatarContainerRef.current.style.width = dimensions.width + 'px'
           avatarContainerRef.current.style.height = dimensions.height + 'px'
-          Object.entries(dimensions ?? {}).forEach(([key, value]: [any, any]) => {
+          Object.entries(dimensions ?? {}).forEach(([key, value]) => {
             if (
               typeof value === 'string' &&
               !['width', 'height', 'x', 'y'].includes(key)
             ) {
-              avatarContainerRef.current.style[key] = value
+              avatarContainerRef.current.style[key as any] = value
             }
           })
 
@@ -1201,7 +1202,7 @@ export function useVideoPlayer(
         if (actualAvatarVideoRef.current) actualAvatarVideoRef.current.src = ''
       }
 
-      if (preview && media.type !== 'presentation') {
+      if (preview && media.type !== 'presentation' && audioPlayerRef.current) {
         actualVideoRef.current.loop = true
         if (media.avatar) actualAvatarVideoRef.current.loop = true
       } else {
@@ -1224,7 +1225,7 @@ export function useVideoPlayer(
           console.log('Attempting to play video...', index)
 
           try {
-            const playPromise = async (): Promise<void> =>
+            const playPromise = async () =>
               new Promise(async (resolve, reject) => {
                 console.log({
                   message: 'Starting play promise',
@@ -1233,7 +1234,10 @@ export function useVideoPlayer(
                   avatarVideoUrl: actualAvatarVideoRef.current,
                 })
 
-                if (media.type === 'content' && (media.avatar || preview)) {
+                if (
+                  media.type === 'content' &&
+                  (audioPlayerRef.current?.src || media.avatar)
+                ) {
                   video.muted = true
                 } else {
                   video.muted = combinedVideoAttributesRef.current.muted
@@ -1293,7 +1297,7 @@ export function useVideoPlayer(
                     }
                     // Show video after successful load
                     showVideo()
-                    resolve()
+                    resolve(true)
                   }
                 }
 
@@ -1436,7 +1440,10 @@ export function useVideoPlayer(
               syncMediaAfterLoad(currentTime)
 
             actualVideoRef.current.muted =
-              combinedVideoAttributesRef.current.muted
+              media.type === 'content' &&
+              (audioPlayerRef.current?.src || media.avatar)
+                ? true
+                : combinedVideoAttributesRef.current.muted
             if (actualAvatarVideoRef.current) {
               actualAvatarVideoRef.current.muted =
                 combinedVideoAttributesRef.current.muted
@@ -1486,7 +1493,7 @@ export function useVideoPlayer(
 
       await playWhenReady()
 
-      if (preview && media.type === 'content') {
+      if (preview && media.type === 'content' && audioPlayerRef.current) {
         actualVideoRef.current.muted = true
         if (actualAvatarVideoRef.current) {
           actualAvatarVideoRef.current.muted = true
@@ -1552,7 +1559,7 @@ export function useVideoPlayer(
     videoPlayer.addEventListener('seeking', handleSeeking)
     videoPlayer.addEventListener('waiting', handleVideoWaiting)
     videoPlayer.addEventListener('canplay', handleCanPlayVideo)
-    if (preview && currentMedia.type !== 'presentation') {
+    if (preview && currentMedia.type !== 'presentation' && currentMedia.audioUrl) {
       audioPlayerRef.current?.addEventListener('timeupdate', handleTimeUpdate)
       audioPlayerRef.current?.addEventListener('ended', handleMediaEnded)
     } else {
@@ -1582,9 +1589,9 @@ export function useVideoPlayer(
   const handleCanPlayVideo = async () => {
     if (loadingMediaRef.current || !videoFrameWaitingRef.current) return
 
-    await new Promise<void>((resolve) => {
+    await new Promise((resolve) => {
       setTimeout(() => {
-        resolve()
+        resolve(true)
       }, 100)
     })
 
@@ -1741,12 +1748,12 @@ export function useVideoPlayer(
         avatarContainerRef.current.style.height = dimensions.height + 'px'
         avatarContainerRef.current.style.opacity = '1'
         avatarContainerRef.current.style.display = 'block'
-        Object.entries(dimensions ?? {}).forEach(([key, value]: [any, any]) => {
+        Object.entries(dimensions ?? {}).forEach(([key, value]) => {
           if (
             typeof value === 'string' &&
             !['width', 'height', 'x', 'y'].includes(key)
           ) {
-            avatarContainerRef.current.style[key] = value
+            avatarContainerRef.current.style[key as any] = value
           }
         })
         if (dimensions.transform) {
@@ -1768,7 +1775,8 @@ export function useVideoPlayer(
     // Handle audio
     const realVideoAudioCheck =
       nextMedia.audioUrl && nextMedia.type === 'content' && !nextMedia.avatar
-    const previewVideoAudioCheck = preview && nextMedia.type !== 'presentation'
+    const previewVideoAudioCheck =
+      preview && nextMedia.type !== 'presentation' && nextMedia.audioUrl
     if (realVideoAudioCheck || previewVideoAudioCheck) {
       const cleanAudioUrl = cleanUrl(nextMedia.audioUrl)
       if (preloadedAudios.current[cleanAudioUrl]) {
@@ -1830,10 +1838,6 @@ export function useVideoPlayer(
     } else {
       actualVideoRef.current.muted = combinedVideoAttributesRef.current.muted
     }
-    // captureFirstFrame(actualVideoRef.current, actualAvatarVideoRef.current)
-
-    // wait 50ms because pause and play will conflict
-    // await new Promise((resolve) => setTimeout(resolve, 50))
 
     // Start playing the new video
     try {
@@ -1851,7 +1855,7 @@ export function useVideoPlayer(
           nextMedia.avatar && actualAvatarVideoRef.current
             ? actualAvatarVideoRef.current.play()
             : null,
-          audioPlayerRef.current ? audioPlayerRef.current.play() : null,
+          audioPlayerRef.current?.src ? audioPlayerRef.current.play() : null,
         ].filter(Boolean),
       )
 
@@ -1863,24 +1867,29 @@ export function useVideoPlayer(
       // Ensure all media streams are synchronized after switching
       await syncAllMediaToTimeline(0, true) // Start from beginning of new video
 
-      if (preview && nextMedia.type !== 'presentation') {
+      if (
+        preview &&
+        nextMedia.type !== 'presentation' &&
+        audioPlayerRef.current.src
+      ) {
         actualVideoRef.current.muted = true
-        if (actualAvatarVideoRef.current) {
+        if (nextMedia.avatar) {
           actualAvatarVideoRef.current.muted = true
         }
       } else {
-        actualVideoRef.current.muted = combinedVideoAttributesRef.current.muted
-        if (actualAvatarVideoRef.current) {
+        actualVideoRef.current.muted =
+          nextMedia.type === 'content' &&
+          (audioPlayerRef.current?.src || nextMedia.avatar)
+            ? true
+            : combinedVideoAttributesRef.current.muted
+        console.log(combinedVideoAttributesRef.current.muted, 'NON_PREVIEW')
+        if (nextMedia.avatar) {
           actualAvatarVideoRef.current.muted =
             combinedVideoAttributesRef.current.muted
         }
       }
       if (audioPlayerRef.current) {
         audioPlayerRef.current.muted = combinedVideoAttributesRef.current.muted
-        console.log(
-          'Audio player muted:',
-          combinedVideoAttributesRef.current.muted,
-        )
       }
 
       // Start sync monitoring for the new video
@@ -1946,7 +1955,7 @@ export function useVideoPlayer(
 
     let currentTime =
       actualVideoRef.current.currentTime / (media?.playbackRate || 1)
-    if (preview && media?.type !== 'presentation') {
+    if (preview && media?.type !== 'presentation' && audioPlayerRef.current) {
       currentTime = audioPlayerRef.current?.currentTime || 0
     }
 
@@ -3195,19 +3204,19 @@ export function useVideoPlayer(
     // Stop all media
     if (actualVideoRef.current) {
       actualVideoRef.current.pause()
-      actualVideoRef.current.src = null
+      actualVideoRef.current.src = ''
       actualVideoRef.current.load()
     }
 
     if (audioPlayerRef.current) {
       audioPlayerRef.current.pause()
-      audioPlayerRef.current.src = null
+      audioPlayerRef.current.src = ''
       audioPlayerRef.current.load()
     }
 
     if (actualAvatarVideoRef.current) {
       actualAvatarVideoRef.current.pause()
-      actualAvatarVideoRef.current.src = null
+      actualAvatarVideoRef.current.src = ''
       actualAvatarVideoRef.current.load()
     }
 

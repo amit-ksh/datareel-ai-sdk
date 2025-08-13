@@ -36,22 +36,14 @@ const DEFAULT_SETTINGS = {
 export class DataReel {
   organisationId?: string = DEFAULT_SETTINGS.organisationId;
   private apiKey?: string = DEFAULT_SETTINGS.apiKey;
-  private secret: string = undefined;
 
   // User information
   email?: string;
   name?: string;
   referenceId?: string;
 
-  constructor(data: DataReelConstructor) {
-    this.secret = data.secret;
-  }
+  constructor(data: DataReelConstructor) {}
 
-  private validateSecret(secret: string) {
-    if (this.secret !== secret) {
-      throw new Error("Invalid secret");
-    }
-  }
 
   private validateOrganisationId(organisationId: string) {
     if (!this.organisationId || this.organisationId !== organisationId) {
@@ -65,15 +57,13 @@ export class DataReel {
     }
   }
 
-  private validateCredentials(secret: string, organisationId: string, apiKey: string) {
-    this.validateSecret(secret);
+  private validateCredentials(organisationId: string, apiKey: string) {
     this.validateOrganisationId(organisationId);
     this.validateApiKey(apiKey);
   }
 
   // USER MANAGEMENT
   async initOrganisation(email: string, password?: string) {
-    this.validateSecret(this.secret);
     
     try {
       passwordSchema.validateSync(password || '')
@@ -123,7 +113,7 @@ export class DataReel {
 
   // GET ASSETS
   async getPersonas({page=1, filters}: {page?: number, filters?: BaseGetAssetsRequest['filters']}): Promise<PaginatedResponse<Persona>> {
-    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
@@ -137,7 +127,7 @@ export class DataReel {
   }
 
   async getAvatars({page=1, filters}: {page?: number, filters?: BaseGetAssetsRequest['filters']}): Promise<PaginatedResponse<Avatar>> {
-    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
     
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
@@ -149,7 +139,7 @@ export class DataReel {
   }
 
   async getVoices({page=1, filters}: {page?: number, filters?: BaseGetAssetsRequest['filters']}): Promise<PaginatedResponse<Voice>> {
-    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
     
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
@@ -169,7 +159,7 @@ export class DataReel {
     total_pages: number;
     data: ContentVideo
   }[]> {
-    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
     if (clusterIds.length === 0) {
       return []
@@ -203,7 +193,7 @@ export class DataReel {
     videoFile: File;
     audioFiles: File[]
   }) {
-    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
     avatarName = this.name
     referenceId = this.referenceId
@@ -268,7 +258,7 @@ export class DataReel {
   }
 
   async getLanguages() {
-    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
     
     return await getOrganisationLanguages({
       apiKey: this.apiKey!,
@@ -277,7 +267,7 @@ export class DataReel {
   }
 
   async getUserLabels() {
-    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
     
     return await getOrganisationUserLabels({
       apiKey: this.apiKey!,
@@ -290,7 +280,7 @@ export class DataReel {
     languages?: string[];
     filters: BaseGetAssetsRequest['filters'];
   }): Promise<PaginatedResponse<Pipeline>> {
-    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
     
     const request: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
@@ -331,7 +321,7 @@ export class DataReel {
       }
     };
   }) {
-    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
     const { avatar, voice, language, videoType, contentVideos, scripts = [] } = data;
     if (!avatar || !voice || !language || !videoType) {
@@ -370,12 +360,13 @@ export class DataReel {
     const request: CreateVideoRequest = {
       pipelineId: videoType.pipeline_id,
       apiKey: this.apiKey!,
-      name: `Video-${Date.now()}`,
+      name: ``,
       assignee: this.email || '',
       approve: true,
       lip_sync_model: videoType.lip_sync_model,
       lip_optimization: videoType.lip_optimization,
       data: body,
+      user_label: this.email
     };
 
     if (data.shareWith?.emailData?.to.length > 0) {
@@ -396,7 +387,7 @@ export class DataReel {
   }
 
   async getVideoStatus(videoId: string) {
-    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
     
     const request: GetVideoByIdRequest = {
       apiKey: this.apiKey!,
@@ -408,7 +399,7 @@ export class DataReel {
   }
 
   async getVideo(videoId: string) {
-    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
     
     const request: GetVideoByIdRequest = {
       apiKey: this.apiKey!,
@@ -421,7 +412,7 @@ export class DataReel {
   }
 
   async shareVideo({data, via}: ShareVideoRequest) {
-    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
     const request = {
       apiKey: this.apiKey!,

@@ -112,7 +112,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   onAuthError,
 }) => {
   return (
-    <DatareelProvider secret="your-secret-key" brandColor={brandColor}>
+    <DatareelProvider brandColor={brandColor}>
       <AuthFormContent
         onAuthSuccess={onAuthSuccess}
         onAuthError={onAuthError}

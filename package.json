@@ -1,5 +1,5 @@
 {
-  "name": "@dr-team/datareel-ai-ui",
+  "name": "@datareel-ai/sdk",
   "private": false,
   "version": "0.0.1",
   "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad",
@@ -10,18 +10,18 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/amit-ksh/datareel-ai-ui"
+    "url": "https://github.com/amit-ksh/datareel-ai-sdk"
   },
-  "main": "./dist/datareel-ai-ui.umd.js",
-  "module": "./dist/datareel-ai-ui.es.js",
+  "main": "./dist/datareel-ai-sdk.umd.js",
+  "module": "./dist/datareel-ai-sdk.es.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/datareel-ai-ui.es.js",
-      "require": "./dist/datareel-ai-ui.umd.js"
+      "import": "./dist/datareel-ai-sdk.es.js",
+      "require": "./dist/datareel-ai-sdk.umd.js"
     },
-    "./styles.css": "./dist/datareel-ai-ui.css"
+    "./styles.css": "./dist/datareel-ai-sdk.css"
   },
   "engines": {
     "node": ">=22"

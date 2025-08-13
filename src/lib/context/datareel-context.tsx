@@ -10,7 +10,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 interface DatareelContextProps {
   brandColor: string;
-  secret: string;
 }
 
 interface DatareelContextValue {
@@ -28,9 +27,8 @@ const queryClient = new QueryClient();
 export function DatareelProvider({
   children,
   brandColor,
-  secret,
 }: DatareelProviderProps) {
-  const [datareel] = useState(() => new DataReel({ secret }));
+  const [datareel] = useState(() => new DataReel({}));
 
   useEffect(() => {
     if (typeof window !== "undefined") {

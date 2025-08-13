@@ -6,7 +6,6 @@ export interface BaseGetAssetsRequest extends BaseVideoRequest {
   page: number;
   filters: {
     user_label?: string;
-    emails?: string[];
     languages?: string[];
   };
 }

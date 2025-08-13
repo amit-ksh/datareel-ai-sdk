@@ -14,6 +14,7 @@ export interface CreateVideoRequest extends BaseVideoRequest {
   lip_optimization: boolean;
   lip_sync_model: string;
   data: JSON;
+  user_label?: string | null;
   whatsapp_data?: {
     contacts: string[];
     caption: string;

@@ -1,3 +1,1 @@
-export interface DataReelConstructor {
-  secret: string;
-}
+export interface DataReelConstructor {}

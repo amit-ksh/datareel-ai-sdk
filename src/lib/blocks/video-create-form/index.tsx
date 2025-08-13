@@ -374,21 +374,30 @@ export const VideoCreateForm = ({
   const renderUserLabels = () => (
     <ItemSelector step={3} title="Select Video Type">
       <div className="flex flex-wrap gap-2">
-        {userLabelsData?.data?.map((label) => (
+        {userLabelsData?.data?.map((label, labelIndex) => (
           <Button
             key={label}
             type="button"
             variant={selectedUserLabel === label ? "default" : "outline"}
             size="lg"
-            className={`rounded-full text-lg px-6 py-3 ${
+            className={`relative overflow-hidden min-w-40 rounded-full text-2xl px-6 py-3 ${
               selectedUserLabel === label ? "ring-2 ring-brand" : ""
             }`}
             aria-pressed={selectedUserLabel === label}
             onClick={() => {
               setSelectedUserLabel(label);
             }}
+            disabled={labelIndex > 0 && !datareel.email}
           >
-            {label}
+            {!datareel.email && labelIndex > 0 ? (
+              <div className="absolute inset-0 flex items-center justify-center text-xs backdrop-blur-sm bg-black">
+                <p className="text-white flex items-center gap-2">
+                  <LockIcon className="size-4" />
+                  Login to access
+                </p>
+              </div>
+            ) : null}
+            {label.toUpperCase()}
           </Button>
         ))}
         {!userLabelsData?.data?.length && (

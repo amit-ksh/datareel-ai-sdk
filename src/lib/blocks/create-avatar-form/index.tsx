@@ -149,11 +149,10 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
         ],
       });
 
-      queryClient.invalidateQueries({
-        queryKey: ["avatars"],
-      });
-
       onAvatarCreated?.(formObject);
+      queryClient.invalidateQueries({
+        queryKey: ["personas"],
+      });
     } catch (error: any) {
       console.error(error);
       const errorMessage = error?.response?.data?.detail || error?.message;

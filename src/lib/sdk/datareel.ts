@@ -224,7 +224,7 @@ export class DataReel {
     const newPersonaId = newPersona?.data.data
 
     const request: CreateAvatarRequest = {
-  apiKey: this.apiKey!,
+      apiKey: this.apiKey!,
       data: {
         settings_id: settingsId || 'default',
         reference_id: referenceId,

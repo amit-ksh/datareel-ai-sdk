@@ -149,10 +149,17 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
         ],
       });
 
-      onAvatarCreated?.(formObject);
       queryClient.invalidateQueries({
         queryKey: ["personas"],
       });
+      // reset form
+      setVideoURL(null);
+      setVideoFile(null);
+      setCroppedAreaPixels(null);
+      setZoom(1);
+      setCrop({ x: 0, y: 0 });
+
+      onAvatarCreated?.(formObject);
     } catch (error: any) {
       console.error(error);
       const errorMessage = error?.response?.data?.detail || error?.message;

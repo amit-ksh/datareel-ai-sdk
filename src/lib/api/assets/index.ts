@@ -147,11 +147,11 @@ export const updatePersona = async (request: {
   consent?: boolean;
 }, apiKey: string) => {
   return VideoAxios.put(
-    `/api/v1/persona/update?persona_id=${request.persona_id}`,
+    `/api/v1/persona/update`,
     request,
     {
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
         api_key: apiKey,
       },
     },

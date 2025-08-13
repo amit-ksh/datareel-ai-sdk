@@ -253,15 +253,15 @@ export class DataReel {
       voiceFormData.append('audio_files', audioFile);
     }
 
-  const [avatar, voice] = await Promise.all([await createVoice(voiceFormData, this.apiKey!), await createVideoAvatar(request)]);
+  const [voice, avatar] = await Promise.all([await createVoice(voiceFormData, this.apiKey!), await createVideoAvatar(request)]);
 
     const updatePersonaPayload = {
         persona_id: newPersonaId,
-        default_avatar: avatar?.data.video_id,
+        default_avatar: avatar?.video_id,
         // @ts-ignore 
-        default_voice: voice?.data.voice_id,
+        default_voice: voice?.data?.voice_id,
         // @ts-ignore 
-        onboarded: Boolean(voice?.data.voice_id && avatar?.data.video_id),
+        onboarded: Boolean(voice?.data?.voice_id && avatar?.data?.video_id),
         consent: true,
       }
 

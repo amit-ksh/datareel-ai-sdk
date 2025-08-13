@@ -372,11 +372,10 @@ export class DataReel {
       apiKey: this.apiKey!,
       name: `Video-${Date.now()}`,
       assignee: this.email || '',
-      approve: videoType.lip_sync_model !== 'preview',
+      approve: true,
       lip_sync_model: videoType.lip_sync_model,
       lip_optimization: videoType.lip_optimization,
       data: body,
-      
     };
 
     if (data.shareWith?.emailData?.to.length > 0) {

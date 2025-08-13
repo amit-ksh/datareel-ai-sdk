@@ -1,5 +1,5 @@
 import type { DataReelConstructor, BaseGetAssetsRequest, PaginatedResponse, Avatar, Voice, Template, ContentVideo, Persona, Pipeline, CreateVideoRequest, GetVideoByIdRequest, CreateAvatarRequest, ShareVideoRequest } from "../types";
-import { getAvatars, getVoices, getTemplates, getContentVideos, getPersonas, createAvatar, createVoice, updatePersona, createPersona, getOrganisationUserLabels } from "../api/assets";
+import { getAvatars, getVoices, getTemplates, getContentVideos, getPersonas, createVoice, updatePersona, createPersona, getOrganisationUserLabels, createVideoAvatar } from "../api/assets";
 import { getPipelines, createVideo, getVideoById,  getOrganisationLanguages, fetchPipelineFormData, shareVideo } from "../api/pipeline";
 import { createOrganisation, loginUser } from "../api/auth";
 
@@ -38,9 +38,8 @@ export class DataReel {
   private apiKey?: string = DEFAULT_SETTINGS.apiKey;
 
   // User information
-  email?: string;
-  name?: string;
-  referenceId?: string;
+  email?: string = '';
+  name?: string = '';
 
   constructor(data: DataReelConstructor) {}
 
@@ -182,21 +181,17 @@ export class DataReel {
 
   async createAvatar({
     settingsId,
-    referenceId,
-    avatarName,
     videoFile,
     audioFiles
   }: {
     settingsId: string;
-    referenceId: string;
-    avatarName: string;
     videoFile: File;
     audioFiles: File[]
   }) {
     this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
-    avatarName = this.name
-    referenceId = this.referenceId
+    const avatarName = this.name
+    const referenceId = this.email
 
     const personaPayload = {
       name: avatarName,
@@ -218,7 +213,8 @@ export class DataReel {
         settings_id: settingsId || 'default',
         reference_id: referenceId,
         avatar_name: avatarName,
-        video: videoFile
+        video: videoFile,
+        persona_id: newPersonaId || '',
       }
     };
 
@@ -230,6 +226,7 @@ export class DataReel {
         stability: 0.5,
         similarity_boost: 0.75,
         style: 0,
+        persona_id: newPersonaId || '',
       } 
 
     const voiceFormData = new FormData();
@@ -240,7 +237,7 @@ export class DataReel {
       voiceFormData.append('audio_files', audioFile);
     }
 
-     const [avatar, voice] = await Promise.all([await createVoice(voiceFormData, this.apiKey!),await createAvatar(request)]);
+     const [avatar, voice] = await Promise.all([await createVoice(voiceFormData, this.apiKey!), await createVideoAvatar(request)]);
 
     const updatePersonaPayload = {
         persona_id: newPersonaId,

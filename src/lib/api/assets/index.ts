@@ -88,7 +88,7 @@ export const getPersonas = async (
   return resp.data;
 };
 
-export const createAvatar = async (
+export const createVideoAvatar = async (
   request: CreateAvatarRequest
 ): Promise<{ video_id: string }> => {
   const params = new URLSearchParams();

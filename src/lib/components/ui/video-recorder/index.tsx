@@ -524,12 +524,13 @@ export const VideoRecorder = ({
 
             {/* This button stop the recording and save it, called automatically when timer ends - hidden */}
             {recordingStatus === "recording" && (
-              <Button
-                ref={stopRecordingBtnRef}
-                type="button"
-                onClick={handleStopRecording}
-                className="hidden"
-              ></Button>
+              <div className="hidden">
+                <Button
+                  ref={stopRecordingBtnRef}
+                  type="button"
+                  onClick={handleStopRecording}
+                ></Button>
+              </div>
             )}
           </div>
         </div>

@@ -94,9 +94,13 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
         return;
       }
 
-      const file = new File([croppedVideoBlob], "cropped-video.mp4", {
-        type: "video/mp4",
-      });
+      const file = new File(
+        [croppedVideoBlob],
+        `cropped-video.${videoFile?.type.split("/")[1]}`,
+        {
+          type: videoFile?.type,
+        }
+      );
       const { video: videoWithoutAudio, audio: audioWithoutVideo } =
         await separateVideoAndAudio({
           videoFile: file,
@@ -108,7 +112,11 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
         });
 
       const formData = new FormData(e.target as HTMLFormElement);
-      formData.set("video", videoWithoutAudio.data, "cropped-video.mp4");
+      formData.set(
+        "video",
+        videoWithoutAudio.data,
+        `cropped-video.${videoFile?.type.split("/")[1]}`
+      );
       formData.set(
         "avatar_name",
         (formData.get("avatar_name") as string)?.trim() || ""
@@ -128,13 +136,15 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
 
       await datareel.createAvatar({
         settingsId: formObject.settings_id,
-        referenceId: formObject.reference_id,
-        avatarName: formObject.avatar_name,
-        videoFile: new File([videoWithoutAudio.data], "cropped-video.mp4", {
-          type: "video/mp4",
-        }),
+        videoFile: new File(
+          [videoWithoutAudio.data],
+          `cropped-video.${videoFile?.type.split("/")[1]}`,
+          {
+            type: videoFile?.type,
+          }
+        ),
         audioFiles: [
-          new File([audioWithoutVideo.data], "audio.mp4", {
+          new File([audioWithoutVideo.data], "audio.mp3", {
             type: "audio/mp4",
           }),
         ],
@@ -243,9 +253,9 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
                         setVideoURL(media.url);
                         const file = new File(
                           [media.blob],
-                          "avatar-video.mp4",
+                          "avatar-video.webm",
                           {
-                            type: "video/mp4",
+                            type: "video/webm",
                           }
                         );
                         setVideoFile(file);

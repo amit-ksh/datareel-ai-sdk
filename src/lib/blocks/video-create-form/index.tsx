@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeftIcon, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, LockIcon } from "lucide-react";
 import { useDatareel } from "../../context/datareel-context";
 import { Button } from "../../components/ui/button";
 import { ImageCard } from "../../components/ui/image-card";
@@ -24,11 +24,13 @@ import { cx } from "class-variance-authority";
 interface VideoCreateFormProps {
   onVideoGenerate: (videoId: string) => Promise<void> | void;
   onError: (error: any) => Promise<void> | void;
+  onCustomAvatarCreate?: () => Promise<void> | void;
 }
 
 export const VideoCreateForm = ({
   onVideoGenerate,
   onError,
+  onCustomAvatarCreate,
 }: VideoCreateFormProps) => {
   const { datareel } = useDatareel();
   const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null);
@@ -287,12 +289,16 @@ export const VideoCreateForm = ({
                 selected={false}
                 onClick={() => {
                   if (datareel.email) {
-                    setShowCustomAvatarForm(true);
+                    onCustomAvatarCreate();
                   }
                 }}
               >
                 <div className="w-full aspect-square bg-brand-light rounded-lg flex items-center justify-center">
-                  <Plus className="w-12 h-12 text-brand" />
+                  {!datareel.email ? (
+                    <LockIcon className="w-12 h-12 text-gray-400" />
+                  ) : (
+                    <Plus className="w-12 h-12 text-brand" />
+                  )}
                 </div>
               </ImageCard>
             </div>
@@ -491,30 +497,6 @@ export const VideoCreateForm = ({
 
   const renderCustomAvatarForm = () => (
     <div className="min-h-screen max-w-3xl mx-auto">
-      {/* Sub-Header */}
-      <div className="">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <button
-                className="mr-4 p-2 rounded-md text-gray-700 bg-white shadow-sm hover:shadow-md transition-shadow"
-                onClick={() => setShowCustomAvatarForm(false)}
-              >
-                <ArrowLeftIcon className="w-6 h-6" />
-              </button>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  Create Custom Avatar
-                </h1>
-                <p className="text-sm text-gray-500 font-medium">
-                  Upload or record a video to create your personalized avatar
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="px-4 sm:px-6 lg:px-8 py-8">
         <CreateAvatarForm
           onAvatarCreated={(avatarData) => {

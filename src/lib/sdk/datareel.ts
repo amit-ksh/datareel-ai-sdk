@@ -79,10 +79,13 @@ export class DataReel {
     };
   }
 
-  login(apiKey: string, organisationId: string, email: string, name: string) {
-    this.email = email;
-    this.organisationId = organisationId;
+  login({apiKey, email, name}: {
+    apiKey: string;
+    email: string;
+    name: string;
+  }) {
     this.apiKey = apiKey;
+    this.email = email;
     this.name = name;
   }
 

@@ -547,7 +547,6 @@ export const VideoCreateForm = ({
             {renderVideoTypeSelection()}
             {/* Content selection moved to a new UI section */}
             {renderScriptInput()}
-            {renderContactForm()}
 
             <div className="mt-12 text-center">
               <Button

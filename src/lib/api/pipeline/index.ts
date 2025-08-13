@@ -1,5 +1,5 @@
 import { VideoAxios } from ".."
-import type { GetAvatarsRequest, GetVideoByIdRequest, CreateVideoRequest, BaseGetAssetsRequest, Pipeline, PaginatedResponse, BaseVideoRequest } from "../../types"
+import type { GetAvatarsRequest, GetVideoByIdRequest, CreateVideoRequest, BaseGetAssetsRequest, Pipeline, PaginatedResponse, BaseVideoRequest, ShareVideoEmailRequest, ShareVideoWhatsappRequest, ShareVideoRequest } from "../../types"
 import { prepareAssetFilters } from "../common"
 
 export const getPipelines = async (data: GetAvatarsRequest): Promise<PaginatedResponse<Pipeline>> => {
@@ -54,3 +54,45 @@ export const getOrganisationLanguages = async (data: Omit<BaseGetAssetsRequest, 
 }
 
 
+const shareVideoViaEmail = async ({
+  apiKey,
+  videoId,
+  subject,
+  emails,
+}: ShareVideoEmailRequest) => {
+  return await VideoAxios.post(
+    `/api/v1/resend/email?results_id=${videoId}&subject=${subject}`,
+    emails,
+    {
+      headers: {
+        Api_key: apiKey,
+      },
+    },
+  )
+}
+
+const shareVideoViaWhatsapp = async ({
+  apiKey,
+  videoId,
+  caption,
+  contacts,
+}: ShareVideoWhatsappRequest) => {
+  return await VideoAxios.post(
+    `/api/v1/resend/whatsapp?results_id=${videoId}&caption=${caption}`,
+    contacts,
+    {
+      headers: {
+        Api_key: apiKey,
+      },
+    },
+  )
+}
+
+
+export const shareVideo= ({data, via}: ShareVideoRequest) => {
+  if (via === "email") {
+    return shareVideoViaEmail(data);
+  } else if (via === "whatsapp") {
+    return shareVideoViaWhatsapp(data);
+  }
+}

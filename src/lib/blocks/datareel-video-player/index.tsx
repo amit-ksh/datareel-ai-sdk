@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { VideoPlayer } from "../../components/ui/video-player";
 import { Button } from "../../components/ui/button";
-import { useVideoData } from "./useVideoData";
+import { useVideoData } from "./use-video-data";
 
 export interface DatareelVideoPlayerProps {
   videoId: string;

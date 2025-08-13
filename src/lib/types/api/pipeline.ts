@@ -92,3 +92,20 @@ export interface Pipeline {
   render_settings: RenderSetting;
   user_label: string | null;
 }
+
+
+export interface ShareVideoEmailRequest extends BaseVideoRequest {
+  videoId: string;
+  subject: string;
+  emails: string[];
+}
+
+export interface ShareVideoWhatsappRequest extends BaseVideoRequest {
+  videoId: string;
+  caption: string;
+  contacts: string[];
+}
+
+export type ShareVideoRequest =
+  | { via: 'email'; data: ShareVideoEmailRequest }
+  | { via: 'whatsapp'; data: ShareVideoWhatsappRequest };

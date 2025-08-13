@@ -1,6 +1,6 @@
-import type { DataReelConstructor, BaseGetAssetsRequest, PaginatedResponse, Avatar, Voice, Template, ContentVideo, Persona, Pipeline, CreateVideoRequest, GetVideoByIdRequest, CreateAvatarRequest } from "../types";
+import type { DataReelConstructor, BaseGetAssetsRequest, PaginatedResponse, Avatar, Voice, Template, ContentVideo, Persona, Pipeline, CreateVideoRequest, GetVideoByIdRequest, CreateAvatarRequest, ShareVideoRequest } from "../types";
 import { getAvatars, getVoices, getTemplates, getContentVideos, getPersonas, createAvatar, createVoice, updatePersona, createPersona, getOrganisationUserLabels } from "../api/assets";
-import { getPipelines, createVideo, getVideoById,  getOrganisationLanguages, fetchPipelineFormData } from "../api/pipeline";
+import { getPipelines, createVideo, getVideoById,  getOrganisationLanguages, fetchPipelineFormData, shareVideo } from "../api/pipeline";
 import { createOrganisation, loginUser } from "../api/auth";
 
 import * as Yup from 'yup'
@@ -419,6 +419,17 @@ export class DataReel {
 
     return await getVideoById(request);
     
+  }
+
+  async shareVideo({data, via}: ShareVideoRequest) {
+    this.validateCredentials(this.secret, this.organisationId || '', this.apiKey || '');
+
+    const request = {
+      apiKey: this.apiKey!,
+      ...data
+    } as const;
+
+    return await shareVideo({data: request, via} as ShareVideoRequest);
   }
 
 }

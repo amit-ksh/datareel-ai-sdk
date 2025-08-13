@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.0](https://github.com/amit-ksh/datareel-ai-sdk/compare/v1.0.0...v1.1.0) (2025-08-13)
+
+
+### Features
+
+* lock user label if user not logged in ([45e424b](https://github.com/amit-ksh/datareel-ai-sdk/commit/45e424bb69484073471bc73fda1d23a69a14bb8c))
+* rename createAvatar to createVideoAvatar and update related logic for video file handling ([d0016af](https://github.com/amit-ksh/datareel-ai-sdk/commit/d0016afa7c06203774d1da884251ffa38d9b35f6))
+* update Datareel SDK integration with new API key and organization ID handling ([c2b0274](https://github.com/amit-ksh/datareel-ai-sdk/commit/c2b027441aa5a819dfda6e2882f4d497ec80b099))
+
+
+### Bug Fixes
+
+* create avatar flow ([433a909](https://github.com/amit-ksh/datareel-ai-sdk/commit/433a9090526b51d25fcc219b9efe54929fec6d22))
+* update paths for SDK files in package.json ([ff03f2a](https://github.com/amit-ksh/datareel-ai-sdk/commit/ff03f2a4b61538b06f58fe6539460f800d1baeb0))
+* update query key from "avatars" to "personas" in avatar creation logic ([5a9fb94](https://github.com/amit-ksh/datareel-ai-sdk/commit/5a9fb94811ed5f6e604a87aba320b5be358bd6e6))
+
 ## 1.0.0 (2025-08-13)
 
 

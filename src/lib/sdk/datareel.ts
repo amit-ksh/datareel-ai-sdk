@@ -1,7 +1,7 @@
-import type { DataReelConstructor, BaseGetAssetsRequest, PaginatedResponse, Avatar, Voice, Template, ContentVideo, Persona, Pipeline, CreateVideoRequest, GetVideoByIdRequest, CreateAvatarRequest, ShareVideoRequest } from "../types";
-import { getAvatars, getVoices, getTemplates, getContentVideos, getPersonas, createVoice, updatePersona, createPersona, getOrganisationUserLabels, createVideoAvatar } from "../api/assets";
+import type { DataReelConstructor, BaseGetAssetsRequest, PaginatedResponse, Avatar, Voice,  ContentVideo, Persona, Pipeline, CreateVideoRequest, GetVideoByIdRequest, CreateAvatarRequest, ShareVideoRequest } from "../types";
+import { getAvatars, getVoices,  getContentVideos, getPersonas, createVoice, updatePersona, createPersona, getOrganisationUserLabels, createVideoAvatar } from "../api/assets";
 import { getPipelines, createVideo, getVideoById,  getOrganisationLanguages, fetchPipelineFormData, shareVideo } from "../api/pipeline";
-import { createOrganisation, loginUser } from "../api/auth";
+import { createOrganisation, } from "../api/auth";
 
 import * as Yup from 'yup'
 
@@ -35,7 +35,7 @@ const DEFAULT_SETTINGS = {
 
 export class DataReel {
   organisationId?: string = DEFAULT_SETTINGS.organisationId;
-  private apiKey?: string = DEFAULT_SETTINGS.apiKey;
+  apiKey?: string = DEFAULT_SETTINGS.apiKey;
 
   // User information
   email?: string = '';
@@ -72,33 +72,36 @@ export class DataReel {
       return
     }
 
-    const response = await createOrganisation({ email, password: password || `T7#kP2qL`, source_org_id: this.organisationId || '', tenant_name: 'Admin', project_name: 'Video Project' });
-    this.organisationId = response.organisation_id;
-    this.apiKey = response.api_key;
+  const response = await createOrganisation({ email, password: password || `T7#kP2qL`, source_org_id: this.organisationId || '', tenant_name: 'Admin', project_name: 'Video Project' });
+  this.organisationId = response.organisation_id;
+  this.apiKey = response.api_key;
 
     return response
   }
 
-  async validateUser(email: string, name: string, apiKey: string) {
-    this.organisationId = this.organisationId;
-    this.apiKey = apiKey;
-    this.email = email;
-    this.name = name;
+  getUser() {
+    return {
+      email: this.email,
+      name: this.name,
+      organisationId: this.organisationId,
+      apiKey: this.apiKey
+    };
   }
 
-  async login(apiKey: string, organisationId: string, email: string, name: string) {
+  login(apiKey: string, organisationId: string, email: string, name: string) {
     this.email = email;
     this.organisationId = organisationId;
     this.apiKey = apiKey;
     this.name = name;
   }
 
+
   useDemoAccount() {
     this.organisationId = DEFAULT_SETTINGS.organisationId;
     this.apiKey = DEFAULT_SETTINGS.apiKey;
   }
 
-  async logout() {
+  logout() {
     this.organisationId = undefined;
     this.apiKey = undefined;
     this.email = undefined;
@@ -158,14 +161,14 @@ export class DataReel {
     total_pages: number;
     data: ContentVideo
   }[]> {
-    this.validateCredentials(this.organisationId || '', this.apiKey || '');
+  this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
     if (clusterIds.length === 0) {
       return []
     }
 
     const request: BaseGetAssetsRequest = {
-      apiKey: this.apiKey!,
+  apiKey: this.apiKey!,
       page,
       filters
     };
@@ -188,10 +191,10 @@ export class DataReel {
     videoFile: File;
     audioFiles: File[]
   }) {
-    this.validateCredentials(this.organisationId || '', this.apiKey || '');
+  this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
-    const avatarName = this.name
-    const referenceId = this.email
+  const avatarName = this.name
+  const referenceId = this.email
 
     const personaPayload = {
       name: avatarName,
@@ -208,7 +211,7 @@ export class DataReel {
     const newPersonaId = newPersona?.data.data
 
     const request: CreateAvatarRequest = {
-      apiKey: this.apiKey!,
+  apiKey: this.apiKey!,
       data: {
         settings_id: settingsId || 'default',
         reference_id: referenceId,
@@ -237,7 +240,7 @@ export class DataReel {
       voiceFormData.append('audio_files', audioFile);
     }
 
-     const [avatar, voice] = await Promise.all([await createVoice(voiceFormData, this.apiKey!), await createVideoAvatar(request)]);
+  const [avatar, voice] = await Promise.all([await createVoice(voiceFormData, this.apiKey!), await createVideoAvatar(request)]);
 
     const updatePersonaPayload = {
         persona_id: newPersonaId,
@@ -249,7 +252,7 @@ export class DataReel {
         consent: true,
       }
 
-    await updatePersona(updatePersonaPayload, this.apiKey!)
+  await updatePersona(updatePersonaPayload, this.apiKey!)
 
     return true
   }
@@ -318,14 +321,14 @@ export class DataReel {
       }
     };
   }) {
-    this.validateCredentials(this.organisationId || '', this.apiKey || '');
+  this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
     const { avatar, voice, language, videoType, contentVideos, scripts = [] } = data;
     if (!avatar || !voice || !language || !videoType) {
       throw new Error("Avatar, voice, language, and video type are required to generate a video");
     }
 
-    const pipelineId = videoType.pipeline_id;
+  const pipelineId = videoType.pipeline_id;
     const pipelineFormDataResp = await this.getPipelineFormData(pipelineId) as any;
     const pipelineFormData = pipelineFormDataResp.data.body.data as any[];
     

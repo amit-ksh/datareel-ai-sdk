@@ -19,22 +19,21 @@ interface CreateAvatarFormProps {
     video: File;
   }) => void;
   onCancel?: () => void;
-  selectedAspectRatio?: {
-    settings_id: string;
-    video_dimensions: {
-      width: number;
-      height: number;
-    };
-  };
   avatarVideoFileValid?: (file: File) => boolean;
 }
 
 export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
   onAvatarCreated,
   onCancel,
-  selectedAspectRatio,
   avatarVideoFileValid,
 }) => {
+  const selectedAspectRatio = {
+    settings_id: "default",
+    video_dimensions: {
+      width: 1038,
+      height: 778,
+    },
+  };
   const { datareel } = useDatareel();
   const [videoURL, setVideoURL] = useState<string | null>(null);
   const [videoFile, setVideoFile] = useState<File | null>(null);

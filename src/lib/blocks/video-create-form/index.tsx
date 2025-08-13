@@ -504,13 +504,6 @@ export const VideoCreateForm = ({
             setShowCustomAvatarForm(false);
           }}
           onCancel={() => setShowCustomAvatarForm(false)}
-          selectedAspectRatio={{
-            settings_id: "default",
-            video_dimensions: {
-              width: 1038,
-              height: 778,
-            },
-          }}
         />
       </div>
     </div>

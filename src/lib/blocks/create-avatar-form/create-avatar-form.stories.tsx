@@ -4,11 +4,7 @@ import { DatareelProvider } from "../../context";
 
 function StoryWrapper(props: any) {
   return (
-    <DatareelProvider
-      secret="sad"
-      organisationId="org_demo123"
-      brandColor="#3B82F6"
-    >
+    <DatareelProvider brandColor="#3B82F6">
       <CreateAvatarForm {...props} />
     </DatareelProvider>
   );
@@ -33,10 +29,6 @@ const meta: Meta<typeof CreateAvatarForm> = {
     },
     onCancel: {
       description: "Callback when form is cancelled",
-    },
-    selectedAspectRatio: {
-      control: "object",
-      description: "Aspect ratio configuration for video cropping",
     },
   },
 };
@@ -66,26 +58,12 @@ export const Default: Story = {
     onAvatarCreated: (data: any) => console.log("Avatar created:", data),
     onCancel: () => console.log("Form cancelled"),
     avatarVideoFileValid: mockAvatarVideoFileValid,
-    selectedAspectRatio: {
-      settings_id: "default",
-      video_dimensions: {
-        width: 1038,
-        height: 778,
-      },
-    },
   },
 };
 
 export const WithCustomAspectRatio: Story = {
   args: {
     ...Default.args,
-    selectedAspectRatio: {
-      settings_id: "wide",
-      video_dimensions: {
-        width: 1920,
-        height: 1080,
-      },
-    },
   },
 };
 

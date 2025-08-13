@@ -29,6 +29,7 @@ export function DatareelProvider({
   brandColor,
 }: DatareelProviderProps) {
   const [datareel] = useState(() => new DataReel({}));
+  const [user, setUser] = useState(datareel.getUser());
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -48,7 +49,34 @@ export function DatareelProvider({
   }, [brandColor]);
 
   const contextValue: DatareelContextValue = {
-    datareel,
+    datareel: Object.assign(datareel, {
+      email: user.email,
+      name: user.name,
+      organisationId: user.organisationId,
+      apiKey: user.apiKey,
+      login: (...args: Parameters<DataReel["login"]>) => {
+        DataReel.prototype.login.call(datareel, ...args);
+        setUser(datareel.getUser());
+      },
+      logout: () => {
+        DataReel.prototype.logout.call(datareel);
+        setUser(datareel.getUser());
+      },
+      useDemoAccount: () => {
+        DataReel.prototype.useDemoAccount.call(datareel);
+        setUser(datareel.getUser());
+      },
+      initOrganisation: async (
+        ...args: Parameters<DataReel["initOrganisation"]>
+      ) => {
+        const res = await DataReel.prototype.initOrganisation.call(
+          datareel,
+          ...args
+        );
+        setUser(datareel.getUser());
+        return res;
+      },
+    }),
   };
 
   return (

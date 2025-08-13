@@ -4,22 +4,26 @@ import { Avatar, Pipeline } from "../../types";
 import { DatareelProvider } from "../../context";
 
 interface VideoCreateFormProps {
-  secret?: string;
-  organizationId?: string;
+  apiKey?: string;
+  organisationId?: string;
   brandColor?: string;
   onVideoGenerate: (data: any) => Promise<void>;
   onCancel: () => void;
 }
 
 const VideoCreateFormWrapper = ({
-  secret = "zBsBEtLn4PgIrj0CNEbHSGNQjhJGoyaAmTvQikqQlZ+K1yhMU7i4htz9MoUlap48Dwwknw+9WB8oMxWl",
-  organizationId = "org_" + Math.random().toString(36).substr(2, 9),
+  apiKey = "demo-api-key",
+  organisationId = "org_" + Math.random().toString(36).substr(2, 9),
   brandColor = "#3B82F6",
   onVideoGenerate,
   onCancel,
 }: VideoCreateFormProps) => {
   return (
-    <DatareelProvider secret={secret} brandColor={brandColor}>
+    <DatareelProvider
+      apiKey={apiKey}
+      organisationId={organisationId}
+      brandColor={brandColor}
+    >
       <VideoCreateForm onVideoGenerate={onVideoGenerate} onError={() => {}} />
     </DatareelProvider>
   );
@@ -32,13 +36,13 @@ const meta: Meta<typeof VideoCreateFormWrapper> = {
     layout: "fullscreen",
   },
   argTypes: {
-    secret: {
+    apiKey: {
       control: "text",
-      description: "Secret key for authentication",
+      description: "API key for authentication",
     },
-    organizationId: {
+    organisationId: {
       control: "text",
-      description: "Organization ID",
+      description: "Organisation ID",
     },
     brandColor: {
       control: "color",
@@ -56,27 +60,24 @@ type Story = StoryObj<typeof VideoCreateFormWrapper>;
 
 export const Default: Story = {
   args: {
-    secret:
-      "zBsBEtLn4PgIrj0CNEbHSGNQjhJGoyaAmTvQikqQlZ+K1yhMU7i4htz9MoUlap48Dwwknw+9WB8oMxWl",
-    organizationId: "org_demo123",
+    apiKey: "demo-api-key",
+    organisationId: "org_demo123",
     brandColor: "#3B82F6",
   },
 };
 
 export const CustomBranding: Story = {
   args: {
-    secret:
-      "zBsBEtLn4PgIrj0CNEbHSGNQjhJGoyaAmTvQikqQlZ+K1yhMU7i4htz9MoUlap48Dwwknw+9WB8oMxWl",
-    organizationId: "org_demo123",
+    apiKey: "demo-api-key",
+    organisationId: "org_demo123",
     brandColor: "#10B981", // Green brand color
   },
 };
 
 export const HealthcareBranding: Story = {
   args: {
-    secret:
-      "zBsBEtLn4PgIrj0CNEbHSGNQjhJGoyaAmTvQikqQlZ+K1yhMU7i4htz9MoUlap48Dwwknw+9WB8oMxWl",
-    organizationId: "org_healthcare",
+    apiKey: "demo-api-key",
+    organisationId: "org_healthcare",
     brandColor: "#0891B2", // Medical blue
   },
 };

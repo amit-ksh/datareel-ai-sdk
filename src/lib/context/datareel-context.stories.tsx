@@ -42,11 +42,21 @@ export default {
       control: "color",
       description: "The brand color to set as CSS variable",
     },
+    apiKey: {
+      control: "text",
+      description: "API key for authentication (demo value is fine)",
+    },
+    organisationId: {
+      control: "text",
+      description: "Organisation ID (demo value is fine)",
+    },
   },
 };
 
 export const Default = {
   args: {
+    apiKey: "demo-api-key",
+    organisationId: "demo-org",
     brandColor: "#3b82f6",
   },
   render: (args: any) => (
@@ -58,6 +68,8 @@ export const Default = {
 
 export const CustomBrandColor = {
   args: {
+    apiKey: "demo-api-key",
+    organisationId: "demo-org",
     brandColor: "#ef4444",
   },
   render: (args: any) => (
@@ -69,6 +81,8 @@ export const CustomBrandColor = {
 
 export const PurpleBrand = {
   args: {
+    apiKey: "demo-api-key",
+    organisationId: "demo-org",
     brandColor: "#8b5cf6",
   },
   render: (args: any) => (

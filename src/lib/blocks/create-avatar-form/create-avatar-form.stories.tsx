@@ -4,7 +4,11 @@ import { DatareelProvider } from "../../context";
 
 function StoryWrapper(props: any) {
   return (
-    <DatareelProvider brandColor="#3B82F6">
+    <DatareelProvider
+      brandColor="#3B82F6"
+      apiKey="demo-api-key"
+      organisationId="demo-org"
+    >
       <CreateAvatarForm {...props} />
     </DatareelProvider>
   );

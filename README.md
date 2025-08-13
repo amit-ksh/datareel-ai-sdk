@@ -1,4 +1,4 @@
-# datareel.ai UI Library
+# Datareel.ai UI SDK
 
 A comprehensive React component library for building AI-powered video generation applications with Datareel.ai services.
 
@@ -13,12 +13,12 @@ A comprehensive React component library for building AI-powered video generation
 
 ## Installation
 
-Install the library using npm or pnpm (scoped package name shown below):
+Install the library using npm or pnpm:
 
 ```bash
-npm install @dr-team/datareel-ai-ui
+npm install @datareel-ai/sdk
 # or
-pnpm add @dr-team/datareel-ai-ui
+pnpm add @datareel-ai/sdk
 ```
 
 You'll also need to install the required peer dependencies if they're not already in your project:
@@ -34,15 +34,16 @@ npm install react react-dom @tanstack/react-query
 Wrap your app with the `DatareelProvider` to enable all Datareel functionality:
 
 ```tsx
-import { DatareelProvider } from "@dr-team/datareel-ai-ui";
-// Import global styles (tailwind + theme variables)
-import "@dr-team/datareel-ai-ui/styles.css";
+import { DatareelProvider } from "@datareel-ai/sdk";
+// Import global styles once near your root
+import "@datareel-ai/sdk/styles.css";
 
 function App() {
   return (
     <DatareelProvider
-      brandColor="#3b82f6" // hex color code only
-      secret="your-secret-key"
+      apiKey="your-api-key"
+      organisationId="your-org-id"
+      brandColor="#3b82f6" // optional, hex color code only
     >
       <YourAppComponents />
     </DatareelProvider>
@@ -55,7 +56,7 @@ function App() {
 Use the `Login` and `Organization` components for user authentication instead of the generic `AuthForm`:
 
 ```tsx
-import { Login, Organization } from "@dr-team/datareel-ai-ui";
+import { Login, Organization } from "@datareel-ai/sdk";
 import { useState } from "react";
 
 function AuthFlow() {
@@ -117,7 +118,7 @@ function AuthFlow() {
 Use the `VideoCreateForm` block to let users create videos:
 
 ```tsx
-import { VideoCreateForm } from "@dr-team/datareel-ai-ui";
+import { VideoCreateForm } from "@datareel-ai/sdk";
 
 function CreateVideoPage() {
   const handleVideoGenerate = async (videoId: string) => {
@@ -149,7 +150,7 @@ function CreateVideoPage() {
 Display generated videos with the `DatareelVideoPlayer`:
 
 ```tsx
-import { DatareelVideoPlayer } from "@dr-team/datareel-ai-ui";
+import { DatareelVideoPlayer } from "@datareel-ai/sdk";
 
 function VideoPlayerPage() {
   return (
@@ -169,7 +170,7 @@ function VideoPlayerPage() {
 Access the Datareel SDK directly using the `useDatareel` hook:
 
 ```tsx
-import { useDatareel } from "@dr-team/datareel-ai-ui";
+import { useDatareel } from "@datareel-ai/sdk";
 
 function CustomComponent() {
   const { datareel } = useDatareel();
@@ -227,8 +228,8 @@ import {
   DatareelVideoPlayer,
   SharePanel,
   useVideoData,
-} from "@dr-team/datareel-ai-ui";
-import "@dr-team/datareel-ai-ui/styles.css";
+} from "@datareel-ai/sdk";
+import "@datareel-ai/sdk/styles.css";
 
 type AppState = "auth" | "create" | "player";
 
@@ -238,9 +239,9 @@ function App() {
 
   return (
     <DatareelProvider
+      apiKey="your-api-key"
       organisationId="your-org-id"
       brandColor="#3b82f6"
-      secret="your-secret-key"
     >
       {currentView === "auth" && (
         <AuthFlow onAuthSuccess={() => setCurrentView("create")} />
@@ -329,7 +330,7 @@ This will start Storybook at `http://localhost:3000` where you can browse all av
 Example:
 
 ```tsx
-import { useVideoData } from "@dr-team/datareel-ai-ui";
+import { useVideoData } from "@datareel-ai/sdk";
 
 function VideoStatus({ videoId }: { videoId: string }) {
   const { video, shareData } = useVideoData(videoId);
@@ -363,7 +364,7 @@ function VideoStatus({ videoId }: { videoId: string }) {
 The library is built with TypeScript and provides full type definitions. Import types as needed:
 
 ```tsx
-import type { Avatar, Pipeline, Voice } from "@dr-team/datareel-ai-ui";
+import type { Avatar, Pipeline, Voice } from "@datareel-ai/sdk";
 ```
 
 ## CSS Import
@@ -371,7 +372,7 @@ import type { Avatar, Pipeline, Voice } from "@dr-team/datareel-ai-ui";
 Don't forget to import the CSS file in your application (include it once, near your root):
 
 ```tsx
-import "@dr-team/datareel-ai-ui/styles.css";
+import "@datareel-ai/sdk/styles.css";
 ```
 
 ## Browser Support

@@ -1,6 +1,6 @@
 import type React from "react";
 import { useState, useCallback } from "react";
-import { DatareelProvider, useDatareel } from "../../context";
+import { useDatareel } from "../../context";
 import { Login } from "../../components/auth/login";
 import { Organization } from "../../components/auth/organization";
 
@@ -10,7 +10,6 @@ type AuthFormData = {
 };
 
 interface AuthFormProps {
-  brandColor?: string;
   onAuthSuccess: (data: AuthFormData) => Promise<void> | void;
   onAuthError?: (error: string, data: AuthFormData) => void;
 }
@@ -107,17 +106,11 @@ const AuthFormContent: React.FC<{
 };
 
 export const AuthForm: React.FC<AuthFormProps> = ({
-  brandColor = "#3b82f6",
   onAuthSuccess,
   onAuthError,
 }) => {
   return (
-    <DatareelProvider brandColor={brandColor}>
-      <AuthFormContent
-        onAuthSuccess={onAuthSuccess}
-        onAuthError={onAuthError}
-      />
-    </DatareelProvider>
+    <AuthFormContent onAuthSuccess={onAuthSuccess} onAuthError={onAuthError} />
   );
 };
 

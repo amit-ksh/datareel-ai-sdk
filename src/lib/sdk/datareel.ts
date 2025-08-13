@@ -17,31 +17,22 @@ export const passwordSchema = Yup.string()
     'Password must contain at least one special character',
   )
 
-
-//   org id - 7cc30ffb-f5b1-4b80-8289-85095a824680
-// api_key - 7b2ab0e4-37cd-4e8e-b7be-d29efc510f17
-// persona label - 'default'
-// pipeline labels -
-// "educational video" - 3 videos
-// "report" - 3 videos
-// "custom script" - 1 video
-
-const DEFAULT_SETTINGS = {
-  organisationId: '7cc30ffb-f5b1-4b80-8289-85095a824680',
-  apiKey: '7b2ab0e4-37cd-4e8e-b7be-d29efc510f17',
-  user_label: 'default'
-} as const
-
-
 export class DataReel {
-  organisationId?: string = DEFAULT_SETTINGS.organisationId;
-  apiKey?: string = DEFAULT_SETTINGS.apiKey;
+  organisationId?: string = '';
+  apiKey?: string = '';
+  defaultUserLabel: string = '';
+  userLabels: string[] = []
 
   // User information
   email?: string = '';
   name?: string = '';
 
-  constructor(data: DataReelConstructor) {}
+  constructor(data: DataReelConstructor) {
+    this.organisationId = data.organisationId;
+    this.apiKey = data.apiKey;
+    this.defaultUserLabel = data.defaultLabel || 'default';
+    this.userLabels = data.userLabels || [];
+  }
 
 
   private validateOrganisationId(organisationId: string) {
@@ -95,15 +86,7 @@ export class DataReel {
     this.name = name;
   }
 
-
-  useDemoAccount() {
-    this.organisationId = DEFAULT_SETTINGS.organisationId;
-    this.apiKey = DEFAULT_SETTINGS.apiKey;
-  }
-
   logout() {
-    this.organisationId = undefined;
-    this.apiKey = undefined;
     this.email = undefined;
     this.name = undefined;
   }
@@ -117,15 +100,42 @@ export class DataReel {
   async getPersonas({page=1, filters}: {page?: number, filters?: BaseGetAssetsRequest['filters']}): Promise<PaginatedResponse<Persona>> {
     this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
-    const request: BaseGetAssetsRequest = {
+    // Always fetch personas for the default user_label and, if available, also for the user's email label.
+    const baseFilters = filters || {};
+
+    const defaultLabelRequest: BaseGetAssetsRequest = {
       apiKey: this.apiKey!,
       page,
       filters: {
-        user_label: DEFAULT_SETTINGS.user_label
-      }
+        ...(baseFilters?.languages ? { languages: baseFilters.languages } : {}),
+        user_label: this.defaultUserLabel,
+      },
+    };
+
+    const promises: Promise<PaginatedResponse<Persona>>[] = [getPersonas(defaultLabelRequest)];
+
+    if (this.email) {
+      const emailLabelRequest: BaseGetAssetsRequest = {
+        apiKey: this.apiKey!,
+        page,
+        filters: {
+          ...(baseFilters?.languages ? { languages: baseFilters.languages } : {}),
+          user_label: this.email,
+        },
+      };
+      promises.push(getPersonas(emailLabelRequest));
     }
 
-    return await getPersonas(request);
+    const responses = await Promise.all(promises);
+    const combined = responses.flatMap((r) => r.data);
+    // Deduplicate by persona id
+    const deduped = Array.from(new Map(combined.map((p) => [p._id, p])).values());
+
+    return {
+      data: deduped,
+      total_pages: Math.max(...responses.map((r) => r.total_pages || 0)),
+      current_page: page,
+    };
   }
 
   async getAvatars({page=1, filters}: {page?: number, filters?: BaseGetAssetsRequest['filters']}): Promise<PaginatedResponse<Avatar>> {

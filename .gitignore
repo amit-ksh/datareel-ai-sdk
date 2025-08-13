@@ -29,3 +29,6 @@ storybook-static
 
 # Testing
 coverage
+
+
+.env*

@@ -7,9 +7,10 @@ import React, {
 } from "react";
 import { DataReel } from "../sdk/datareel";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { DataReelConstructor } from "../types";
 
-interface DatareelContextProps {
-  brandColor: string;
+interface DatareelContextProps extends DataReelConstructor {
+  brandColor?: string;
 }
 
 interface DatareelContextValue {
@@ -27,24 +28,26 @@ const queryClient = new QueryClient();
 export function DatareelProvider({
   children,
   brandColor,
+  ...datareelProps
 }: DatareelProviderProps) {
-  const [datareel] = useState(() => new DataReel({}));
+  const [datareel] = useState(() => new DataReel({ ...datareelProps }));
   const [user, setUser] = useState(datareel.getUser());
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const root = document.documentElement;
 
-      root.style.setProperty("--datareel-brand-color", brandColor);
+      const color = brandColor ?? "#3b82f6";
+      root.style.setProperty("--datareel-brand-color", color);
       root.style.setProperty(
         "--datareel-brand-color-hover",
-        adjustBrightness(brandColor, 0.8)
+        adjustBrightness(color, 0.8)
       );
       root.style.setProperty(
         "--datareel-brand-color-light",
-        lightenColor(brandColor, 0.1)
+        lightenColor(color, 0.1)
       );
-      root.style.setProperty("--datareel-brand-color-ring", brandColor);
+      root.style.setProperty("--datareel-brand-color-ring", color);
     }
   }, [brandColor]);
 
@@ -60,10 +63,6 @@ export function DatareelProvider({
       },
       logout: () => {
         DataReel.prototype.logout.call(datareel);
-        setUser(datareel.getUser());
-      },
-      useDemoAccount: () => {
-        DataReel.prototype.useDemoAccount.call(datareel);
         setUser(datareel.getUser());
       },
       initOrganisation: async (

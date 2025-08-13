@@ -4,7 +4,7 @@ import { DatareelProvider } from "../../context/datareel-context";
 function DatareelVideoPlayerStory(props) {
   return (
     <DatareelProvider
-      secret="demo-secret"
+      apiKey="demo-api-key"
       organisationId="demo-org"
       brandColor="#3B82F6"
     >

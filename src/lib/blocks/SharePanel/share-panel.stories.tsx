@@ -28,7 +28,11 @@ export const Default: Story = {
       },
     });
     return (
-      <DatareelProvider brandColor="#6366f1" secret="demo-secret">
+      <DatareelProvider
+        brandColor="#6366f1"
+        apiKey="demo-api-key"
+        organisationId="demo-org"
+      >
         <SharePanel {...args} />
       </DatareelProvider>
     );

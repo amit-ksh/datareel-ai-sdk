@@ -59,8 +59,8 @@ export function useVideoData(videoId: string, options: UseVideoDataOptions = {})
   const [pipelineData, setPipelineData] = useState<any>(null);
   const [copied, setCopied] = useState({ url: false, embed: false });
 
-  const shareUrl = `https://www.datareel.ai/delivery/${videoId}`;
-  const embedCode = `<iframe src="https://www.datareel.ai/embed/${videoId}" width="560" height="315" frameborder="0" allowfullscreen></iframe>`;
+  const shareUrl = `https://www.dev.datareel.ai/delivery/${videoId}`;
+  const embedCode = `<iframe src="https://www.dev.datareel.ai/embed/${videoId}" width="560" height="315" frameborder="0" allowfullscreen></iframe>`;
 
   const {
     data: resultData,

@@ -22,7 +22,7 @@ export const ImageCard = React.forwardRef<HTMLDivElement, ImageCardProps>(
         className={clsx(
           "relative p-2 bg-white rounded-lg border cursor-pointer transition-all hover:shadow-md",
           selected
-            ? "border-brand ring-2 ring-brand"
+            ? "border-brand border-2"
             : "border-gray-200 hover:border-gray-300",
           className
         )}

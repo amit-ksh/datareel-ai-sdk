@@ -23,7 +23,7 @@ export const LanguageCard = React.forwardRef<HTMLDivElement, LanguageCardProps>(
         className={clsx(
           "p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md",
           selected
-            ? "border-brand ring-2 ring-brand"
+            ? "border-brand border-2"
             : "border-gray-200 hover:border-gray-300"
         )}
         onClick={onClick}

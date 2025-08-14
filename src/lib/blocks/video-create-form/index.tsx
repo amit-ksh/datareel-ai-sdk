@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, ChevronLeft, ChevronRight, LockIcon, XIcon } from "lucide-react";
+import { Eye } from "lucide-react";
 import { useDatareel } from "../../context/datareel-context";
 import { Button } from "../../components/ui/button";
 import { ImageCard } from "../../components/ui/image-card";
@@ -98,7 +99,7 @@ export const VideoCreateForm = ({
         },
       }),
     // Only run when we have datareel instance AND a selected user label
-    enabled: !!datareel && !!selectedUserLabel,
+    enabled: !!datareel && !!selectedUserLabel && !!selectedLanguage,
   });
 
   const { data: userLabelsData } = useQuery({
@@ -376,7 +377,7 @@ export const VideoCreateForm = ({
             key={label}
             className={`relative group p-3 border min-w-32 min-h-16 rounded-xl cursor-pointer transition-all duration-300 flex flex-col justify-center items-center overflow-hidden ${
               selectedUserLabel === label
-                ? "border-brand bg-gradient-to-br from-brand/8 to-brand/12"
+                ? "border-brand border-2"
                 : "border-gray-200 hover:border-brand bg-white"
             }`}
             onClick={() => {
@@ -452,7 +453,7 @@ export const VideoCreateForm = ({
   );
 
   const renderVideoTypeSelection = () => {
-    if (!selectedUserLabel) return null; // Hide entirely until a user label is chosen
+    if (!selectedUserLabel || !selectedLanguage) return null; // Hide entirely until a user label is chosen
     return (
       <ItemSelector step={4} title="Select Template">
         {pipelinesLoading ? (
@@ -487,15 +488,24 @@ export const VideoCreateForm = ({
                       setSelectedVideoType(pipeline);
                       resetPaginationAndSelections("videoType");
                     }}
+                    className="group"
                   >
+                    <button
+                      type="button"
+                      className="absolute cursor-pointer inline-flex top-2 left-2 size-7 z-10 items-center justify-center rounded-full bg-white/90 hover:bg-white text-gray-700 shadow border border-gray-200"
+                      title="Preview"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPreviewVideoId(pipeline.preview_id);
+                      }}
+                    >
+                      <Eye className="size-4" />
+                    </button>
                     {pipeline.preview_thumbnail_s3.length > 0 ? (
-                      <button
+                      <div
                         className="relative"
                         style={{
                           aspectRatio: `${renderSettings.canvas_dimensions.width} / ${renderSettings.canvas_dimensions.height}`,
-                        }}
-                        onClick={() => {
-                          setPreviewVideoId(pipeline.preview_id);
                         }}
                       >
                         <img
@@ -515,7 +525,7 @@ export const VideoCreateForm = ({
                             className="w-full h-full object-cover rounded-lg"
                           />
                         </div>
-                      </button>
+                      </div>
                     ) : (
                       <div className="w-full aspect-video bg-brand-light rounded-lg flex items-center justify-center">
                         <span className="text-blue-600 text-2xl">📹</span>
@@ -615,7 +625,7 @@ export const VideoCreateForm = ({
             }}
           >
             <DialogPortal>
-              <DialogOverlay className="fixed inset-0 bg-black/50" />
+              <DialogOverlay className="fixed z-50 inset-0 bg-black/50" />
               <DialogContent className="fixed z-50 left-1/2 top-1/2 w-[92vw] max-w-xl -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white px-3 py-2 shadow-lg focus:outline-none">
                 <div className="flex items-center justify-between mb-2">
                   <DialogTitle className="font-medium">

@@ -261,7 +261,7 @@ export class DataReel {
         // @ts-ignore 
         default_voice: voice?.data?.voice_id,
         // @ts-ignore 
-        onboarded: Boolean(voice?.data?.voice_id && avatar?.data?.video_id),
+        onboarded: Boolean(voice?.data?.voice_id && avatar?.video_id),
         consent: true,
       }
 

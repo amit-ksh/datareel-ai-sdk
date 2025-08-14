@@ -20,6 +20,7 @@ import type {
 import { ItemSelector } from "../../components";
 import { CreateAvatarForm } from "../create-avatar-form";
 import { cx } from "class-variance-authority";
+import { DEFAULT_LAYOUT } from "../datareel-video-player/use-video-data";
 
 interface VideoCreateFormProps {
   onVideoGenerate: (videoId: string) => Promise<void> | void;
@@ -425,28 +426,60 @@ export const VideoCreateForm = ({
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {pipelinesData?.data?.map((pipeline) => (
-                <ImageCard
-                  key={pipeline.pipeline_id}
-                  name={pipeline.pipeline_name}
-                  selected={
-                    selectedVideoType?.pipeline_id === pipeline.pipeline_id
-                  }
-                  onClick={() => {
-                    const selectedUserLabelIndex =
-                      userLabelsData?.data.indexOf(selectedUserLabel);
-                    if (selectedUserLabelIndex > 0 && !datareel.email) {
-                      return;
+              {pipelinesData?.data?.map((pipeline) => {
+                const renderSettings =
+                  pipeline?.render_settings || DEFAULT_LAYOUT;
+                return (
+                  <ImageCard
+                    key={pipeline.pipeline_id}
+                    name={pipeline.pipeline_name}
+                    selected={
+                      selectedVideoType?.pipeline_id === pipeline.pipeline_id
                     }
-                    setSelectedVideoType(pipeline);
-                    resetPaginationAndSelections("videoType");
-                  }}
-                >
-                  <div className="w-full aspect-video bg-brand-light rounded-lg flex items-center justify-center">
-                    <span className="text-blue-600 text-2xl">📹</span>
-                  </div>
-                </ImageCard>
-              ))}
+                    onClick={() => {
+                      const selectedUserLabelIndex =
+                        userLabelsData?.data.indexOf(selectedUserLabel);
+                      if (selectedUserLabelIndex > 0 && !datareel.email) {
+                        return;
+                      }
+                      setSelectedVideoType(pipeline);
+                      resetPaginationAndSelections("videoType");
+                    }}
+                  >
+                    {pipeline.preview_thumbnail_s3.length > 0 ? (
+                      <div
+                        className="relative"
+                        style={{
+                          aspectRatio: `${renderSettings.canvas_dimensions.width} / ${renderSettings.canvas_dimensions.height}`,
+                        }}
+                      >
+                        <img
+                          src={pipeline.preview_thumbnail_s3?.[1]}
+                          alt={pipeline.pipeline_name}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                        <div
+                          className="absolute w-full  left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                          style={{
+                            aspectRatio: `${renderSettings.video_dimensions.width} / ${renderSettings.video_dimensions.height}`,
+                          }}
+                        >
+                          <img
+                            src={pipeline.preview_thumbnail_s3?.[0]}
+                            alt={pipeline.pipeline_name}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-full aspect-video bg-brand-light rounded-lg flex items-center justify-center">
+                        <span className="text-blue-600 text-2xl">📹</span>
+                      </div>
+                    )}
+                  </ImageCard>
+                );
+              })}
+
               {!pipelinesData?.data?.length && (
                 <div className="col-span-full text-center text-sm text-gray-500 p-6 border border-dashed rounded-lg">
                   No templates available for this label & language.

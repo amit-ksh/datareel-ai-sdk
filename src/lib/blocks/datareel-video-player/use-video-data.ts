@@ -4,7 +4,7 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { useDatareel } from '../../context/datareel-context';
 
 // Default layout moved here for reuse
-const DEFAULT_LAYOUT = {
+export const DEFAULT_LAYOUT = {
   name: 'Square',
   settings_id: 'default',
   id: 'default',

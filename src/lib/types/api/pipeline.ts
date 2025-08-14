@@ -92,6 +92,8 @@ export interface Pipeline {
   pipeline_id: string;
   render_settings: RenderSetting;
   user_label: string | null;
+  preview_id: string;
+  preview_thumbnail_s3: string[];
 }
 
 

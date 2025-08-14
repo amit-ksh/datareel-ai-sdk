@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Plus, ChevronLeft, ChevronRight, LockIcon } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, LockIcon, XIcon } from "lucide-react";
 import { useDatareel } from "../../context/datareel-context";
 import { Button } from "../../components/ui/button";
 import { ImageCard } from "../../components/ui/image-card";
@@ -21,6 +21,14 @@ import { ItemSelector } from "../../components";
 import { CreateAvatarForm } from "../create-avatar-form";
 import { cx } from "class-variance-authority";
 import { DEFAULT_LAYOUT } from "../datareel-video-player/use-video-data";
+import {
+  Root as Dialog,
+  Content as DialogContent,
+  Overlay as DialogOverlay,
+  Portal as DialogPortal,
+  Title as DialogTitle,
+} from "@radix-ui/react-dialog";
+import DatareelVideoPlayer from "../datareel-video-player";
 
 interface VideoCreateFormProps {
   onVideoGenerate: (videoId: string) => Promise<void> | void;
@@ -60,9 +68,7 @@ export const VideoCreateForm = ({
   // Pagination states
   const [personasPage, setPersonasPage] = useState(1);
   const [pipelinesPage, setPipelinesPage] = useState(1);
-  const [templatesPages, setTemplatesPages] = useState<{
-    [key: string]: number;
-  }>({});
+  const [previewVideoId, setPreviewVideoId] = useState<string | null>(null);
 
   // Data fetching
   const { data: personasData, isLoading: personasLoading } = useQuery({
@@ -101,14 +107,6 @@ export const VideoCreateForm = ({
     enabled: !!datareel,
   });
 
-  const [customScripts, setCustomScripts] = useState<string[]>([]);
-  const { data: pipelineFormDataData, isLoading: pipelineFormDataLoading } =
-    useQuery({
-      queryKey: ["pipelines", selectedVideoType?.pipeline_id],
-      queryFn: () =>
-        datareel.getPipelineFormData(selectedVideoType?.pipeline_id),
-      enabled: !!datareel && !!selectedVideoType?.pipeline_id,
-    });
   const dynamicClusterComponents = selectedVideoType?.data?.data.filter(
     (component) =>
       component.type === "content" && component.content?.type === "dynamic"
@@ -180,12 +178,10 @@ export const VideoCreateForm = ({
       setSelectedVideoType(null);
       setSelectedTemplate([]);
       setScripts([]);
-      setTemplatesPages({});
       setPipelinesPage(1); // Reset pipelines pagination when language changes
     } else if (level === "videoType") {
       setSelectedTemplate([]);
       setScripts([]);
-      setTemplatesPages({});
     }
   };
 
@@ -447,10 +443,13 @@ export const VideoCreateForm = ({
                     }}
                   >
                     {pipeline.preview_thumbnail_s3.length > 0 ? (
-                      <div
+                      <button
                         className="relative"
                         style={{
                           aspectRatio: `${renderSettings.canvas_dimensions.width} / ${renderSettings.canvas_dimensions.height}`,
+                        }}
+                        onClick={() => {
+                          setPreviewVideoId(pipeline.preview_id);
                         }}
                       >
                         <img
@@ -470,7 +469,7 @@ export const VideoCreateForm = ({
                             className="w-full h-full object-cover rounded-lg"
                           />
                         </div>
-                      </div>
+                      </button>
                     ) : (
                       <div className="w-full aspect-video bg-brand-light rounded-lg flex items-center justify-center">
                         <span className="text-blue-600 text-2xl">📹</span>
@@ -563,6 +562,30 @@ export const VideoCreateForm = ({
         renderCustomAvatarForm()
       ) : (
         <div className="flex">
+          <Dialog
+            open={Boolean(previewVideoId)}
+            onOpenChange={(open: boolean) => {
+              if (!open) setPreviewVideoId(null);
+            }}
+          >
+            <DialogPortal>
+              <DialogOverlay className="fixed inset-0 bg-black/50" />
+              <DialogContent className="fixed left-1/2 top-1/2 w-[92vw] max-w-xl -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white px-3 py-2 shadow-lg focus:outline-none">
+                <div className="flex items-center justify-between mb-2">
+                  <DialogTitle>Preview Video</DialogTitle>
+
+                  <Button
+                    variant="ghost"
+                    onClick={() => setPreviewVideoId(null)}
+                    title="Close"
+                  >
+                    <XIcon className="size-4" />
+                  </Button>
+                </div>
+                <DatareelVideoPlayer videoId={previewVideoId} />
+              </DialogContent>
+            </DialogPortal>
+          </Dialog>
           <div className="flex-1 space-y-6">
             {renderPersonaSelection()}
             {renderLanguageSelection()}

@@ -39,7 +39,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
   } = video;
 
   const LoadingState = () => (
-    <div className="fixed inset-0 bg-white/95 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+    <div className="bg-white/95 backdrop-blur-sm z-40 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-4">
           <div className="relative w-20 h-20 mx-auto">

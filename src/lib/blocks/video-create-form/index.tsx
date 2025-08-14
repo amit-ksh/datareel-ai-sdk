@@ -387,16 +387,13 @@ export const VideoCreateForm = ({
             onClick={() => {
               setSelectedUserLabel(label);
             }}
-            disabled={labelIndex > 0 && !datareel.email}
           >
             {!datareel.email && labelIndex > 0 ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-gray-900/95 to-gray-800/80">
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-500/40">
                 <div className="relative size-full">
-                  <p className="absolute top-0.5 left-0.5 text-white flex items-center gap-2">
+                  <p className="absolute top-0.5 left-0.5 text-gray-950 flex items-center gap-2">
                     <LockIcon className="w-4 h-4" />
-                    <span className="text-base font-medium">
-                      Login to unlock
-                    </span>
+                    <span className="text-xs font-medium">Login to unlock</span>
                   </p>
                 </div>
               </div>
@@ -405,7 +402,7 @@ export const VideoCreateForm = ({
           </Button>
         ))}
         {!userLabelsData?.data?.length && (
-          <span className="text-sm text-gray-500">No labels</span>
+          <p className="font-medium text-center text-gray-500">No labels</p>
         )}
       </div>
     </ItemSelector>
@@ -436,6 +433,11 @@ export const VideoCreateForm = ({
                     selectedVideoType?.pipeline_id === pipeline.pipeline_id
                   }
                   onClick={() => {
+                    const selectedUserLabelIndex =
+                      userLabelsData?.data.indexOf(selectedUserLabel);
+                    if (selectedUserLabelIndex > 0 && !datareel.email) {
+                      return;
+                    }
                     setSelectedVideoType(pipeline);
                     resetPaginationAndSelections("videoType");
                   }}

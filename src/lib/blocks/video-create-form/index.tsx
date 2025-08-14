@@ -370,36 +370,82 @@ export const VideoCreateForm = ({
 
   const renderUserLabels = () => (
     <ItemSelector step={3} title="Select Video Type">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-3">
         {userLabelsData?.data?.map((label, labelIndex) => (
-          <Button
+          <div
             key={label}
-            type="button"
-            variant={selectedUserLabel === label ? "default" : "outline"}
-            size="lg"
-            className={`relative overflow-hidden w-48 h-14 rounded-full text-2xl px-6 py-3 ${
-              selectedUserLabel === label ? "ring-2 ring-brand" : ""
+            className={`relative group p-3 border min-w-32 min-h-16 rounded-xl cursor-pointer transition-all duration-300 flex flex-col justify-center items-center overflow-hidden ${
+              selectedUserLabel === label
+                ? "border-brand bg-gradient-to-br from-brand/8 to-brand/12"
+                : "border-gray-200 hover:border-brand bg-white"
             }`}
-            aria-pressed={selectedUserLabel === label}
             onClick={() => {
               setSelectedUserLabel(label);
             }}
           >
             {!datareel.email && labelIndex > 0 ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-500/40">
-                <div className="relative size-full">
-                  <p className="absolute top-0.5 left-0.5 text-gray-950 flex items-center gap-2">
-                    <LockIcon className="w-4 h-4" />
-                    <span className="text-xs font-medium">Login to unlock</span>
+              <>
+                <div className="text-center mb-2 z-20 relative">
+                  <div className="text-lg font-bold text-gray-700">
+                    {label.charAt(0).toUpperCase() +
+                      label.slice(1).toLowerCase()}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center z-20 relative">
+                    <LockIcon className="size-4 text-gray-500" />
+                  </div>
+
+                  <p className="text-xs font-semibold text-gray-500 tracking-wide uppercase z-20 relative">
+                    Login to unlock
                   </p>
                 </div>
+
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-50/60 to-gray-100/40 rounded-2xl pointer-events-none"></div>
+              </>
+            ) : (
+              <div className="text-center relative z-10">
+                <div className="text-lg font-bold text-gray-800 tracking-wide">
+                  {label.charAt(0).toUpperCase() + label.slice(1).toLowerCase()}
+                </div>
+
+                {selectedUserLabel !== label && (
+                  <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-brand/20 transition-all duration-300"></div>
+                )}
               </div>
-            ) : null}
-            {label.toUpperCase()}
-          </Button>
+            )}
+
+            {(datareel.email || labelIndex === 0) && (
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-gray-50/30 rounded-2xl pointer-events-none"></div>
+            )}
+          </div>
         ))}
+
         {!userLabelsData?.data?.length && (
-          <p className="font-medium text-center text-gray-500">No labels</p>
+          <div className="w-full text-center py-12">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg
+                className="w-8 h-8 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                />
+              </svg>
+            </div>
+            <p className="font-medium text-gray-500 text-lg">
+              No labels available
+            </p>
+            <p className="text-gray-400 text-sm mt-1">
+              Labels will appear here when added
+            </p>
+          </div>
         )}
       </div>
     </ItemSelector>
@@ -570,9 +616,11 @@ export const VideoCreateForm = ({
           >
             <DialogPortal>
               <DialogOverlay className="fixed inset-0 bg-black/50" />
-              <DialogContent className="fixed left-1/2 top-1/2 w-[92vw] max-w-xl -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white px-3 py-2 shadow-lg focus:outline-none">
+              <DialogContent className="fixed z-50 left-1/2 top-1/2 w-[92vw] max-w-xl -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white px-3 py-2 shadow-lg focus:outline-none">
                 <div className="flex items-center justify-between mb-2">
-                  <DialogTitle>Preview Video</DialogTitle>
+                  <DialogTitle className="font-medium">
+                    Preview Video
+                  </DialogTitle>
 
                   <Button
                     variant="ghost"

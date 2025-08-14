@@ -380,7 +380,7 @@ export const VideoCreateForm = ({
             type="button"
             variant={selectedUserLabel === label ? "default" : "outline"}
             size="lg"
-            className={`relative overflow-hidden min-w-40 rounded-full text-2xl px-6 py-3 ${
+            className={`relative overflow-hidden w-48 h-14 rounded-full text-2xl px-6 py-3 ${
               selectedUserLabel === label ? "ring-2 ring-brand" : ""
             }`}
             aria-pressed={selectedUserLabel === label}
@@ -390,11 +390,15 @@ export const VideoCreateForm = ({
             disabled={labelIndex > 0 && !datareel.email}
           >
             {!datareel.email && labelIndex > 0 ? (
-              <div className="absolute inset-0 flex items-center justify-center text-xs backdrop-blur-sm bg-black">
-                <p className="text-white flex items-center gap-2">
-                  <LockIcon className="size-4" />
-                  Login to access
-                </p>
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-gray-900/95 to-gray-800/80">
+                <div className="relative size-full">
+                  <p className="absolute top-0.5 left-0.5 text-white flex items-center gap-2">
+                    <LockIcon className="w-4 h-4" />
+                    <span className="text-base font-medium">
+                      Login to unlock
+                    </span>
+                  </p>
+                </div>
               </div>
             ) : null}
             {label.toUpperCase()}

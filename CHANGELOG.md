@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.1.0](https://github.com/amit-ksh/datareel-ai-sdk/compare/v1.0.0...v1.1.0) (2025-08-19)
+
+
+### Features
+
+* add thumbnail ([3362d7d](https://github.com/amit-ksh/datareel-ai-sdk/commit/3362d7d76c57b1156e1da91ed7b7bd5d224574dd))
+* add video preview for pipeline ([93935e6](https://github.com/amit-ksh/datareel-ai-sdk/commit/93935e6df27dc93fb8202bf01513a2b6e4d0a85e))
+* lock user label if user not logged in ([45e424b](https://github.com/amit-ksh/datareel-ai-sdk/commit/45e424bb69484073471bc73fda1d23a69a14bb8c))
+* rename createAvatar to createVideoAvatar and update related logic for video file handling ([d0016af](https://github.com/amit-ksh/datareel-ai-sdk/commit/d0016afa7c06203774d1da884251ffa38d9b35f6))
+* update Datareel SDK integration with new API key and organization ID handling ([c2b0274](https://github.com/amit-ksh/datareel-ai-sdk/commit/c2b027441aa5a819dfda6e2882f4d497ec80b099))
+* updated asset access logic ([c87d9b9](https://github.com/amit-ksh/datareel-ai-sdk/commit/c87d9b935fadb66b20114504854be92c73bc1955))
+
+
+### Bug Fixes
+
+* create avatar flow ([433a909](https://github.com/amit-ksh/datareel-ai-sdk/commit/433a9090526b51d25fcc219b9efe54929fec6d22))
+* improve user label selection UI and add no labels message ([42d28ff](https://github.com/amit-ksh/datareel-ai-sdk/commit/42d28ffb158004295afdd2a07d8eba0d7438d1c2))
+* update button styling and login prompt in VideoCreateForm ([8d2f3ec](https://github.com/amit-ksh/datareel-ai-sdk/commit/8d2f3ec8c229fb0c47021ea676d86af6a781cfe9))
+* update paths for SDK files in package.json ([ff03f2a](https://github.com/amit-ksh/datareel-ai-sdk/commit/ff03f2a4b61538b06f58fe6539460f800d1baeb0))
+* update query key from "avatars" to "personas" in avatar creation logic ([5a9fb94](https://github.com/amit-ksh/datareel-ai-sdk/commit/5a9fb94811ed5f6e604a87aba320b5be358bd6e6))
+* update video sharing URLs to use the development environment and improve user label selection logic ([37e6dd6](https://github.com/amit-ksh/datareel-ai-sdk/commit/37e6dd649a0dcbe4d0f2e87de47a282881e7f673))
+
 ## 1.0.0 (2025-08-13)
 
 

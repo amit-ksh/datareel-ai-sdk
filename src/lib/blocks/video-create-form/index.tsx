@@ -562,7 +562,7 @@ export const VideoCreateForm = ({
           {textComponents.map((component, index) => (
             <ScriptInput
               key={component.id}
-              label={`Script for ${component.name || `Component ${index + 1}`}`}
+              label={`Enter Script`}
               placeholder="Enter your script here..."
               value={scripts[index] || ""}
               onChange={(e) => {

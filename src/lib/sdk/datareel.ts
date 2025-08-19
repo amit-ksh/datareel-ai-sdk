@@ -301,7 +301,6 @@ export class DataReel {
       filters
     };
 
-    console.log(languages, request.filters)
     return await getPipelines(request);
   }
 

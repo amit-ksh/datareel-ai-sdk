@@ -501,7 +501,7 @@ export const VideoCreateForm = ({
                     >
                       <Eye className="size-4" />
                     </button>
-                    {pipeline.preview_thumbnail_s3.length > 0 ? (
+                    {pipeline.preview_thumbnail_s3?.length > 0 ? (
                       <div
                         className="relative"
                         style={{

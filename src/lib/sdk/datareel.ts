@@ -274,11 +274,19 @@ export class DataReel {
 
   async getLanguages() {
     this.validateCredentials(this.organisationId || '', this.apiKey || '');
-    
-    return await getOrganisationLanguages({
+
+    const languages = await getOrganisationLanguages({
       apiKey: this.apiKey!,
       filters: undefined
     });
+
+    const englishIndex = languages.findIndex(lang => lang === 'en');
+    if (englishIndex > -1) {
+      const [englishLang] = languages.splice(englishIndex, 1);
+      languages.unshift(englishLang);
+    }
+
+    return languages;
   }
 
   async getUserLabels() {

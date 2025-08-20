@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { by639_1 } from "iso-language-codes";
 
 export interface LanguageCardProps {
-  flag?: string;
+  flag?: string | React.ReactNode;
   name: string;
   description?: string;
   selected: boolean;

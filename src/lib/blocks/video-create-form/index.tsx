@@ -371,7 +371,7 @@ export const VideoCreateForm = ({
 
   const renderUserLabels = () => (
     <ItemSelector step={3} title="Select Video Type">
-      <div className="flex flex-wrap gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {userLabelsData?.data?.map((label, labelIndex) => (
           <div
             key={label}
@@ -424,7 +424,7 @@ export const VideoCreateForm = ({
         ))}
 
         {!userLabelsData?.data?.length && (
-          <div className="w-full text-center py-12">
+          <div className="w-full col-span-1 sm:col-span-2 md:col-span-3 text-center py-12">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
                 className="w-8 h-8 text-gray-400"

@@ -282,7 +282,7 @@ export const VideoCreateForm = ({
               })}
             >
               <ImageCard
-                name="Create Persona"
+                name="Create Avatar"
                 description="Create your own"
                 selected={false}
                 onClick={() => {

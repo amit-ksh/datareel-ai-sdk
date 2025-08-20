@@ -198,19 +198,21 @@ export class DataReel {
   async createAvatar({
     settingsId,
     videoFile,
-    audioFiles
+    audioFiles,
+    avatarName: providedAvatarName
   }: {
     settingsId: string;
     videoFile: File;
-    audioFiles: File[]
+    audioFiles: File[];
+    avatarName?: string;
   }) {
   this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
-  const avatarName = this.name
+  const avatarName = (providedAvatarName || this.name || '').trim()
   const referenceId = this.email
 
     const personaPayload = {
-      name: avatarName,
+  name: avatarName,
       email: this.email || '',
       reference_id: referenceId,
       organisation_id: this.organisationId || '',
@@ -234,8 +236,8 @@ export class DataReel {
       }
     };
 
-    const voicePayload = {
-        voice_label: avatarName.trim(),
+  const voicePayload = {
+    voice_label: avatarName.trim(),
         reference_id: referenceId,
         language: 'end',
         model: 'eleven_labs',

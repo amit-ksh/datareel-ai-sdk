@@ -142,6 +142,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
             type: videoFile?.type,
           }
         ),
+        avatarName: String(formObject.avatar_name || "").trim(),
         audioFiles: [
           new File([audioWithoutVideo.data], "audio.mp3", {
             type: "audio/mp4",
@@ -200,6 +201,16 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
   return (
     <form onSubmit={avatarSubmission} className="space-y-6">
       <div className="space-y-4">
+        {/* Avatar name */}
+        <Input
+          id="avatar_name"
+          name="avatar_name"
+          type="text"
+          label="Avatar name"
+          placeholder="e.g., John Demo"
+          required
+        />
+
         <Tabs
           variant="default"
           activeTab={activeTab}

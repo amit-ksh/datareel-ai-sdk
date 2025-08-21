@@ -7,6 +7,7 @@ import { cx } from "class-variance-authority";
 import { Button } from "../button";
 // import { LiveAudioVisualizer } from "react-audio-visualize";
 import { MediaErrorDisplay } from "./media-error-display";
+import { createPortal } from "react-dom";
 import {
   Video,
   Mic,
@@ -16,8 +17,14 @@ import {
   Download,
 } from "lucide-react";
 
+export const SCRIPTS: Record<string, string> = {
+  en: "Welcome to our video presentation. Today, I'll be discussing the importance of digital literacy in today's rapidly evolving technological landscape. Digital literacy encompasses the skills needed to find, evaluate, utilize, share, and create content using information technologies and the internet. As our world becomes increasingly connected, these skills are becoming essential for education, employment, and civic engagement. I believe that by fostering digital literacy, we can bridge the digital divide and ensure that everyone has the opportunity to participate fully in our digital society. Thank you for watching this presentation.",
+  es: "Bienvenido a nuestra presentación en video. Hoy, hablaré sobre la importancia de la alfabetización digital en el panorama tecnológico en rápida evolución de hoy. La alfabetización digital abarca las habilidades necesarias para encontrar, evaluar, utilizar, compartir y crear contenido utilizando tecnologías de la información y la internet. A medida que nuestro mundo se vuelve cada vez más conectado, estas habilidades se están convirtiendo en esenciales para la educación, el empleo y la participación cívica. Creo que al fomentar la alfabetización digital, podemos cerrar la brecha digital y garantizar que todos tengan la oportunidad de participar plenamente en nuestra sociedad digital. Gracias por ver esta presentación.",
+  hi: "हमारे वीडियो प्रस्तुति में आपका स्वागत है। आज, मैं आधुनिक तकनीकी परिदृश्य में डिजिटल साक्षरता के महत्व के बारे में बात करूंगा। डिजिटल साक्षरता में सूचना प्रौद्योगिकी और इंटरनेट का उपयोग करके सामग्री खोजने, मूल्यांकन करने, उपयोग करने, साझा करने और बनाने के लिए आवश्यक कौशल शामिल हैं। जैसे-जैसे हमारा विश्व अधिक जुड़ता जा रहा है, ये कौशल शिक्षा, रोजगार और नागरिक भागीदारी के लिए आवश्यक होते जा रहे हैं। मेरा मानना है कि डिजिटल साक्षरता को बढ़ावा देकर, हम डिजिटल विभाजन को पाट सकते हैं और यह सुनिश्चित कर सकते हैं कि हर किसी को हमारे डिजिटल समाज में पूरी तरह से भाग लेने का अवसर मिले। इस प्रस्तुति को देखने के लिए धन्यवाद।",
+};
 export interface VideoRecorderProps {
   recordDuration?: number;
+  language: string;
   onRecordingComplete: (media: {
     blob: Blob;
     url: string;
@@ -35,8 +42,11 @@ export const VideoRecorder = ({
   onRecordingComplete,
   onReset,
   record,
+  language,
 }: VideoRecorderProps) => {
   const [timeRemaining, setTimeRemaining] = useState<number>(recordDuration);
+  const [highlightedText, setHighlightedText] = useState<string>("");
+  const [remainingText, setRemainingText] = useState<string>(SCRIPTS[language]);
   const [showPreview, setShowPreview] = useState<boolean>(false);
   const [recordingStage, setRecordingStage] = useState<
     "initial" | "connected" | "instructions" | "countdown" | "recording"
@@ -53,6 +63,7 @@ export const VideoRecorder = ({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const scriptContainerRef = useRef<HTMLDivElement | null>(null);
   const stopRecordingBtnRef = useRef<HTMLButtonElement | null>(null);
+  const [isBrowser, setIsBrowser] = useState(false);
 
   const [trimming, setTrimming] = useState<boolean>(false);
 
@@ -171,6 +182,14 @@ export const VideoRecorder = ({
     }
   }, [cameraConnected, recordingStage]);
 
+  // Reset script text when language changes and not actively recording
+  useEffect(() => {
+    if (recordingStage === "initial" || recordingStage === "connected") {
+      setHighlightedText("");
+      setRemainingText(SCRIPTS[language] ?? "");
+    }
+  }, [language, recordingStage]);
+
   const startTimer = () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -178,6 +197,7 @@ export const VideoRecorder = ({
     }
     const startTime = Date.now();
     const duration = recordDuration * 1000;
+    const currentScript = SCRIPTS[language] ?? "";
 
     timerRef.current = setInterval(() => {
       if (recordingCanceled.current) {
@@ -194,6 +214,11 @@ export const VideoRecorder = ({
       );
 
       setTimeRemaining(remaining);
+      // Update script highlight based on time progress
+      const totalChars = currentScript.length;
+      const highlightedChars = Math.floor((newProgress / 100) * totalChars);
+      setHighlightedText(currentScript.substring(0, highlightedChars));
+      setRemainingText(currentScript.substring(highlightedChars));
 
       if (newProgress >= 100 && stopRecordingBtnRef.current) {
         stopRecordingBtnRef.current.click();
@@ -204,6 +229,8 @@ export const VideoRecorder = ({
   const resetRecording = useCallback(() => {
     recordingCanceled.current = false;
     setTimeRemaining(recordDuration);
+    setHighlightedText("");
+    setRemainingText(SCRIPTS[language] ?? "");
     setShowPreview(false);
     setRecordingStage("initial");
     if (timerRef.current) {
@@ -214,9 +241,8 @@ export const VideoRecorder = ({
     if (scriptContainerRef.current) {
       scriptContainerRef.current.scrollTop = 0;
     }
-
     if (onReset) onReset();
-  }, [recordDuration, onReset]);
+  }, [recordDuration, language, onReset]);
 
   const handleConnectCamera = async () => {
     try {
@@ -238,6 +264,8 @@ export const VideoRecorder = ({
     recordingCanceled.current = false;
     setCountdown(COUNTDOWN_SECONDS);
     setRecordingStage("countdown");
+    setHighlightedText("");
+    setRemainingText(SCRIPTS[language] ?? "");
     setTimeRemaining(recordDuration);
     countdownTimerRef.current = setInterval(() => {
       setCountdown((prevCount) => {
@@ -297,6 +325,8 @@ export const VideoRecorder = ({
     setShowPreview(false);
     setRecordingStage("initial");
     stopRecording();
+    setHighlightedText("");
+    setRemainingText(SCRIPTS[language] ?? "");
     setTimeRemaining(recordDuration);
   };
 
@@ -321,8 +351,72 @@ export const VideoRecorder = ({
     return cleanup;
   }, []);
 
+  // Auto scroll to keep highlighted text visible
+  useEffect(() => {
+    if (scriptContainerRef.current && highlightedText) {
+      const container = scriptContainerRef.current;
+      const highlightSpan = container.querySelector(
+        ".highlighted-text"
+      ) as HTMLSpanElement | null;
+
+      if (highlightSpan) {
+        const containerRect = container.getBoundingClientRect();
+        const spanRect = highlightSpan.getBoundingClientRect();
+
+        if (spanRect.bottom > containerRect.bottom - 50) {
+          container.scrollTop += 30;
+        }
+      }
+    }
+  }, [highlightedText]);
+
+  useEffect(() => {
+    setIsBrowser(true);
+  }, []);
+
   return (
     <div>
+      {/* Top script panel */}
+      <div
+        className={cx("mb-2", {
+          "h-20 opacity-0": ["recording", "countdown"].includes(recordingStage),
+        })}
+      >
+        <div className="mb-2 flex flex-col justify-between gap-2 sm:flex-row">
+          <div>
+            <h3 className="text-lg font-semibold">Script Recording Session</h3>
+            <p className="text-sm text-muted-foreground">
+              Read the script while being recorded ({recordDuration} seconds)
+            </p>
+          </div>
+        </div>
+        <div className="mx-auto mt-2 max-h-40 max-w-[500px] overflow-y-auto scroll-smooth rounded-lg bg-slate-100 p-4 text-[1.2rem] font-medium">
+          <span className="highlighted-text font-normal text-blue-600">
+            {highlightedText}
+          </span>
+          <span>{remainingText}</span>
+        </div>
+      </div>
+
+      {/* Floating script overlay while recording */}
+      {isBrowser &&
+        ["recording", "countdown"].includes(recordingStage) &&
+        createPortal(
+          <div className="fixed left-1/2 top-0 z-[100] w-full max-w-[500px] -translate-x-1/2">
+            <div className="rounded-lg bg-white/95 p-4 shadow-lg backdrop-blur-sm">
+              <div
+                ref={scriptContainerRef}
+                className="no-scrollbar mx-auto max-h-32 overflow-y-auto scroll-smooth rounded-lg bg-slate-100 p-4 text-[1.2rem] font-medium"
+              >
+                <span className="highlighted-text font-normal text-blue-600">
+                  {highlightedText}
+                </span>
+                <span>{remainingText}</span>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
       {error && (
         <div className="mx-auto max-w-xl">
           <MediaErrorDisplay

@@ -4,12 +4,13 @@ import type React from "react";
 import { useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import Cropper from "react-easy-crop";
-import { VideoRecorder } from "../../components/ui/video-recorder";
+import { SCRIPTS, VideoRecorder } from "../../components/ui/video-recorder";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Tabs } from "../../components/ui/tabs";
 import { cropVideo, separateVideoAndAudio } from "../../api/cropper";
 import { useDatareel } from "../../context";
+import { by639_1 } from "iso-language-codes";
 
 interface CreateAvatarFormProps {
   onAvatarCreated?: (avatarData: {
@@ -35,6 +36,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
     },
   };
   const { datareel } = useDatareel();
+  const [language, setLanguage] = useState("en");
   const [videoURL, setVideoURL] = useState<string | null>(null);
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -143,6 +145,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
           }
         ),
         avatarName: String(formObject.avatar_name || "").trim(),
+        language: language,
         audioFiles: [
           new File([audioWithoutVideo.data], "audio.mp3", {
             type: "audio/mp4",
@@ -201,15 +204,42 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
   return (
     <form onSubmit={avatarSubmission} className="space-y-6">
       <div className="space-y-4">
-        {/* Avatar name */}
-        <Input
-          id="avatar_name"
-          name="avatar_name"
-          type="text"
-          label="Avatar name"
-          placeholder="e.g., John Demo"
-          required
-        />
+        <div className="grid grid-cols-2 gap-4">
+          {/* Avatar name */}
+          <Input
+            id="avatar_name"
+            name="avatar_name"
+            type="text"
+            label="Avatar name"
+            placeholder="e.g., John Demo"
+            required
+          />
+          {/* LANGUAGE SELECTOR */}
+          <div>
+            <label
+              htmlFor="language"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Language
+            </label>
+            <select
+              id="language"
+              name="language"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              required
+              className={`
+              w-full px-4 py-3 border border-gray-300 rounded-md outline-none transition-colors`.trim()}
+            >
+              {Object.entries(SCRIPTS).map(([lang]) => (
+                <option key={lang} value={lang}>
+                  {/* @ts-ignore */}
+                  {by639_1?.[lang]?.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
         <Tabs
           variant="default"
@@ -281,6 +311,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
                         audio: true,
                         video: true,
                       }}
+                      language={language}
                     />
                   </div>
                 </div>

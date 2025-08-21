@@ -199,12 +199,14 @@ export class DataReel {
     settingsId,
     videoFile,
     audioFiles,
-    avatarName: providedAvatarName
+    avatarName: providedAvatarName,
+    language,
   }: {
     settingsId: string;
     videoFile: File;
     audioFiles: File[];
     avatarName?: string;
+    language: string;
   }) {
   this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
@@ -237,9 +239,9 @@ export class DataReel {
     };
 
   const voicePayload = {
-    voice_label: avatarName.trim(),
+        voice_label: avatarName.trim(),
         reference_id: referenceId,
-        language: 'end',
+        language: language || 'en',
         model: 'eleven_labs',
         stability: 0.5,
         similarity_boost: 0.75,

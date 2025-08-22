@@ -332,6 +332,7 @@ export class DataReel {
     language: string | null;
     videoType: Pipeline | null;
     contentVideos: ContentVideo['videos'];
+    presentationDataList: Array<{ bullet_points: any; dictation: string }>;
     scripts?: string[];
     shareWith?: {
       emailData: {
@@ -346,7 +347,7 @@ export class DataReel {
   }) {
   this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
-    const { avatar, voice, language, videoType, contentVideos, scripts = [] } = data;
+    const { avatar, voice, language, videoType, contentVideos, scripts = [], presentationDataList } = data;
     if (!avatar || !voice || !language || !videoType) {
       throw new Error("Avatar, voice, language, and video type are required to generate a video");
     }
@@ -372,10 +373,14 @@ export class DataReel {
           scriptIndex++;
         } else if (key === 'content') {
           acc[key] = contentVideos.pop().video_id
+        } else if (key === 'presentation_content') {
+          const presentationData = presentationDataList.pop();
+          acc[key]['bullet_points'] = presentationData.bullet_points;
+          acc[key]['dictation'] = presentationData.dictation;
         }
 
         return acc;
-      }, {id: componentIndex} as Record<string, string | number>);
+      }, {id: componentIndex} as Record<string, string | number | any>);
 
       body.push(data);
     })

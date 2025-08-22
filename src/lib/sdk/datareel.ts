@@ -20,6 +20,7 @@ export const passwordSchema = Yup.string()
 export class DataReel {
   organisationId?: string = '';
   apiKey?: string = '';
+  defaultApiKey = '';
   defaultUserLabel: string = '';
   userLabels: string[] = []
 
@@ -30,6 +31,7 @@ export class DataReel {
   constructor(data: DataReelConstructor) {
     this.organisationId = data.organisationId;
     this.apiKey = data.apiKey;
+    this.defaultApiKey = data.apiKey || '';
     this.defaultUserLabel = data.defaultLabel || 'default';
     this.userLabels = data.userLabels || [];
   }
@@ -42,7 +44,8 @@ export class DataReel {
   }
 
   private validateApiKey(apiKey: string) {
-    if (!this.apiKey || this.apiKey !== apiKey) {
+    const _apiKey = this.getApiKey();
+    if (!_apiKey || _apiKey !== apiKey) {
       throw new Error("Invalid API key");
     }
   }
@@ -75,7 +78,7 @@ export class DataReel {
       email: this.email,
       name: this.name,
       organisationId: this.organisationId,
-      apiKey: this.apiKey
+      apiKey: this.getApiKey()
     };
   }
 
@@ -94,10 +97,6 @@ export class DataReel {
     this.name = undefined;
   }
 
-  getApiKey() {
-    return this.apiKey;
-  }
-
 
   // GET ASSETS
   async getPersonas({page=1, filters}: {page?: number, filters?: BaseGetAssetsRequest['filters']}): Promise<PaginatedResponse<Persona>> {
@@ -107,7 +106,7 @@ export class DataReel {
     const baseFilters = filters || {};
 
     const defaultLabelRequest: BaseGetAssetsRequest = {
-      apiKey: this.apiKey!,
+      apiKey: this.getApiKey()!,
       page,
       filters: {
         ...(baseFilters?.languages ? { languages: baseFilters.languages } : {}),
@@ -119,7 +118,7 @@ export class DataReel {
 
     if (this.email) {
       const emailLabelRequest: BaseGetAssetsRequest = {
-        apiKey: this.apiKey!,
+        apiKey: this.getApiKey()!,
         page,
         filters: {
           ...(baseFilters?.languages ? { languages: baseFilters.languages } : {}),
@@ -145,7 +144,7 @@ export class DataReel {
     this.validateCredentials(this.organisationId || '', this.apiKey || '');
     
     const request: BaseGetAssetsRequest = {
-      apiKey: this.apiKey!,
+      apiKey: this.getApiKey()!,
       page,
       filters
     };
@@ -157,7 +156,7 @@ export class DataReel {
     this.validateCredentials(this.organisationId || '', this.apiKey || '');
     
     const request: BaseGetAssetsRequest = {
-      apiKey: this.apiKey!,
+      apiKey: this.getApiKey()!,
       page,
       filters
     };
@@ -181,7 +180,7 @@ export class DataReel {
     }
 
     const request: BaseGetAssetsRequest = {
-  apiKey: this.apiKey!,
+      apiKey: this.getApiKey()!,
       page,
       filters
     };
@@ -228,7 +227,7 @@ export class DataReel {
     const newPersonaId = newPersona?.data.data
 
     const request: CreateAvatarRequest = {
-      apiKey: this.apiKey!,
+      apiKey: this.getApiKey()!,
       data: {
         settings_id: settingsId || 'default',
         reference_id: referenceId,
@@ -257,7 +256,7 @@ export class DataReel {
       voiceFormData.append('audio_files', audioFile);
     }
 
-  const [voice, avatar] = await Promise.all([await createVoice(voiceFormData, this.apiKey!), await createVideoAvatar(request)]);
+  const [voice, avatar] = await Promise.all([await createVoice(voiceFormData, this.getApiKey()), await createVideoAvatar(request)]);
 
     const updatePersonaPayload = {
         persona_id: newPersonaId,
@@ -269,7 +268,7 @@ export class DataReel {
         consent: true,
       }
 
-  await updatePersona(updatePersonaPayload, this.apiKey!)
+  await updatePersona(updatePersonaPayload, this.getApiKey())
 
     return true
   }
@@ -278,7 +277,7 @@ export class DataReel {
     this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
     const languages = await getOrganisationLanguages({
-      apiKey: this.apiKey!,
+      apiKey: this.getApiKey(),
       filters: undefined
     });
 
@@ -295,7 +294,7 @@ export class DataReel {
     this.validateCredentials(this.organisationId || '', this.apiKey || '');
     
     return await getOrganisationUserLabels({
-      apiKey: this.apiKey!,
+      apiKey: this.getApiKey()!,
       assetType: 'persona'
     });
   }
@@ -308,7 +307,7 @@ export class DataReel {
     this.validateCredentials(this.organisationId || '', this.apiKey || '');
     
     const request: BaseGetAssetsRequest = {
-      apiKey: this.apiKey!,
+      apiKey: this.getApiKey()!,
       page,
       filters
     };
@@ -321,7 +320,7 @@ export class DataReel {
     this.validateApiKey(this.apiKey || '');
 
     return await fetchPipelineFormData({
-      apiKey: this.apiKey!,
+      apiKey: this.getApiKey()!,
       pipelineId
     })
   }
@@ -383,7 +382,7 @@ export class DataReel {
 
     const request: CreateVideoRequest = {
       pipelineId: videoType.pipeline_id,
-      apiKey: this.apiKey!,
+      apiKey: this.getApiKey()!,
       name: ``,
       assignee: this.email || '',
       approve: true,
@@ -414,7 +413,7 @@ export class DataReel {
     this.validateCredentials(this.organisationId || '', this.apiKey || '');
     
     const request: GetVideoByIdRequest = {
-      apiKey: this.apiKey!,
+      apiKey: this.getApiKey()!,
       videoId,
       filters: {}
     };
@@ -426,7 +425,7 @@ export class DataReel {
     this.validateCredentials(this.organisationId || '', this.apiKey || '');
     
     const request: GetVideoByIdRequest = {
-      apiKey: this.apiKey!,
+      apiKey: this.getApiKey()!,
       videoId,
       filters: {}
     };
@@ -439,12 +438,16 @@ export class DataReel {
     this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
     const request = {
-      apiKey: this.apiKey!,
+      apiKey: this.getApiKey()!,
       ...data
     } as const;
 
     return await shareVideo({data: request, via} as ShareVideoRequest);
   }
 
+
+  getApiKey() {
+    return this.apiKey || this.defaultApiKey;
+  }
 }
 

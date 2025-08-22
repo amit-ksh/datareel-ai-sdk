@@ -375,8 +375,10 @@ export class DataReel {
           acc[key] = contentVideos.pop().video_id
         } else if (key === 'presentation_content') {
           const presentationData = presentationDataList.pop();
+          acc[key] = {};
           acc[key]['bullet_points'] = presentationData.bullet_points;
           acc[key]['dictation'] = presentationData.dictation;
+          acc[key].content_type = pipelineFormData.at(componentIndex).presentation_content?.content_type;
         }
 
         return acc;

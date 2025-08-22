@@ -22,6 +22,13 @@ export const fetchPipelineFormData = async (data: BaseVideoRequest & {pipelineId
   return resp.data
 }
 
+export const fetchPipelineDataById = async (data: BaseVideoRequest & {pipelineId: string}): Promise<Pipeline> => {
+  const resp = await VideoAxios.get(`/api/v1/pipeline/view?pipeline_id=${data.pipelineId}`, {
+    headers: { api_key: data.apiKey }
+  })
+  return resp.data
+}
+
 export const createVideo = async (data: CreateVideoRequest) => {
   const resp = await VideoAxios.post(`/api/v1/run/${data.pipelineId}`, {
     name: data.name,

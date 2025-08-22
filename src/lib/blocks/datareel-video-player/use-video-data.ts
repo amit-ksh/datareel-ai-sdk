@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { useDatareel } from '../../context/datareel-context';
+import { fetchPipelineDataById } from '../../api/pipeline';
 
 // Default layout moved here for reuse
 export const DEFAULT_LAYOUT = {
@@ -37,6 +38,7 @@ export interface UseVideoDataResult {
     apiKey?: string | null;
     organisationId?: string | null;
     name?: string;
+    pipelineName: string;
     refetch: () => void;
     loadingStateHelpers: {
       totalProgress: number;
@@ -73,6 +75,15 @@ export function useVideoData(videoId: string, options: UseVideoDataOptions = {})
     queryFn: () => datareel.getVideo(videoId),
     enabled: !!videoId && !!datareel,
   });
+
+  const { data: resultPipelineData } = useQuery({
+    queryKey: ['video-pipeline', resultData?.data?.pipeline_id],
+    queryFn: () => fetchPipelineDataById({
+      apiKey,
+      pipelineId: resultData?.data?.pipeline_id
+    }),
+    enabled: !!resultData?.data?.pipeline_id
+  })
 
   const effectiveData = useMemo(() => {
     if (resultData?.data.status !== 'PROCESSING') return resultData?.data;
@@ -262,6 +273,7 @@ export function useVideoData(videoId: string, options: UseVideoDataOptions = {})
       apiKey,
       organisationId,
       name: resultData?.data?.data?.name || 'Video',
+      pipelineName: resultPipelineData?.pipeline_name || 'Unnamed Pipeline',
       refetch: refetchResult,
       loadingStateHelpers: {
         totalProgress,

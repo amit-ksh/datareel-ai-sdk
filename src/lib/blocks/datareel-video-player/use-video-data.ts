@@ -3,20 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { useDatareel } from '../../context/datareel-context';
 import { fetchPipelineDataById } from '../../api/pipeline';
+import { DEFAULT_LAYOUT } from '../../constants';
 
-// Default layout moved here for reuse
-export const DEFAULT_LAYOUT = {
-  name: 'Square',
-  settings_id: 'default',
-  id: 'default',
-  canvas_dimensions: { width: 1, height: 1 },
-  video_dimensions: { width: 1038, height: 778 },
-  center_coordinate: { x: 540, y: 540 },
-  pip_position: { x: 700, y: 680 },
-  pip_size: 40,
-  max_quality: 1080,
-  pip_radius: 100,
-};
+
 
 export interface UseVideoDataOptions {
   realtime?: boolean; // enable websocket realtime updates
@@ -38,6 +27,7 @@ export interface UseVideoDataResult {
     apiKey?: string | null;
     organisationId?: string | null;
     name?: string;
+    pipelineId: string;
     pipelineName: string;
     refetch: () => void;
     loadingStateHelpers: {
@@ -273,6 +263,7 @@ export function useVideoData(videoId: string, options: UseVideoDataOptions = {})
       apiKey,
       organisationId,
       name: resultData?.data?.data?.name || 'Video',
+      pipelineId: resultPipelineData?.pipeline_id || '',
       pipelineName: resultPipelineData?.pipeline_name || 'Unnamed Pipeline',
       refetch: refetchResult,
       loadingStateHelpers: {

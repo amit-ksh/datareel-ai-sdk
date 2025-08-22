@@ -21,7 +21,6 @@ import type {
 import { ItemSelector } from "../../components";
 import { CreateAvatarForm } from "../create-avatar-form";
 import { cx } from "class-variance-authority";
-import { DEFAULT_LAYOUT } from "../datareel-video-player/use-video-data";
 import {
   Root as Dialog,
   Content as DialogContent,
@@ -30,6 +29,7 @@ import {
   Title as DialogTitle,
 } from "@radix-ui/react-dialog";
 import DatareelVideoPlayer from "../datareel-video-player";
+import { DEFAULT_LAYOUT } from "../../constants";
 
 interface VideoCreateFormProps {
   onVideoGenerate: (videoId: string) => Promise<void> | void;

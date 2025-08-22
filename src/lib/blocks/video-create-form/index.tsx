@@ -151,6 +151,7 @@ export const VideoCreateForm = ({
         language: selectedLanguage,
         videoType: selectedVideoType,
         contentVideos: selectedTemplate,
+        presentationDataList: [],
         scripts: scripts.filter((script) => script?.trim()),
         shareWith: {
           emailData: {

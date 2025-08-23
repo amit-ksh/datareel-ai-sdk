@@ -141,6 +141,7 @@ export const createPersona = async (request: FormData, apiKey: string) => {
 
 export const updatePersona = async (request: {
   persona_id: string;
+  name: string;
   default_avatar?: string;
   default_voice?: string;
   onboarded?: boolean;
@@ -158,6 +159,35 @@ export const updatePersona = async (request: {
   )
 }
 
+export const deletePersona = async (request: { persona_id: string }, apiKey: string) => {
+  return VideoAxios.delete(`/api/v1/persona/delete`, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      api_key: apiKey,
+    },
+    data: request,
+  });
+};
+
+export const deleteAvatar = async (request: { video_id: string }, apiKey: string) => {
+  return VideoAxios.delete(`/api/v1/video/delete`, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      api_key: apiKey,
+    },
+    data: request,
+  });
+};
+
+export const deleteVoice = async (request: { voice_id: string }, apiKey: string) => {
+  return VideoAxios.delete(`/api/v1/voice/delete`, {
+    data: request,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      api_key: apiKey,
+    },
+  });
+};
 
 const USER_LABEL_ASSET_API_MAP = {
   persona: {

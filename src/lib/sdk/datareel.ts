@@ -1,5 +1,5 @@
 import type { DataReelConstructor, BaseGetAssetsRequest, PaginatedResponse, Avatar, Voice,  ContentVideo, Persona, Pipeline, CreateVideoRequest, GetVideoByIdRequest, CreateAvatarRequest, ShareVideoRequest } from "../types";
-import { getAvatars, getVoices,  getContentVideos, getPersonas, createVoice, updatePersona, createPersona, getOrganisationUserLabels, createVideoAvatar } from "../api/assets";
+import { getAvatars, getVoices,  getContentVideos, getPersonas, createVoice, updatePersona as updatePersonaApi, createPersona, getOrganisationUserLabels, createVideoAvatar, deletePersona as apiDeletePersona, deleteAvatar as apiDeleteAvatar, deleteVoice as apiDeleteVoice } from "../api/assets";
 import { getPipelines, createVideo, getVideoById,  getOrganisationLanguages, fetchPipelineFormData, shareVideo } from "../api/pipeline";
 import { createOrganisation, } from "../api/auth";
 
@@ -260,6 +260,7 @@ export class DataReel {
 
     const updatePersonaPayload = {
         persona_id: newPersonaId,
+        name: avatarName,
         default_avatar: avatar?.video_id,
         // @ts-ignore 
         default_voice: voice?.data?.voice_id,
@@ -268,7 +269,7 @@ export class DataReel {
         consent: true,
       }
 
-  await updatePersona(updatePersonaPayload, this.getApiKey())
+  await updatePersonaApi(updatePersonaPayload, this.getApiKey())
 
     return true
   }
@@ -450,6 +451,64 @@ export class DataReel {
     } as const;
 
     return await shareVideo({data: request, via} as ShareVideoRequest);
+  }
+
+
+  async deletePersonaAssets(persona: Persona ) {
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
+    const apiKey = this.getApiKey()!;
+
+    const personaId = persona._id;
+    const avatarId = persona.default_avatar || null;
+    const voiceId = persona.default_voice || null;
+
+    if (!personaId) throw new Error('personaId is required');
+
+    const errors: string[] = [];
+
+    try {
+      await apiDeletePersona({ persona_id: personaId }, apiKey);
+    } catch (e: any) {
+      errors.push(`persona:${e?.message || 'unknown error'}`);
+    }
+
+    if (avatarId) {
+      try {
+        await apiDeleteAvatar({ video_id: avatarId }, apiKey);
+      } catch (e: any) {
+        errors.push(`avatar:${e?.message || 'unknown error'}`);
+      }
+    }
+
+    if (voiceId) {
+      try {
+        await apiDeleteVoice({ voice_id: voiceId }, apiKey);
+      } catch (e: any) {
+        errors.push(`voice:${e?.message || 'unknown error'}`);
+      }
+    }
+
+    if (errors.length) {
+      throw new Error(`Delete completed with issues -> ${errors.join('; ')}`);
+    }
+    return true;
+  }
+
+
+  async updatePersona({
+    personaId,
+    name,
+  }: {
+    personaId: string;
+    name: string;
+  }) {
+    this.validateCredentials(this.organisationId || '', this.apiKey || '');
+    const apiKey = this.getApiKey()!;
+    const payload = {
+      persona_id: personaId,
+      name,
+    };
+    return updatePersonaApi(payload as any, apiKey);
   }
 
 

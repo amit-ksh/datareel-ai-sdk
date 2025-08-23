@@ -210,10 +210,10 @@ export class DataReel {
   this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
   const avatarName = (providedAvatarName || this.name || '').trim()
-  const referenceId = this.email
+  const referenceId = ''
 
     const personaPayload = {
-  name: avatarName,
+      name: avatarName,
       email: this.email || '',
       reference_id: referenceId,
       organisation_id: this.organisationId || '',
@@ -454,7 +454,7 @@ export class DataReel {
   }
 
 
-  async deletePersonaAssets(persona: Persona ) {
+  async deletePersona(persona: Persona ) {
     this.validateCredentials(this.organisationId || '', this.apiKey || '');
     const apiKey = this.getApiKey()!;
 

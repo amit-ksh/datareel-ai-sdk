@@ -4,6 +4,7 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { useDatareel } from '../../context/datareel-context';
 import { fetchPipelineDataById } from '../../api/pipeline';
 import { DEFAULT_LAYOUT } from '../../constants';
+import { Pipeline } from '../../types';
 
 
 
@@ -27,7 +28,7 @@ export interface UseVideoDataResult {
     apiKey?: string | null;
     organisationId?: string | null;
     name?: string;
-    pipelineData: any;
+    pipelineData: Pipeline;
     pipelineId: string;
     pipelineName: string;
     refetch: () => void;
@@ -264,8 +265,8 @@ export function useVideoData(videoId: string, options: UseVideoDataOptions = {})
       apiKey,
       organisationId,
       name: resultData?.data?.data?.name || 'Video',
-      pipelineData: resultPipelineData,
-      pipelineId: resultPipelineData?.data?.pipeline_id || '',
+      pipelineData: resultPipelineData.data,
+      pipelineId: resultPipelineData?.data?.pipeline_id || resultData?.data?.data?.pipeline_id || '',
       pipelineName: resultPipelineData?.data?.pipeline_name || 'Unnamed Pipeline',
       refetch: refetchResult,
       loadingStateHelpers: {

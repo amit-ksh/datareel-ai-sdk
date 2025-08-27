@@ -27,6 +27,7 @@ export interface UseVideoDataResult {
     apiKey?: string | null;
     organisationId?: string | null;
     name?: string;
+    pipelineData: any;
     pipelineId: string;
     pipelineName: string;
     refetch: () => void;
@@ -263,8 +264,9 @@ export function useVideoData(videoId: string, options: UseVideoDataOptions = {})
       apiKey,
       organisationId,
       name: resultData?.data?.data?.name || 'Video',
-      pipelineId: resultPipelineData?.pipeline_id || '',
-      pipelineName: resultPipelineData?.pipeline_name || 'Unnamed Pipeline',
+      pipelineData: resultPipelineData,
+      pipelineId: resultPipelineData?.data?.pipeline_id || '',
+      pipelineName: resultPipelineData?.data?.pipeline_name || 'Unnamed Pipeline',
       refetch: refetchResult,
       loadingStateHelpers: {
         totalProgress,

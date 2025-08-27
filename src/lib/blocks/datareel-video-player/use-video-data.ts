@@ -265,7 +265,7 @@ export function useVideoData(videoId: string, options: UseVideoDataOptions = {})
       apiKey,
       organisationId,
       name: resultData?.data?.data?.name || 'Video',
-      pipelineData: resultPipelineData.data,
+      pipelineData: resultPipelineData?.data,
       pipelineId: resultPipelineData?.data?.pipeline_id || resultData?.data?.data?.pipeline_id || '',
       pipelineName: resultPipelineData?.data?.pipeline_name || 'Unnamed Pipeline',
       refetch: refetchResult,

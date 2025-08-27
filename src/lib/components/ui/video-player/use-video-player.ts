@@ -2852,14 +2852,7 @@ export function useVideoPlayer(
   // keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: any) => {
-      if (e.key === ' ') {
-        if (loadingMediaRef.current) return
-        togglePlay()
-      } else if (e.key === 'f') {
-        // toggleFullscreen()
-      } else if (e.key === 'm') {
-        // toggleMute()
-      } else if (
+       if (
         e.key === 'F12' ||
         (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
         (e.ctrlKey && e.key === 'U')

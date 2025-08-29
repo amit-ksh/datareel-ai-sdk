@@ -161,6 +161,7 @@ export function useVideoData(videoId: string, options: UseVideoDataOptions = {})
       }
     },
     shouldReconnect: () => true,
+    reconnectAttempts: 3
   });
 
   // WebSocket handling for real-time updates

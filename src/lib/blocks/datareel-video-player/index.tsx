@@ -129,7 +129,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-md w-full text-center">
           <div className="w-16 h-16 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4">
             <CircleXIcon className="w-8 h-8 text-red-500" />

@@ -210,7 +210,7 @@ export class DataReel {
   this.validateCredentials(this.organisationId || '', this.apiKey || '');
 
   const avatarName = (providedAvatarName || this.name || '').trim()
-  const referenceId = ''
+  const referenceId = this.email
 
     const personaPayload = {
       name: avatarName,

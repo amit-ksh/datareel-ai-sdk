@@ -18,13 +18,15 @@ interface CreateAvatarFormProps {
     reference_id: string;
     settings_id: string;
     video: File;
-  }) => void;
+  }) => Promise<void> | void;
+  onError?: (error: Error) => Promise<void> | void;
   onCancel?: () => void;
   avatarVideoFileValid?: (file: File) => boolean;
 }
 
 export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
   onAvatarCreated,
+  onError,
   onCancel,
   avatarVideoFileValid,
 }) => {
@@ -167,8 +169,8 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
     } catch (error: any) {
       console.error(error);
       const errorMessage = error?.response?.data?.detail || error?.message;
-      throw new Error(
-        errorMessage || "Failed to create avatar. Please try again."
+      onError?.(
+        new Error(errorMessage || "Failed to create avatar. Please try again.")
       );
     } finally {
       setRender(false);

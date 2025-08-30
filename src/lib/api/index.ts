@@ -1,6 +1,6 @@
 import axios from "axios"
 
-export const ENVIRONMENT_TYPE: 'production' | 'development' = 'production'
+export const ENVIRONMENT_TYPE: 'production' | 'development' = 'development'
 
 const ENVIRONMENTS = {
   production: {
@@ -24,5 +24,5 @@ export const AuthAxios = axios.create({
 })
 
 export const VideoAxios = axios.create({
-  baseURL: ENVIRONMENTS[ENVIRONMENT_TYPE].video+API_VERSION.V1,
+  baseURL: ENVIRONMENTS[ENVIRONMENT_TYPE].video+API_VERSION.V2,
 })

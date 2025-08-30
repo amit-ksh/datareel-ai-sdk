@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.1.0](https://github.com/amit-ksh/datareel-ai-sdk/compare/v1.0.0...v1.1.0) (2025-08-30)
+
+
+### Features
+
+* add AvatarUploadGuidelines component and integrate pipeline data fetching ([e313718](https://github.com/amit-ksh/datareel-ai-sdk/commit/e313718f0866ebbfb8a4bbe3609f8003508f75fd))
+* add delete and update persona functionality in DataReel class ([5cd75a7](https://github.com/amit-ksh/datareel-ai-sdk/commit/5cd75a7359ef5c8a44d2a5cc60624e399e9bf580))
+* add pipeline data ([82a0f0d](https://github.com/amit-ksh/datareel-ai-sdk/commit/82a0f0d7791d6aadcb39a27b96f9f6d7f1969f64))
+* add presentation_content dynamic field for generate video ([2af9caf](https://github.com/amit-ksh/datareel-ai-sdk/commit/2af9cafe8a6dfc7d01756599f4d084c663d0ab91))
+* add scripts in the video recorder ([c85e19c](https://github.com/amit-ksh/datareel-ai-sdk/commit/c85e19ccb089baba414e76243dcdbe295b4d7fbd))
+* add support for dynamic presentation_content in  generate video ([d78794e](https://github.com/amit-ksh/datareel-ai-sdk/commit/d78794e2bc549cfddbedb6cbd1fd2a7ae2e5029e))
+* add thumbnail ([3362d7d](https://github.com/amit-ksh/datareel-ai-sdk/commit/3362d7d76c57b1156e1da91ed7b7bd5d224574dd))
+* add video preview for pipeline ([93935e6](https://github.com/amit-ksh/datareel-ai-sdk/commit/93935e6df27dc93fb8202bf01513a2b6e4d0a85e))
+* api version connection ([2c3649a](https://github.com/amit-ksh/datareel-ai-sdk/commit/2c3649a2108597fe6aa3de8e218ff7959b19ba32))
+* avatar name input in persona create form ([9e6186d](https://github.com/amit-ksh/datareel-ai-sdk/commit/9e6186de692a4f048bb60fe49e41927fd5fe4680))
+* enhance presentation_content structure in DataReel class ([0171737](https://github.com/amit-ksh/datareel-ai-sdk/commit/01717374d9811fd4f07d66fe3cf201d1f7fd41f1))
+* lock user label if user not logged in ([45e424b](https://github.com/amit-ksh/datareel-ai-sdk/commit/45e424bb69484073471bc73fda1d23a69a14bb8c))
+* package api version connection ([e4b7ad2](https://github.com/amit-ksh/datareel-ai-sdk/commit/e4b7ad23e4cb73e8eab8beedd5cba96d87244ce1))
+* prod sdk setup ([0981cae](https://github.com/amit-ksh/datareel-ai-sdk/commit/0981caea1425d512d5034038979dee51e018052a))
+* rename createAvatar to createVideoAvatar and update related logic for video file handling ([d0016af](https://github.com/amit-ksh/datareel-ai-sdk/commit/d0016afa7c06203774d1da884251ffa38d9b35f6))
+* shift package to prod ([3210cb9](https://github.com/amit-ksh/datareel-ai-sdk/commit/3210cb918ea2607616f7d8988f93c715e48cdb55))
+* update Datareel SDK integration with new API key and organization ID handling ([c2b0274](https://github.com/amit-ksh/datareel-ai-sdk/commit/c2b027441aa5a819dfda6e2882f4d497ec80b099))
+* update datareel video player ui ([9c516dd](https://github.com/amit-ksh/datareel-ai-sdk/commit/9c516dd5ee14051e009ad7e2b9cca09936af94fc))
+* update persona creation to use empty reference_id and rename deletePersonaAssets method ([8155f8f](https://github.com/amit-ksh/datareel-ai-sdk/commit/8155f8ff0c1a147870a3a566fb55e825f72dbd8a))
+* updated asset access logic ([c87d9b9](https://github.com/amit-ksh/datareel-ai-sdk/commit/c87d9b935fadb66b20114504854be92c73bc1955))
+* user label UI improvement ([1d1a942](https://github.com/amit-ksh/datareel-ai-sdk/commit/1d1a942a3c71e690467f4cb24340f66e35ae10b4))
+
+
+### Bug Fixes
+
+* create avatar flow ([433a909](https://github.com/amit-ksh/datareel-ai-sdk/commit/433a9090526b51d25fcc219b9efe54929fec6d22))
+* default apikey logic ([cbd1a9a](https://github.com/amit-ksh/datareel-ai-sdk/commit/cbd1a9a7ecca0c7dd9f5b9a9eaa927ed3ae27afb))
+* improve user label selection UI and add no labels message ([42d28ff](https://github.com/amit-ksh/datareel-ai-sdk/commit/42d28ffb158004295afdd2a07d8eba0d7438d1c2))
+* update button styling and login prompt in VideoCreateForm ([8d2f3ec](https://github.com/amit-ksh/datareel-ai-sdk/commit/8d2f3ec8c229fb0c47021ea676d86af6a781cfe9))
+* update LanguageCardProps to allow ReactNode for flag and modify getLanguages to prioritize English language ([7a364bb](https://github.com/amit-ksh/datareel-ai-sdk/commit/7a364bbe1b01f0760814241e0f7dcc0b1bc075bd))
+* update paths for SDK files in package.json ([ff03f2a](https://github.com/amit-ksh/datareel-ai-sdk/commit/ff03f2a4b61538b06f58fe6539460f800d1baeb0))
+* update query key from "avatars" to "personas" in avatar creation logic ([5a9fb94](https://github.com/amit-ksh/datareel-ai-sdk/commit/5a9fb94811ed5f6e604a87aba320b5be358bd6e6))
+* update video sharing URLs to use the development environment and improve user label selection logic ([37e6dd6](https://github.com/amit-ksh/datareel-ai-sdk/commit/37e6dd649a0dcbe4d0f2e87de47a282881e7f673))
+
 ## 1.0.0 (2025-08-13)
 
 

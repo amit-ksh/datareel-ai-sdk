@@ -151,7 +151,7 @@ export function useVideoData(videoId: string, options: UseVideoDataOptions = {})
   const wsUrl = useMemo(() => {
     if (!realtime) return null;
     if (!videoId || !apiKey || isVideoCreated || isResultPending) return null;
-    return `wss://video.dev.datareel.ai/api/v1/ws/${videoId}/${apiKey}`;
+    return `wss://video.dev.datareel.ai/api/v2/ws/${videoId}/${apiKey}`;
   }, [videoId, apiKey, isVideoCreated, isResultPending, realtime]);
 
   const { lastMessage, readyState } = useWebSocket(wsUrl, {

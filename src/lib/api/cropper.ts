@@ -26,7 +26,7 @@ export const cropVideo = async ({
   formData.set('scale_width', scale.width.toString())
   formData.set('scale_height', scale.height.toString())
 
-  return VideoAxios.post('/api/v1/video/crop-video', formData, {
+  return VideoAxios.post('video/crop-video', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
       Accept: 'video/mp4',
@@ -60,7 +60,7 @@ export const trimVideoAudio = async ({
     formData.set('scale_height', scale.height.toString())
   }
 
-  return VideoAxios.post('/api/v1/video/trim-crop-video', formData, {
+  return VideoAxios.post('video/trim-crop-video', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -90,7 +90,7 @@ export const extractVideo = async ({
   formData.set('scale_width', scale.width.toString())
   formData.set('scale_height', scale.height.toString())
 
-  return VideoAxios.post('/api/v1/video/separate-video-audio/video', formData, {
+  return VideoAxios.post('video/separate-video-audio/video', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -119,7 +119,7 @@ export const extractAudio = async ({
   formData.set('scale_width', scale.width.toString())
   formData.set('scale_height', scale.height.toString())
 
-  return VideoAxios.post('/api/v1/video/separate-video-audio/audio', formData, {
+  return VideoAxios.post('video/separate-video-audio/audio', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

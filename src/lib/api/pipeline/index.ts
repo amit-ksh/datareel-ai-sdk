@@ -6,7 +6,7 @@ export const getPipelines = async (data: GetAvatarsRequest): Promise<PaginatedRe
   const params = prepareAssetFilters(data)
   params.append("page", data.page?.toString() || "1");
 
-  const resp = await VideoAxios.get(`/api/v1/pipeline/list`, {
+  const resp = await VideoAxios.get(`pipeline/list`, {
     headers: { api_key: data.apiKey },
     params,
   })
@@ -15,7 +15,7 @@ export const getPipelines = async (data: GetAvatarsRequest): Promise<PaginatedRe
 }
 
 export const fetchPipelineFormData = async (data: BaseVideoRequest & {pipelineId: string}): Promise<Pipeline> => {
-  const resp = await VideoAxios.get(`/api/v1/integrate/pipeline/${data.pipelineId}`, {
+  const resp = await VideoAxios.get(`integrate/pipeline/${data.pipelineId}`, {
     headers: { api_key: data.apiKey },
   })
 
@@ -23,14 +23,14 @@ export const fetchPipelineFormData = async (data: BaseVideoRequest & {pipelineId
 }
 
 export const fetchPipelineDataById = async (data: BaseVideoRequest & {pipelineId: string}): Promise<{data: Pipeline}> => {
-  const resp = await VideoAxios.get(`/api/v1/pipeline/view?pipeline_id=${data.pipelineId}`, {
+  const resp = await VideoAxios.get(`pipeline/view?pipeline_id=${data.pipelineId}`, {
     headers: { api_key: data.apiKey }
   })
   return resp.data
 }
 
 export const createVideo = async (data: CreateVideoRequest) => {
-  const resp = await VideoAxios.post(`/api/v1/run/${data.pipelineId}`, {
+  const resp = await VideoAxios.post(`run/${data.pipelineId}`, {
     name: data.name,
     assignee: data.assignee,
     lip_sync_model: data.lip_sync_model,
@@ -46,14 +46,14 @@ export const createVideo = async (data: CreateVideoRequest) => {
 }
 
 export const getVideoById = async (data: GetVideoByIdRequest) => {
-  const resp = await VideoAxios.get(`/api/v1/list/pipeline/results/${data.videoId}`, {
+  const resp = await VideoAxios.get(`list/pipeline/results/${data.videoId}`, {
     headers: { api_key: data.apiKey },
   })
   return resp.data
 }
 
 export const getOrganisationLanguages = async (data: Omit<BaseGetAssetsRequest, 'page'>): Promise<string[]> => {
-  const resp = await VideoAxios.get(`/api/v1/pipeline/languages`, {
+  const resp = await VideoAxios.get(`pipeline/languages`, {
     headers: { api_key: data.apiKey },
   })
 
@@ -68,7 +68,7 @@ const shareVideoViaEmail = async ({
   emails,
 }: ShareVideoEmailRequest) => {
   return await VideoAxios.post(
-    `/api/v1/resend/email?results_id=${videoId}&subject=${subject}`,
+    `resend/email?results_id=${videoId}&subject=${subject}`,
     emails,
     {
       headers: {
@@ -85,7 +85,7 @@ const shareVideoViaWhatsapp = async ({
   contacts,
 }: ShareVideoWhatsappRequest) => {
   return await VideoAxios.post(
-    `/api/v1/resend/whatsapp?results_id=${videoId}&caption=${caption}`,
+    `resend/whatsapp?results_id=${videoId}&caption=${caption}`,
     contacts,
     {
       headers: {

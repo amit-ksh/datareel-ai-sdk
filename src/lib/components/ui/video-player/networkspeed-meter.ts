@@ -1,10 +1,12 @@
+import { VideoAxios } from "../../../api";
+
 export class NetworkSpeedMeter {
   private testFileUrl: string
   private speedHistory: { speed: number; timestamp: number }[]
 
   constructor() {
     this.testFileUrl =
-      'https://video.dev.datareel.ai/api/v1/cdn/sample_1mb_file.bin' // 1MB test file
+      'cdn/sample_1mb_file.bin' // 1MB test file
     this.speedHistory = []
   }
 
@@ -52,7 +54,7 @@ export class NetworkSpeedMeter {
   async measureDownloadSpeed() {
     const testSizes = [
       {
-        url: 'https://video.dev.datareel.ai/api/v1/cdn/sample_1mb_file.bin',
+        url: 'cdn/sample_1mb_file.bin',
         size: 1000000,
       }, // 1MB
     ]
@@ -79,13 +81,12 @@ export class NetworkSpeedMeter {
   async performDownloadTest(url: string, expectedSize: number) {
     const startTime = performance.now()
 
-    const response = await fetch(url, {
-      cache: 'no-cache',
+    const response = (await VideoAxios.get(url, {
       headers: {
         'Cache-Control': 'no-cache',
         Pragma: 'no-cache',
       },
-    })
+    })).data
 
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
 

@@ -6,7 +6,7 @@ const getDeliveryVideoByQualityStatus = async ({ resultId }: { resultId: string 
   const params = new URLSearchParams()
   params.append('results_id', resultId)
   const resp = await VideoAxios.get(
-    `/api/v1/pipeline/results/quality/status/public`,
+    `pipeline/results/quality/status/public`,
     {
       headers: {
         secret: 'zBsBEtLn4PgIrj0CNEbHSGNQjhJGoyaAmTvQikqQlZ+K1yhMU7i4htz9MoUlap48Dwwknw+9WB8oMxWl',
@@ -39,7 +39,7 @@ const getVideoByQualityDelivery = async ({ resultId, quality }: { resultId: stri
   const params = new URLSearchParams()
   params.append('results_id', resultId)
   params.append('quality', quality || '720')
-  return VideoAxios.get(`/api/v1/pipeline/results/quality/public`, {
+  return VideoAxios.get(`pipeline/results/quality/public`, {
     headers: {
       secret: 'zBsBEtLn4PgIrj0CNEbHSGNQjhJGoyaAmTvQikqQlZ+K1yhMU7i4htz9MoUlap48Dwwknw+9WB8oMxWl',
     },

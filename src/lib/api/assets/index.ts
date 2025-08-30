@@ -17,7 +17,7 @@ export const getAvatars = async (
   const params = prepareAssetFilters(data);
   params.append("page", data.page?.toString() || "1");
 
-  const resp = await VideoAxios.get(`/api/v1/video/list`, {
+  const resp = await VideoAxios.get(`video/list`, {
     headers: { api_key: data.apiKey },
     params,
   });
@@ -31,7 +31,7 @@ export const getVoices = async (
   const params = prepareAssetFilters(data);
   params.append("page", data.page?.toString() || "1");
 
-  const resp = await VideoAxios.get(`/api/v1/voice/list`, {
+  const resp = await VideoAxios.get(`voice/list`, {
     headers: { api_key: data.apiKey },
     params,
   });
@@ -44,7 +44,7 @@ export const getTemplates = async (
   const params = prepareAssetFilters(data);
   params.append("page", data.page?.toString() || "1");
 
-  const resp = await VideoAxios.get(`/api/v1/template/list`, {
+  const resp = await VideoAxios.get(`template/list`, {
     headers: { api_key: data.apiKey },
     params,
   });
@@ -65,7 +65,7 @@ export const getContentVideos = async (
   params.append("cluster_id", data.cluster_id || "");
   params.append("page", data.page?.toString() || "1");
 
-  const resp = await VideoAxios.get(`/api/v1/view/cluster`, {
+  const resp = await VideoAxios.get(`view/cluster`, {
     headers: { api_key: data.apiKey },
     params,
   });
@@ -80,7 +80,7 @@ export const getPersonas = async (
   params.set('page_num', data.page?.toString() || "1");
   params.set('onboarded', String(true));
 
-  const resp = await VideoAxios.get(`/api/v1/persona/list`, {
+  const resp = await VideoAxios.get(`persona/list`, {
     headers: { api_key: data.apiKey },
     params,
   });
@@ -105,7 +105,7 @@ export const createVideoAvatar = async (
   formData.append("settings_id", request.data.settings_id);
 
   const response = await VideoAxios.post(
-    `/api/v1/video/upload?${params.toString()}`,
+    `video/upload?${params.toString()}`,
     formData,
     {
       headers: {
@@ -120,7 +120,7 @@ export const createVideoAvatar = async (
 
 
 export const createVoice = async (request: FormData, apiKey: string) => {
-  return VideoAxios.post(`/api/v1/voice/upload`, request, {
+  return VideoAxios.post(`voice/upload`, request, {
     headers: {
       'Content-Type': 'multipart/form-data',
       api_key: apiKey,
@@ -130,7 +130,7 @@ export const createVoice = async (request: FormData, apiKey: string) => {
 
 
 export const createPersona = async (request: FormData, apiKey: string) => {
-  return VideoAxios.post(`/api/v1/persona/create`, request, {
+  return VideoAxios.post(`persona/create`, request, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       api_key: apiKey,
@@ -148,7 +148,7 @@ export const updatePersona = async (request: {
   consent?: boolean;
 }, apiKey: string) => {
   return VideoAxios.put(
-    `/api/v1/persona/update`,
+    `persona/update`,
     request,
     {
       headers: {
@@ -160,7 +160,7 @@ export const updatePersona = async (request: {
 }
 
 export const deletePersona = async (request: { persona_id: string }, apiKey: string) => {
-  return VideoAxios.delete(`/api/v1/persona/delete`, {
+  return VideoAxios.delete(`persona/delete`, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       api_key: apiKey,
@@ -170,7 +170,7 @@ export const deletePersona = async (request: { persona_id: string }, apiKey: str
 };
 
 export const deleteAvatar = async (request: { video_id: string }, apiKey: string) => {
-  return VideoAxios.delete(`/api/v1/video/delete`, {
+  return VideoAxios.delete(`video/delete`, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       api_key: apiKey,
@@ -180,7 +180,7 @@ export const deleteAvatar = async (request: { video_id: string }, apiKey: string
 };
 
 export const deleteVoice = async (request: { voice_id: string }, apiKey: string) => {
-  return VideoAxios.delete(`/api/v1/voice/delete`, {
+  return VideoAxios.delete(`voice/delete`, {
     data: request,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -191,13 +191,13 @@ export const deleteVoice = async (request: { voice_id: string }, apiKey: string)
 
 const USER_LABEL_ASSET_API_MAP = {
   persona: {
-    endpoint: '/api/v1/persona/user_labels',
+    endpoint: 'persona/user_labels',
   },
   content: {
-    endpoint: '/api/v1/cluster/user_labels',
+    endpoint: 'cluster/user_labels',
   },
   video_content: {
-    endpoint: '/api/v1/video/user_labels',
+    endpoint: 'video/user_labels',
   },
 } as const;
 

@@ -91,6 +91,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
             const isActive = item.id === currentActiveTab;
             return (
               <button
+                type="button"
                 key={item.id}
                 className={getTabClasses(item, isActive)}
                 onClick={() => !item.disabled && handleTabChange(item.id)}

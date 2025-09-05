@@ -46,7 +46,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
   const [render, setRender] = useState(false);
   const [activeTab, setActiveTab] = useState<"upload" | "record">("upload");
-
+  const [isCreatingAvatar, setIsCreatingAvatar] = useState(false);
   const queryClient = useQueryClient();
 
   const onCropComplete = useCallback(
@@ -88,7 +88,9 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
       if (!videoURL) {
         throw new Error("Please upload a video");
       }
-
+      if (isCreatingAvatar) return;
+      
+      setIsCreatingAvatar(true);
       setRender(true);
       const croppedVideoBlob = await showCroppedVideo();
       if (!croppedVideoBlob) {
@@ -174,6 +176,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
       );
     } finally {
       setRender(false);
+      setIsCreatingAvatar(false);
     }
   };
 
@@ -383,7 +386,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
         </Button>
         <Button
           type="submit"
-          disabled={!videoURL || render || !datareel?.email}
+          disabled={!videoURL || isCreatingAvatar || render || !datareel?.email}
           className="min-w-[120px]"
           title={!datareel?.email ? "Set your email to enable" : undefined}
         >

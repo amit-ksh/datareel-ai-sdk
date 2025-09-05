@@ -256,7 +256,7 @@ const useMediaRecorder = ({
     }
 
     recorder.onstop = () => {
-      const blob = new Blob(mediaChunks.current, { type: 'video/mp4' })
+      const blob = new Blob(mediaChunks.current, { type: recorderMimeType })
       const url = URL.createObjectURL(blob)
       setRecordedMedia({
         blob,

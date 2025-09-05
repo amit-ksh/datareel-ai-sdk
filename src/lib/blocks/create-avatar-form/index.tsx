@@ -382,6 +382,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
             handleReset();
             onCancel?.();
           }}
+          disabled={isCreatingAvatar}
         >
           Cancel
         </Button>

@@ -2,12 +2,37 @@
 
 import { useState, useEffect, useRef, } from 'react'
 
+const VideoMimeTypes = [
+  'video/mp4',                       // ✅ Safari (H.264 + AAC)
+  'video/mp4;codecs="avc1.42E01E"',  // ✅ Safari (explicit H.264 codec)
+  'video/webm;codecs=vp9,opus',      // ✅ Chrome/Firefox (high quality)
+  'video/webm;codecs=vp8,opus',      // ✅ Chrome/Firefox (widely supported)
+  'video/webm;codecs=vp8',           // ✅ fallback for video-only
+  'video/webm'                       // ✅ generic fallback
+];
+
+const AudioMimeTypes = [
+  'audio/mp4',                       // ✅ Safari (AAC)
+  'audio/mp4;codecs=alac',           // ✅ Safari Technology Preview (ALAC)
+  'audio/mp4;codecs=pcm',            // ✅ Safari Technology Preview (lossless)
+  'audio/webm;codecs=opus',          // ✅ Chrome/Firefox
+  'audio/webm',                      // ✅ Chrome/Firefox fallback
+];
+
+const getSupportedMimeType = (isVideo: boolean) => {
+  const mimeTypes = isVideo ? VideoMimeTypes : AudioMimeTypes;
+  for (const type of mimeTypes) {
+    if (MediaRecorder.isTypeSupported(type)) {
+      return type;
+    }
+  }
+}
+
 interface MediaRecorderOptions {
   audio?: boolean
   video?: boolean
   audioConstraints?: MediaTrackConstraints
   videoConstraints?: MediaTrackConstraints
-  mimeType?: string
   onRecordingComplete?: (data: {
     blob: Blob
     url: string
@@ -39,7 +64,6 @@ const useMediaRecorder = ({
   video = false,
   audioConstraints = {},
   videoConstraints = {},
-  mimeType = 'video/webm',
   onRecordingComplete,
 }: MediaRecorderOptions = {}) => {
   const [permission, setPermission] = useState<boolean>(false)
@@ -197,22 +221,14 @@ const useMediaRecorder = ({
       if (!mediaStream) return
     }
 
-    let recorderMimeType = mimeType
-    if (!MediaRecorder.isTypeSupported(mimeType)) {
-      const supportedTypes = [
-        'video/webm',
-        'video/webm;codecs=vp9',
-        'video/webm;codecs=vp8',
-        'audio/webm',
-        'audio/mp4',
-      ]
-
-      for (const type of supportedTypes) {
-        if (MediaRecorder.isTypeSupported(type)) {
-          recorderMimeType = type
-          break
-        }
-      }
+    let recorderMimeType = getSupportedMimeType(video)
+    if (!recorderMimeType) {
+      setError({
+        message: 'No supported MIME type found for recording.',
+        type: 'unsupported_media',
+        originalError: new Error('No supported MIME type found for recording.'),
+      })
+      return
     }
 
     const recorder = new MediaRecorder(mediaStream, {
@@ -325,13 +341,7 @@ const useMediaRecorder = ({
   const downloadRecording = (filename = 'recording') => {
     if (!recordedMedia) return
 
-    const extension = recordedMedia.type.includes('audio/')
-      ? recordedMedia.type.includes('mp4')
-        ? 'mp4'
-        : 'webm'
-      : recordedMedia.type.includes('mp4')
-        ? 'mp4'
-        : 'webm'
+    const extension = recordedMedia.type.split('/')[1].split(';')[0] || 'webm'
 
     const a = document.createElement('a')
     a.href = recordedMedia.url

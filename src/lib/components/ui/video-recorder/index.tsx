@@ -103,10 +103,11 @@ export const VideoRecorder = ({
       try {
         const blobFromUrl = await fetch(media.url).then((res) => res.blob());
         await new Promise((resolve) => setTimeout(resolve, 1000));
+        const extension = media.type.split('/')[1].split(';')[0] || 'webm';
         const file = new File(
           [blobFromUrl],
-          `scripted-recording-${new Date().toISOString()}.webm`,
-          { type: "video/webm" }
+          `scripted-recording-${new Date().toISOString()}.${extension}`,
+          { type: `video/${extension}` }
         );
 
         // Process the video/audio with trimming and cropping
@@ -133,7 +134,7 @@ export const VideoRecorder = ({
         const processedMediaObj = {
           blob: processedMedia.data,
           url: URL.createObjectURL(processedMedia.data),
-          type: record?.video ? "video/webm" : "audio/mp3",
+          type: record?.video ? `video/${extension}` : `audio/${extension}`,
         };
 
         await onRecordingComplete(processedMediaObj);

@@ -302,11 +302,12 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
                     <VideoRecorder
                       onRecordingComplete={async (media) => {
                         setVideoURL(media.url);
+                        const extension = media.type.split('/')[1] || 'webm'
                         const file = new File(
                           [media.blob],
-                          "avatar-video.webm",
+                          `avatar-video.${extension}`,
                           {
-                            type: "video/webm",
+                            type: `video/${extension}`,
                           }
                         );
                         setVideoFile(file);

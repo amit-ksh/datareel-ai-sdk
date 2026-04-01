@@ -11,6 +11,10 @@ const ENVIRONMENTS = {
     auth: 'https://auth.dev.datareel.ai/',
     video: 'https://video.dev.datareel.ai/',
   },
+  uat: {
+    auth: 'https://auth.uat.datareel.ai/',
+    video: 'https://video.uat.datareel.ai/',
+  },
 } as const
 
 const API_VERSION = {

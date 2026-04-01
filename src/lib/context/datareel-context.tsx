@@ -1,3 +1,5 @@
+"use client";
+
 import React, {
   createContext,
   useContext,
@@ -41,11 +43,11 @@ export function DatareelProvider({
       root.style.setProperty("--datareel-brand-color", color);
       root.style.setProperty(
         "--datareel-brand-color-hover",
-        adjustBrightness(color, 0.8)
+        adjustBrightness(color, 0.8),
       );
       root.style.setProperty(
         "--datareel-brand-color-light",
-        lightenColor(color, 0.1)
+        lightenColor(color, 0.1),
       );
       root.style.setProperty("--datareel-brand-color-ring", color);
     }
@@ -70,7 +72,7 @@ export function DatareelProvider({
       ) => {
         const res = await DataReel.prototype.initOrganisation.call(
           datareel,
-          ...args
+          ...args,
         );
         setUser(datareel.getUser());
         return res;
@@ -112,7 +114,7 @@ const adjustBrightness = (hex: string, factor: number): string => {
   const r = Math.max(0, Math.min(255, Math.floor((rgb >> 16) * factor)));
   const g = Math.max(
     0,
-    Math.min(255, Math.floor(((rgb >> 8) & 0x00ff) * factor))
+    Math.min(255, Math.floor(((rgb >> 8) & 0x00ff) * factor)),
   );
   const b = Math.max(0, Math.min(255, Math.floor((rgb & 0x0000ff) * factor)));
   return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;

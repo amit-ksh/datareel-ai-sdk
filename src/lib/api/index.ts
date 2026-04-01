@@ -1,6 +1,6 @@
 import axios from "axios"
 
-export const ENVIRONMENT_TYPE: 'production' | 'development' = 'development'
+export const ENVIRONMENT_TYPE: 'production' | 'development' | 'uat' = 'uat'
 
 const ENVIRONMENTS = {
   production: {

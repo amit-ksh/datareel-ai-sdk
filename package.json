@@ -37,8 +37,19 @@
     "prepack": "json -f package.json -I -e \"delete this.devDependencies; delete this.dependencies\""
   },
   "dependencies": {
+    "@auth0/auth0-react": "^2.16.1",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@tanstack/react-query": "^5.96.1",
+    "axios": "1.11.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "iso-language-codes": "^2.0.0",
+    "lucide-react": "^1.7.0",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-easy-crop": "^5.5.7",
+    "react-use-websocket": "^4.13.0",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@babel/core": "7.27.4",

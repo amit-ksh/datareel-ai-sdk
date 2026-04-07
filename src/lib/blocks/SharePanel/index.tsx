@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   Share2,
@@ -46,7 +48,7 @@ export const SharePanel: React.FC<SharePanelProps> = ({
           onClick={() =>
             window.open(
               `mailto:?subject=Check out this video&body=${shareUrl}`,
-              "_blank"
+              "_blank",
             )
           }
         >
@@ -57,7 +59,7 @@ export const SharePanel: React.FC<SharePanelProps> = ({
           onClick={() =>
             window.open(
               `https://wa.me/?text=${encodeURIComponent(shareUrl)}`,
-              "_blank"
+              "_blank",
             )
           }
         >

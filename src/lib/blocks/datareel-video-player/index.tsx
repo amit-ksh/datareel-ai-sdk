@@ -1,3 +1,5 @@
+"use client";
+
 // CLEAN IMPLEMENTATION - Legacy content fully removed
 import React from "react";
 import { cx } from "class-variance-authority";
@@ -85,7 +87,7 @@ export const DatareelVideoPlayer: React.FC<DatareelVideoPlayerProps> = ({
                 <div
                   className={cx(
                     "w-7 h-7 rounded-full flex items-center justify-center text-white",
-                    isCompleted ? "bg-green-500" : "bg-blue-500"
+                    isCompleted ? "bg-green-500" : "bg-blue-500",
                   )}
                 >
                   {isCompleted ? (

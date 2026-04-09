@@ -53,8 +53,8 @@ export function useVideoData(videoId: string, options: UseVideoDataOptions = {})
   const [pipelineData, setPipelineData] = useState<any>(null);
   const [copied, setCopied] = useState({ url: false, embed: false });
 
-  const shareUrl = `https://www.dev.datareel.ai/delivery/${videoId}`;
-  const embedCode = `<iframe src="https://www.dev.datareel.ai/embed/${videoId}" width="560" height="315" frameborder="0" allowfullscreen></iframe>`;
+  const shareUrl = `https://www.uat.datareel.ai/delivery/${videoId}`;
+  const embedCode = `<iframe src="https://www.uat.datareel.ai/embed/${videoId}" width="560" height="315" frameborder="0" allowfullscreen></iframe>`;
 
   const {
     data: resultData,
@@ -151,7 +151,7 @@ export function useVideoData(videoId: string, options: UseVideoDataOptions = {})
   const wsUrl = useMemo(() => {
     if (!realtime) return null;
     if (!videoId || !apiKey || isVideoCreated || isResultPending) return null;
-    return `wss://video.dev.datareel.ai/api/v2/ws/${videoId}/${apiKey}`;
+    return `wss://video.uat.datareel.ai/api/v2/ws/${videoId}/${apiKey}`;
   }, [videoId, apiKey, isVideoCreated, isResultPending, realtime]);
 
   const { lastMessage, readyState } = useWebSocket(wsUrl, {

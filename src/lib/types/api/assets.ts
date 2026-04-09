@@ -22,6 +22,20 @@ export interface CreateAvatarRequest {
     avatar_name: string;
     persona_id?: string;
     video: File;
+    remove_background?: boolean;
+    crop?: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
+    scale?: {
+      width: number;
+      height: number;
+    };
+    replace_background_image?: File;
+    replace_background_original_image?: File;
+    replace_background_color?: string;
   };
 }
 

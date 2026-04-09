@@ -8,7 +8,6 @@ import { SCRIPTS, VideoRecorder } from "../../components/ui/video-recorder";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Tabs } from "../../components/ui/tabs";
-import { cropVideo, separateVideoAndAudio } from "../../api/cropper";
 import { useDatareel } from "../../context";
 import { by639_1 } from "iso-language-codes";
 
@@ -53,33 +52,8 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
     (croppedArea: any, croppedAreaPixels: any) => {
       setCroppedAreaPixels(croppedAreaPixels);
     },
-    []
+    [],
   );
-
-  const showCroppedVideo = async () => {
-    try {
-      if (!croppedAreaPixels) {
-        console.error("Crop area not defined");
-        return;
-      }
-
-      const croppedVideoBlob = await cropVideo({
-        videoFile: videoFile!,
-        crop: croppedAreaPixels,
-        scale: {
-          width: selectedAspectRatio?.video_dimensions?.width || 1038,
-          height: selectedAspectRatio?.video_dimensions?.height || 778,
-        },
-      });
-      return croppedVideoBlob.data;
-    } catch (e: any) {
-      console.error(e);
-      const errorMessage = e?.response?.data?.detail || e?.message;
-      throw new Error(
-        errorMessage || "Failed to crop the video. Please try again."
-      );
-    }
-  };
 
   const avatarSubmission = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -89,46 +63,18 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
         throw new Error("Please upload a video");
       }
       if (isCreatingAvatar) return;
-      
+
       setIsCreatingAvatar(true);
       setRender(true);
-      const croppedVideoBlob = await showCroppedVideo();
-      if (!croppedVideoBlob) {
-        console.error("Cropped video blob is not available");
-        setRender(false);
-        return;
-      }
-
-      const file = new File(
-        [croppedVideoBlob],
-        `cropped-video.${videoFile?.type.split("/")[1]}`,
-        {
-          type: videoFile?.type,
-        }
-      );
-      const { video: videoWithoutAudio, audio: audioWithoutVideo } =
-        await separateVideoAndAudio({
-          videoFile: file,
-          crop: croppedAreaPixels,
-          scale: {
-            width: selectedAspectRatio?.video_dimensions?.width || 1038,
-            height: selectedAspectRatio?.video_dimensions?.height || 778,
-          },
-        });
 
       const formData = new FormData(e.target as HTMLFormElement);
       formData.set(
-        "video",
-        videoWithoutAudio.data,
-        `cropped-video.${videoFile?.type.split("/")[1]}`
-      );
-      formData.set(
         "avatar_name",
-        (formData.get("avatar_name") as string)?.trim() || ""
+        (formData.get("avatar_name") as string)?.trim() || "",
       );
       formData.set(
         "reference_id",
-        (formData.get("reference_id") as string)?.trim() || ""
+        (formData.get("reference_id") as string)?.trim() || "",
       );
       formData.set("settings_id", selectedAspectRatio?.settings_id || "");
 
@@ -141,20 +87,15 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
 
       await datareel.createAvatar({
         settingsId: formObject.settings_id,
-        videoFile: new File(
-          [videoWithoutAudio.data],
-          `cropped-video.${videoFile?.type.split("/")[1]}`,
-          {
-            type: videoFile?.type,
-          }
-        ),
+        videoFile: videoFile!,
         avatarName: String(formObject.avatar_name || "").trim(),
         language: language,
-        audioFiles: [
-          new File([audioWithoutVideo.data], "audio.mp3", {
-            type: "audio/mp4",
-          }),
-        ],
+        crop: croppedAreaPixels,
+        scale: {
+          width: selectedAspectRatio?.video_dimensions?.width || 1038,
+          height: selectedAspectRatio?.video_dimensions?.height || 778,
+        },
+        removeBackground: !!formObject.remove_background,
       });
 
       queryClient.invalidateQueries({
@@ -172,7 +113,7 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
       console.error(error);
       const errorMessage = error?.response?.data?.detail || error?.message;
       onError?.(
-        new Error(errorMessage || "Failed to create avatar. Please try again.")
+        new Error(errorMessage || "Failed to create avatar. Please try again."),
       );
     } finally {
       setRender(false);
@@ -246,6 +187,21 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
           </div>
         </div>
 
+        {/* <div className="flex items-center space-x-2">
+          <input
+            id="remove_background"
+            name="remove_background"
+            type="checkbox"
+            className="h-4 w-4 bg-white border-gray-300 rounded outline-none"
+          />
+          <label
+            htmlFor="remove_background"
+            className="text-sm font-medium text-gray-700"
+          >
+            Remove background
+          </label>
+        </div> */}
+
         <Tabs
           variant="default"
           activeTab={activeTab}
@@ -302,13 +258,13 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
                     <VideoRecorder
                       onRecordingComplete={async (media) => {
                         setVideoURL(media.url);
-                        const extension = media.type.split('/')[1] || 'webm'
+                        const extension = media.type.split("/")[1] || "webm";
                         const file = new File(
                           [media.blob],
                           `avatar-video.${extension}`,
                           {
                             type: `video/${extension}`,
-                          }
+                          },
                         );
                         setVideoFile(file);
                       }}
@@ -392,11 +348,11 @@ export const CreateAvatarForm: React.FC<CreateAvatarFormProps> = ({
           className="min-w-[120px]"
           title={!datareel?.email ? "Set your email to enable" : undefined}
         >
-          {render
+          {Boolean(render || isCreatingAvatar)
             ? "Creating..."
             : !datareel?.email
-            ? "Create Avatar (locked)"
-            : "Create Avatar"}
+              ? "Create Avatar (locked)"
+              : "Create Avatar"}
         </Button>
       </div>
     </form>

@@ -90,30 +90,59 @@ export const getPersonas = async (
 
 export const createVideoAvatar = async (
   request: CreateAvatarRequest
-): Promise<{ video_id: string }> => {
-  const params = new URLSearchParams();
-  if (request.data.persona_id) {
-    params.append("persona_id", request.data.persona_id);
-  }
- 
+): Promise<{ avatar_id: string }> => {
+  const { data } = request;
   const formData = new FormData();
-  formData.append("video", request.data.video);
-  formData.append("avatar_name", request.data.avatar_name);
-  formData.append("reference_id", request.data.reference_id);
+  if (request.apiKey) formData.append("api_key", request.apiKey);
+  if (data.persona_id) formData.append("persona_id", data.persona_id);
+  formData.append("video", data.video);
+  formData.append("avatar_name", data.avatar_name);
+  
+  let settingsId = data.settings_id;
+  if (settingsId === "default") settingsId = "";
+  formData.append("settings_id", settingsId);
+  formData.append("reference_id", data.reference_id);
 
-  if (request.data.settings_id === "default") request.data.settings_id = "";
-  formData.append("settings_id", request.data.settings_id);
+  if (data.remove_background !== undefined) {
+    formData.append("remove_background", String(data.remove_background));
+  }
 
-  const response = await VideoAxios.post(
-    `video/upload?${params.toString()}`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        api_key: request.apiKey,
-      },
-    }
-  );
+  const { crop, scale } = data;
+  if (crop) {
+    formData.set("x", String(crop.x));
+    formData.set("y", String(crop.y));
+    formData.set("width", String(crop.width));
+    formData.set("height", String(crop.height));
+  }
+  if (scale) {
+    const scaleWidth = scale.width % 2 === 0 ? scale.width : scale.width - 1;
+    const scaleHeight =
+      scale.height % 2 === 0 ? scale.height : scale.height - 1;
+    formData.set("scale_width", String(scaleWidth));
+    formData.set("scale_height", String(scaleHeight));
+  }
+
+  if (data.replace_background_image) {
+    formData.append("replace_background_image", data.replace_background_image);
+  }
+
+  if (data.replace_background_original_image) {
+    formData.append(
+      "replace_background_original_image",
+      data.replace_background_original_image
+    );
+  }
+
+  if (data.replace_background_color) {
+    formData.append("replace_background_color", data.replace_background_color);
+  }
+
+  const response = await VideoAxios.post(`avatar/process-avatar`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      api_key: request.apiKey,
+    },
+  });
 
   return response.data;
 };
@@ -160,28 +189,25 @@ export const updatePersona = async (request: {
 }
 
 export const deletePersona = async (request: { persona_id: string }, apiKey: string) => {
-  return VideoAxios.delete(`persona/delete`, {
+  return VideoAxios.put(`persona/delete`, request, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       api_key: apiKey,
     },
-    data: request,
   });
 };
 
 export const deleteAvatar = async (request: { video_id: string }, apiKey: string) => {
-  return VideoAxios.delete(`video/delete`, {
+  return VideoAxios.put(`avatar/delete`, request, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       api_key: apiKey,
     },
-    data: request,
   });
 };
 
 export const deleteVoice = async (request: { voice_id: string }, apiKey: string) => {
-  return VideoAxios.delete(`voice/delete`, {
-    data: request,
+  return VideoAxios.put(`voice/delete`, request, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       api_key: apiKey,

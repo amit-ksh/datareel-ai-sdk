@@ -197,77 +197,102 @@ export class DataReel {
   async createAvatar({
     settingsId,
     videoFile,
-    audioFiles,
+    audioFiles = [],
     avatarName: providedAvatarName,
     language,
+    crop,
+    scale,
+    removeBackground,
   }: {
     settingsId: string;
     videoFile: File;
-    audioFiles: File[];
+    audioFiles?: File[];
     avatarName?: string;
     language: string;
+    crop?: CreateAvatarRequest["data"]["crop"];
+    scale?: CreateAvatarRequest["data"]["scale"];
+    removeBackground?: boolean;
   }) {
-  this.validateCredentials(this.organisationId || '', this.apiKey || '');
+    this.validateCredentials(this.organisationId || "", this.apiKey || "");
 
-  const avatarName = (providedAvatarName || this.name || '').trim()
-  const referenceId = this.email
+    const avatarName = (providedAvatarName || this.name || "").trim();
+    const referenceId = this.email;
 
     const personaPayload = {
       name: avatarName,
-      email: this.email || '',
+      email: this.email || "",
       reference_id: referenceId,
-      organisation_id: this.organisationId || '',
-      user_label: this.email
-    }
-    const personaFormData = new FormData()
+      organisation_id: this.organisationId || "",
+      user_label: this.email,
+    };
+    const personaFormData = new FormData();
     for (const key in personaPayload) {
-      personaFormData.set(key, String(personaPayload[key as keyof typeof personaPayload]))
+      personaFormData.set(
+        key,
+        String(personaPayload[key as keyof typeof personaPayload])
+      );
     }
-    const newPersona = await createPersona(personaFormData, this.apiKey!)
-    const newPersonaId = newPersona?.data.data
+    const newPersona = await createPersona(personaFormData, this.apiKey!);
+    const newPersonaId = newPersona?.data.data;
 
     const request: CreateAvatarRequest = {
       apiKey: this.getApiKey()!,
       data: {
-        settings_id: settingsId || 'default',
-        reference_id: referenceId,
+        settings_id: settingsId || "default",
+        reference_id: referenceId || "",
         avatar_name: avatarName,
         video: videoFile,
-        persona_id: newPersonaId || '',
-      }
+        persona_id: newPersonaId || "",
+        crop,
+        scale,
+        remove_background: removeBackground,
+      },
     };
 
-  const voicePayload = {
-        voice_label: avatarName.trim(),
-        reference_id: referenceId,
-        language: language || 'en',
-        model: 'eleven_labs',
-        stability: 0.5,
-        similarity_boost: 0.75,
-        style: 0,
-        persona_id: newPersonaId || '',
-      } 
+    const voicePayload =
+      audioFiles && audioFiles.length > 0
+        ? {
+            voice_label: avatarName.trim(),
+            reference_id: referenceId,
+            language: language || "en",
+            model: "eleven_labs",
+            stability: 0.5,
+            similarity_boost: 0.75,
+            style: 0,
+            persona_id: newPersonaId || "",
+          }
+        : null;
 
     const voiceFormData = new FormData();
-    for (const key in voicePayload) {
-      voiceFormData.set(key, String(voicePayload[key as keyof typeof voicePayload]))
-    }
-    for (const audioFile of audioFiles) {
-      voiceFormData.append('audio_files', audioFile);
+    if (voicePayload) {
+      for (const key in voicePayload) {
+        voiceFormData.set(
+          key,
+          String(voicePayload[key as keyof typeof voicePayload])
+        );
+      }
+      for (const audioFile of audioFiles) {
+        voiceFormData.append("audio_files", audioFile);
+      }
     }
 
-  const [voice, avatar] = await Promise.all([await createVoice(voiceFormData, this.getApiKey()), await createVideoAvatar(request)]);
+    const [voice, avatar] = await Promise.all([
+      voicePayload ? createVoice(voiceFormData, this.getApiKey()) : null,
+      createVideoAvatar(request),
+    ]);
 
     const updatePersonaPayload = {
-        persona_id: newPersonaId,
-        name: avatarName,
-        default_avatar: avatar?.video_id,
-        // @ts-ignore 
-        default_voice: voice?.data?.voice_id,
-        // @ts-ignore 
-        onboarded: Boolean(voice?.data?.voice_id && avatar?.video_id),
-        consent: true,
-      }
+      persona_id: newPersonaId,
+      name: avatarName,
+      default_avatar: avatar?.avatar_id,
+      // @ts-ignore
+      default_voice: voice?.data?.voice_id,
+      // @ts-ignore
+      onboarded: Boolean(
+        (voice?.data?.voice_id || !voicePayload) && avatar?.avatar_id
+      ),
+      consent: true,
+    };
 
   await updatePersonaApi(updatePersonaPayload, this.getApiKey())
 
